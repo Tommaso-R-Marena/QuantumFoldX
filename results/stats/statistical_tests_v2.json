@@ -1,0 +1,54 @@
+{
+  "primary": {
+    "metric": "Dual-State Coverage (TM>0.5)",
+    "n": 14,
+    "n_covered": 5,
+    "rate": 0.35714285714285715,
+    "wilson_95ci": [
+      0.16344490737202735,
+      0.6123599531785959
+    ],
+    "af3_auto_rate": 0.14,
+    "af3_multi_rate": 0.233,
+    "p_vs_af3_auto": 0.035931893084180315,
+    "p_vs_af3_multi": 0.21040062903691087,
+    "sig_vs_auto": "True",
+    "sig_vs_multi": "False"
+  },
+  "stratification": {
+    "easy": {
+      "n": 5,
+      "covered": 5,
+      "rate": 1.0,
+      "mean_baseline_tm": 0.8307366774020017
+    },
+    "medium": {
+      "n": 2,
+      "covered": 0,
+      "rate": 0.0,
+      "mean_baseline_tm": 0.34608335607013396
+    },
+    "hard": {
+      "n": 7,
+      "covered": 0,
+      "rate": 0.0,
+      "mean_baseline_tm": 0.1561866589455023
+    }
+  },
+  "improvement": {
+    "n": 14,
+    "mean_angstrom": 0.9026444719886035,
+    "median_angstrom": 0.3324008231885931,
+    "mean_pct": 5.1448046122490405,
+    "frac_improved": 1.0,
+    "max_improvement": 5.606863807765688,
+    "wilcoxon_p": 6.103515625e-05,
+    "sig": "True"
+  },
+  "quantum_ranking": {
+    "n": 14,
+    "mean_rho": -0.26947415562697846,
+    "n_negative": 10,
+    "note": "Negative rho = QICESS ranks conformations closer to state 2 higher"
+  }
+}

@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+data/pdb_cache/*.pdb
+.DS_Store
+*.egg-info/

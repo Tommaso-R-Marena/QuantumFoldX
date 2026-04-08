@@ -1,0 +1,17 @@
+protein,gene,status,error,pdb_state1,pdb_state2,uniprot,af3_imfd_rmsd,n_residues_state1,n_residues_state2,n_fd_residues,n_im_residues,ensemble_size,scoring_time_s,qfx_rmsd_state1,qfx_tm_state1,qfx_gdt_state1,qfx_lddt_state1,qfx_imfd_rmsd,qfx_rmsd_state2,qfx_tm_state2,qicess_composite,qicess_quantum_energy,qicess_rg,qicess_rama,best_method,n_qubits,ensemble_diversity
+Tyrosine-protein kinase ABL1,ABL1,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+Proto-oncogene tyrosine-protein kinase Src,SRC,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+Tyrosine-protein kinase HCK,HCK,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+Tyrosine-protein kinase Fyn,FYN,parse_failed,,2DQ7,1A6U,P06241,3.5,,,,,,,,,,,,,,,,,,,,
+Tyrosine-protein kinase Lck,LCK,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+Tyrosine-protein phosphatase SHP-1,PTPN6,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+Epidermal growth factor receptor,EGFR,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+Focal adhesion kinase 1,PTK2,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+STAT3,STAT3,success,,1BG1,3CWG,P40763,4.5,558.0,501.0,123.0,178.0,30.0,6.429291248321533,4.12569735097386,0.8359011364274235,43.10035842293907,94.36447780773996,8.413910123582065,20.02149486914706,0.250988996289593,0.1599302148381052,0.0,32.466756920714346,0.4568345323741007,rigid_body,0.0,4.962513017352135
+Cystathionine beta-synthase,CBS,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+WASP,WAS,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+B-Raf kinase,BRAF,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+Tyrosine-protein kinase JAK1,JAK1,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+KIT receptor,KIT,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
+FGFR1,FGFR1,parse_failed,,2FDB,3GQI,P11362,2.3,,,,,,,,,,,,,,,,,,,,
+Adenylate kinase 1,AK1,error,array() got an unexpected keyword argument 'requires_grad',,,,,,,,,,,,,,,,,,,,,,,,
