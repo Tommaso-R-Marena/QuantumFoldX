@@ -92,6 +92,39 @@ Evaluated on 14 autoinhibited proteins from [Papageorgiou et al. 2025](https://w
 | QFX rate vs AF3 multi-state (23.3%) | Binomial | 0.210 | ✗ |
 | RMSD improvement > 0 | Wilcoxon signed-rank | 0.000061 | ✓ (α=0.001) |
 
+## Ablation Study: Does the Quantum Layer Matter?
+
+The most important question about this work: is the VQE scoring layer contributing anything, or is it decorative?
+
+We ran a rigorous ablation comparing 5 scoring methods on identical ensembles across all 14 proteins:
+
+| Method | Top-10 Mean TM to State 2 | Notes |
+|--------|--------------------------|-------|
+| QICESS-VQE (quantum) | 0.391 ± 0.308 | The quantum method |
+| QICESS-Exact (classical diag) | 0.388 ± 0.305 | Same Ising model, exact solution |
+| Classical-MJ (sum potentials) | 0.338 ± 0.238 | Just sum MJ energies |
+| No-Quantum (renormalized) | 0.332 ± 0.234 | Drop quantum term entirely |
+| **Random** | **0.394 ± 0.313** | **Null baseline** |
+
+### Ablation Findings
+
+1. **VQE never finds the exact ground state**: 0/14 proteins match exact diagonalization (mean Hamming distance = 5.1 out of 16 bits). The variational circuit is trapped in local minima.
+
+2. **VQE does not outperform random ranking**: VQE 0.391 vs Random 0.394 (p = 0.25, Wilcoxon signed-rank). The quantum scoring layer adds no statistically measurable ranking value.
+
+3. **Exact diagonalization is 2x faster**: Classical enumeration of 2^16 = 65,536 states takes ~6s vs VQE's ~13s per protein. The quantum circuit is slower and less accurate.
+
+4. **There is a borderline signal for Ising-model-based scoring**: VQE vs No-Quantum shows Δ = +0.059 (p = 0.058), suggesting the Ising contact model itself may capture something useful — but the evidence is insufficient with only 14 proteins, and the quantum solver is not the reason.
+
+### What This Means
+
+At 16 qubits classically simulated, the VQE provides **no quantum advantage**. The Ising Hamiltonian formulation of protein contacts is a reasonable physics idea, but:
+- The problem is trivially solvable classically at this scale (exact diag in milliseconds)
+- The VQE doesn't even solve it correctly (0% ground state match)
+- The resulting ranking doesn't outperform random selection
+
+The quantum component would need to demonstrate advantage at a scale where classical exact diag is infeasible (>50 qubits), which requires either real quantum hardware or fundamentally different circuit architectures.
+
 ## Installation
 
 ```bash
