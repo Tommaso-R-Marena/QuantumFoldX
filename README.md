@@ -14,7 +14,7 @@ AF3 typically predicts a single conformational state per protein. For drug desig
 
 | Metric | QuantumFoldX | AlphaFold 3 | Significance |
 |--------|-------------|-------------|--------------|
-| Dual-state coverage (autoinhibited) | **35.7%** (5/14) | 14% | p=0.036 (binomial) |
+| Dual-state coverage (autoinhibited) | **37.5%** (6/16) | 14% | p=0.017 (binomial) |
 | Ensemble RMSD improvement | **100%** of proteins | N/A (single prediction) | p=0.00006 (Wilcoxon) |
 | Disorder prediction AUC | **0.831** (DisorderNet) | 0.747 | +0.084 AUC |
 | D-peptide chirality violations | **0%** (ChiralFold) | 51% | -51pp |
@@ -56,7 +56,7 @@ QuantumFoldX Pipeline
 
 ### Dual-State Conformational Coverage
 
-Evaluated on 14 autoinhibited proteins from [Papageorgiou et al. 2025](https://www.nature.com/articles/s42004-025-01763-0):
+Evaluated on 16 autoinhibited proteins from [Papageorgiou et al. 2025](https://www.nature.com/articles/s42004-025-01763-0):
 
 | Gene | N_res | S1↔S2 RMSD (Å) | S1↔S2 TM | Ens→S2 minRMSD (Å) | Ens→S2 maxTM | RMSD Improv. | Dual-State |
 |------|-------|-----------------|-----------|---------------------|--------------|--------------|------------|
@@ -128,18 +128,21 @@ The quantum component would need to demonstrate advantage at a scale where class
 ## Installation
 
 ```bash
-pip install pennylane pennylane-lightning numpy scipy pandas matplotlib requests
+pip install -r requirements.txt
 ```
 
-## Usage
+```bash
+# Run the full benchmark suite (all categories + ablation + figures)
+python benchmarks/run_all_benchmarks.py
 
-```python
-# Run the full benchmark
-cd QuantumFoldX
+# Run autoinhibited benchmark only
 python benchmarks/run_benchmark_v2_fast.py
 
 # Analyze results and generate figures
 python benchmarks/analyze_results.py
+
+# Run unit tests
+python -m pytest tests/ -v
 ```
 
 ## Project Structure
@@ -161,8 +164,13 @@ QuantumFoldX/
 ├── configs/
 │   └── benchmark_dataset.py      # 16 autoinhibited proteins with AF3 baselines
 ├── benchmarks/
-│   ├── run_benchmark_v2_fast.py  # Main benchmark pipeline
-│   └── analyze_results.py       # Statistical analysis & figure generation
+│   ├── run_all_benchmarks.py     # Master benchmark runner (all suites)
+│   ├── run_benchmark_v2_fast.py  # Autoinhibited dual-state benchmark
+│   ├── benchmark_utils.py        # Shared benchmark utilities
+│   └── analyze_results.py        # Statistical analysis & figure generation
+├── tests/
+│   └── test_quantumfoldx.py      # Unit tests (19 tests)
+├── requirements.txt
 ├── results/
 │   ├── tables/                   # CSV results
 │   ├── stats/                    # Statistical tests (JSON)

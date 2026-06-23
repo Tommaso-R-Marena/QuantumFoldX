@@ -1,0 +1,696 @@
+2026-06-23 03:51:26,546 [INFO] ================================================================================
+2026-06-23 03:51:26,546 [INFO] QuantumFoldX — FULL BENCHMARK SUITE
+2026-06-23 03:51:26,546 [INFO] ================================================================================
+2026-06-23 03:51:26,546 [INFO] VQE: 2 restarts, 50 steps | QAOA: enabled
+2026-06-23 03:51:26,546 [INFO] 
+================================================================================
+2026-06-23 03:51:26,546 [INFO] BENCHMARK: AUTOINHIBITED
+2026-06-23 03:51:26,546 [INFO] ================================================================================
+2026-06-23 03:51:26,546 [INFO] 
+  [1/16] ABL1 (autoinhibited)
+2026-06-23 03:51:26,786 [INFO] Downloaded 2F4J from RCSB (241299 bytes)
+2026-06-23 03:51:26,792 [INFO]   S1↔S2: RMSD=4.97Å TM=0.888 (n_common=263)
+2026-06-23 03:51:27,111 [INFO]   Running VQE for protein (263 residues)...
+2026-06-23 03:51:30,500 [INFO]   VQE complete: 16 qubits, E_ground = -51.4058
+2026-06-23 03:51:30,500 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:51:43,660 [INFO]   QAOA complete: 18 qubits, E=-1.4157
+2026-06-23 03:52:01,299 [INFO]   Ens→S2: minRMSD=4.88Å maxTM=0.890
+2026-06-23 03:52:01,299 [INFO]   Dual-state(TM>0.5): True | Time: 34.5s
+2026-06-23 03:52:01,305 [INFO] 
+  [2/16] SRC (autoinhibited)
+2026-06-23 03:52:01,586 [INFO] Downloaded 2SRC from RCSB (353079 bytes)
+2026-06-23 03:52:01,838 [INFO] Downloaded 1Y57 from RCSB (374139 bytes)
+2026-06-23 03:52:01,844 [INFO]   S1↔S2: RMSD=23.20Å TM=0.198 (n_common=449)
+2026-06-23 03:52:02,413 [INFO]   Running VQE for protein (449 residues)...
+2026-06-23 03:52:05,944 [INFO]   VQE complete: 16 qubits, E_ground = -23.2200
+2026-06-23 03:52:05,944 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:52:16,903 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 03:52:28,668 [INFO]   Ens→S2: minRMSD=22.84Å maxTM=0.218
+2026-06-23 03:52:28,668 [INFO]   Dual-state(TM>0.5): False | Time: 26.8s
+2026-06-23 03:52:28,672 [INFO] 
+  [3/16] HCK (autoinhibited)
+2026-06-23 03:52:28,939 [INFO] Downloaded 1AD5 from RCSB (763506 bytes)
+2026-06-23 03:52:29,193 [INFO] Downloaded 2HK5 from RCSB (233199 bytes)
+2026-06-23 03:52:29,199 [INFO]   S1↔S2: RMSD=19.29Å TM=0.170 (n_common=258)
+2026-06-23 03:52:29,700 [INFO]   Running VQE for protein (437 residues)...
+2026-06-23 03:52:33,253 [INFO]   VQE complete: 16 qubits, E_ground = -20.0127
+2026-06-23 03:52:33,253 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:52:44,632 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 03:52:55,801 [INFO]   Ens→S2: minRMSD=19.27Å maxTM=0.170
+2026-06-23 03:52:55,801 [INFO]   Dual-state(TM>0.5): False | Time: 26.6s
+2026-06-23 03:52:55,803 [INFO] 
+  [4/16] FYN (autoinhibited)
+2026-06-23 03:52:56,052 [INFO] Downloaded 2DQ7 from RCSB (222750 bytes)
+2026-06-23 03:52:56,301 [INFO] Downloaded 1A6U from RCSB (187434 bytes)
+2026-06-23 03:52:56,302 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/2DQ7.pdb (chain=A)
+2026-06-23 03:52:56,304 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/1A6U.pdb (chain=A)
+2026-06-23 03:52:56,305 [INFO]   S1↔S2: RMSD=18.04Å TM=0.067 (n_common=108)
+2026-06-23 03:52:56,543 [INFO]   Running VQE for protein (262 residues)...
+2026-06-23 03:52:59,892 [INFO]   VQE complete: 16 qubits, E_ground = -56.2233
+2026-06-23 03:52:59,892 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:53:11,024 [INFO]   QAOA complete: 18 qubits, E=-1.6038
+2026-06-23 03:53:26,961 [INFO]   Ens→S2: minRMSD=16.37Å maxTM=0.098
+2026-06-23 03:53:26,961 [INFO]   Dual-state(TM>0.5): False | Time: 30.6s
+2026-06-23 03:53:26,964 [INFO] 
+  [5/16] LCK (autoinhibited)
+2026-06-23 03:53:27,394 [INFO] Downloaded 3LCK from RCSB (254178 bytes)
+2026-06-23 03:53:27,596 [INFO] Downloaded 2PL0 from RCSB (222507 bytes)
+2026-06-23 03:53:27,599 [INFO]   S1↔S2: RMSD=15.25Å TM=0.220 (n_common=267)
+2026-06-23 03:53:27,789 [INFO]   Running VQE for protein (288 residues)...
+2026-06-23 03:53:31,254 [INFO]   VQE complete: 16 qubits, E_ground = -50.0461
+2026-06-23 03:53:31,254 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:53:45,744 [INFO]   QAOA complete: 18 qubits, E=-0.9783
+2026-06-23 03:54:03,403 [INFO]   Ens→S2: minRMSD=15.10Å maxTM=0.241
+2026-06-23 03:54:03,403 [INFO]   Dual-state(TM>0.5): False | Time: 35.8s
+2026-06-23 03:54:03,406 [INFO] 
+  [6/16] PTPN6 (autoinhibited)
+2026-06-23 03:54:03,691 [INFO] Downloaded 2B3O from RCSB (363690 bytes)
+2026-06-23 03:54:04,003 [INFO] Downloaded 3PS5 from RCSB (395361 bytes)
+2026-06-23 03:54:04,008 [INFO]   S1↔S2: RMSD=23.33Å TM=0.191 (n_common=504)
+2026-06-23 03:54:04,658 [INFO]   Running VQE for protein (504 residues)...
+2026-06-23 03:54:08,399 [INFO]   VQE complete: 16 qubits, E_ground = -31.3788
+2026-06-23 03:54:08,399 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:54:20,244 [INFO]   QAOA complete: 18 qubits, E=-1.6839
+2026-06-23 03:54:32,698 [INFO]   Ens→S2: minRMSD=17.73Å maxTM=0.387
+2026-06-23 03:54:32,698 [INFO]   Dual-state(TM>0.5): False | Time: 28.7s
+2026-06-23 03:54:32,700 [INFO] 
+  [7/16] EGFR (autoinhibited)
+2026-06-23 03:54:32,990 [INFO] Downloaded 2GS6 from RCSB (256932 bytes)
+2026-06-23 03:54:33,285 [INFO] Downloaded 2GS7 from RCSB (447363 bytes)
+2026-06-23 03:54:33,288 [INFO]   S1↔S2: RMSD=3.93Å TM=0.859 (n_common=278)
+2026-06-23 03:54:33,574 [INFO]   Running VQE for protein (311 residues)...
+2026-06-23 03:54:37,015 [INFO]   VQE complete: 16 qubits, E_ground = -63.7198
+2026-06-23 03:54:37,015 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:54:47,629 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 03:55:03,792 [INFO]   Ens→S2: minRMSD=3.90Å maxTM=0.861
+2026-06-23 03:55:03,792 [INFO]   Dual-state(TM>0.5): True | Time: 30.5s
+2026-06-23 03:55:03,796 [INFO] 
+  [8/16] PTK2 (autoinhibited)
+2026-06-23 03:55:03,800 [INFO]   S1↔S2: RMSD=4.71Å TM=0.709 (n_common=266)
+2026-06-23 03:55:04,849 [INFO]   Running VQE for protein (611 residues)...
+2026-06-23 03:55:08,268 [INFO]   VQE complete: 16 qubits, E_ground = -27.3727
+2026-06-23 03:55:08,268 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:55:18,600 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 03:55:35,778 [INFO]   Ens→S2: minRMSD=4.69Å maxTM=0.710
+2026-06-23 03:55:35,778 [INFO]   Dual-state(TM>0.5): True | Time: 32.0s
+2026-06-23 03:55:35,781 [INFO] 
+  [9/16] STAT3 (autoinhibited)
+2026-06-23 03:55:36,135 [INFO] Downloaded 1BG1 from RCSB (447768 bytes)
+2026-06-23 03:55:36,377 [INFO] Downloaded 3CWG from RCSB (717741 bytes)
+2026-06-23 03:55:36,384 [INFO]   S1↔S2: RMSD=0.85Å TM=0.989 (n_common=501)
+2026-06-23 03:55:37,229 [INFO]   Running VQE for protein (558 residues)...
+2026-06-23 03:55:40,683 [INFO]   VQE complete: 16 qubits, E_ground = -24.5887
+2026-06-23 03:55:40,684 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:55:55,204 [INFO]   QAOA complete: 18 qubits, E=-0.7500
+2026-06-23 03:56:07,580 [INFO]   Ens→S2: minRMSD=0.84Å maxTM=0.989
+2026-06-23 03:56:07,580 [INFO]   Dual-state(TM>0.5): True | Time: 31.2s
+2026-06-23 03:56:07,582 [INFO] 
+  [10/16] CBS (autoinhibited)
+2026-06-23 03:56:07,859 [INFO] Downloaded 4L3V from RCSB (1034532 bytes)
+2026-06-23 03:56:08,154 [INFO] Downloaded 4PCU from RCSB (1312119 bytes)
+2026-06-23 03:56:08,163 [INFO]   S1↔S2: RMSD=14.45Å TM=0.369 (n_common=486)
+2026-06-23 03:56:08,772 [INFO]   Running VQE for protein (498 residues)...
+2026-06-23 03:56:12,178 [INFO]   VQE complete: 16 qubits, E_ground = -20.1713
+2026-06-23 03:56:12,178 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:56:22,737 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 03:56:36,362 [INFO]   Ens→S2: minRMSD=12.55Å maxTM=0.431
+2026-06-23 03:56:36,363 [INFO]   Dual-state(TM>0.5): False | Time: 28.2s
+2026-06-23 03:56:36,365 [INFO] 
+  [11/16] WAS (autoinhibited)
+2026-06-23 03:56:36,367 [INFO]   S1↔S2: RMSD=15.15Å TM=0.053 (n_common=59)
+2026-06-23 03:56:36,452 [INFO]   Running VQE for protein (107 residues)...
+2026-06-23 03:56:40,045 [INFO]   VQE complete: 16 qubits, E_ground = -60.3094
+2026-06-23 03:56:40,045 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:56:51,014 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 03:57:06,142 [INFO]   Ens→S2: minRMSD=15.11Å maxTM=0.053
+2026-06-23 03:57:06,142 [INFO]   Dual-state(TM>0.5): False | Time: 29.8s
+2026-06-23 03:57:06,144 [INFO] 
+  [12/16] BRAF (autoinhibited)
+2026-06-23 03:57:06,504 [INFO] Downloaded 4MNE from RCSB (1577232 bytes)
+2026-06-23 03:57:06,851 [INFO] Downloaded 4XV2 from RCSB (715878 bytes)
+2026-06-23 03:57:06,860 [INFO]   S1↔S2: RMSD=13.16Å TM=0.323 (n_common=247)
+2026-06-23 03:57:07,029 [INFO]   Running VQE for protein (289 residues)...
+2026-06-23 03:57:10,615 [INFO]   VQE complete: 16 qubits, E_ground = -47.2458
+2026-06-23 03:57:10,615 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:57:22,507 [INFO]   QAOA complete: 18 qubits, E=-1.6532
+2026-06-23 03:57:40,212 [INFO]   Ens→S2: minRMSD=12.80Å maxTM=0.334
+2026-06-23 03:57:40,212 [INFO]   Dual-state(TM>0.5): False | Time: 33.3s
+2026-06-23 03:57:40,215 [INFO] 
+  [13/16] JAK1 (autoinhibited)
+2026-06-23 03:57:40,451 [INFO] Downloaded 3EYG from RCSB (252234 bytes)
+2026-06-23 03:57:40,682 [INFO] Downloaded 2B7A from RCSB (470448 bytes)
+2026-06-23 03:57:40,686 [INFO]   S1↔S2: RMSD=19.50Å TM=0.157 (n_common=252)
+2026-06-23 03:57:40,850 [INFO]   Running VQE for protein (281 residues)...
+2026-06-23 03:57:44,357 [INFO]   VQE complete: 16 qubits, E_ground = -50.4452
+2026-06-23 03:57:44,357 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:57:57,399 [INFO]   QAOA complete: 18 qubits, E=-1.6192
+2026-06-23 03:58:14,707 [INFO]   Ens→S2: minRMSD=19.18Å maxTM=0.160
+2026-06-23 03:58:14,707 [INFO]   Dual-state(TM>0.5): False | Time: 34.0s
+2026-06-23 03:58:14,712 [INFO] 
+  [14/16] KIT (autoinhibited)
+2026-06-23 03:58:14,946 [INFO] Downloaded 1T46 from RCSB (258714 bytes)
+2026-06-23 03:58:15,204 [INFO] Downloaded 1PKG from RCSB (448902 bytes)
+2026-06-23 03:58:15,208 [INFO]   S1↔S2: RMSD=5.47Å TM=0.853 (n_common=286)
+2026-06-23 03:58:15,497 [INFO]   Running VQE for protein (297 residues)...
+2026-06-23 03:58:18,862 [INFO]   VQE complete: 16 qubits, E_ground = -56.1639
+2026-06-23 03:58:18,863 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:58:30,354 [INFO]   QAOA complete: 18 qubits, E=-1.6587
+2026-06-23 03:58:48,097 [INFO]   Ens→S2: minRMSD=5.42Å maxTM=0.857
+2026-06-23 03:58:48,097 [INFO]   Dual-state(TM>0.5): True | Time: 32.9s
+2026-06-23 03:58:48,099 [INFO] 
+  [15/16] FGFR1 (autoinhibited)
+2026-06-23 03:58:48,496 [INFO] Downloaded 2FDB from RCSB (486567 bytes)
+2026-06-23 03:58:48,744 [INFO] Downloaded 3GQI from RCSB (408969 bytes)
+2026-06-23 03:58:48,746 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/2FDB.pdb (chain=A)
+2026-06-23 03:58:48,750 [INFO]   S1↔S2: RMSD=18.19Å TM=0.091 (n_common=149)
+2026-06-23 03:58:48,864 [INFO]   Running VQE for protein (149 residues)...
+2026-06-23 03:58:52,340 [INFO]   VQE complete: 16 qubits, E_ground = -62.3361
+2026-06-23 03:58:52,340 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 03:59:09,132 [INFO]   QAOA complete: 18 qubits, E=-0.5476
+2026-06-23 03:59:55,927 [INFO]   Ens→S2: minRMSD=16.42Å maxTM=0.129
+2026-06-23 03:59:55,928 [INFO]   Dual-state(TM>0.5): False | Time: 67.1s
+2026-06-23 03:59:55,967 [INFO] 
+  [16/16] AK1 (autoinhibited)
+2026-06-23 03:59:56,214 [INFO] Downloaded 4AKE from RCSB (309339 bytes)
+2026-06-23 03:59:56,434 [INFO] Downloaded 1ANK from RCSB (430434 bytes)
+2026-06-23 03:59:56,438 [INFO]   S1↔S2: RMSD=7.12Å TM=0.565 (n_common=214)
+2026-06-23 03:59:56,645 [INFO]   Running VQE for protein (214 residues)...
+2026-06-23 04:00:00,247 [INFO]   VQE complete: 16 qubits, E_ground = -72.4888
+2026-06-23 04:00:00,248 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:00:11,165 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 04:00:26,938 [INFO]   Ens→S2: minRMSD=6.77Å maxTM=0.584
+2026-06-23 04:00:26,938 [INFO]   Dual-state(TM>0.5): True | Time: 30.5s
+2026-06-23 04:00:26,953 [INFO] 
+  AUTOINHIBITED COMPLETE: 16/16 success, 6/16 dual-state covered, 540s
+2026-06-23 04:00:26,953 [INFO]   Coverage: 6/16 = 37.5% (AF3 baseline: 14.0%, p=0.0171)
+2026-06-23 04:00:26,953 [INFO] 
+================================================================================
+2026-06-23 04:00:26,953 [INFO] BENCHMARK: FOLDSWITCH
+2026-06-23 04:00:26,953 [INFO] ================================================================================
+2026-06-23 04:00:26,953 [INFO] 
+  [1/6] KAI_B (foldswitch)
+2026-06-23 04:00:27,347 [INFO] Downloaded 5JYT from RCSB (2824227 bytes)
+2026-06-23 04:00:28,567 [INFO] Downloaded 5JYV from RCSB (5803893 bytes)
+2026-06-23 04:00:28,570 [INFO]   S1↔S2: RMSD=15.40Å TM=0.094 (n_common=106)
+2026-06-23 04:00:28,652 [INFO]   Running VQE for protein (106 residues)...
+2026-06-23 04:00:32,064 [INFO]   VQE complete: 16 qubits, E_ground = -58.1876
+2026-06-23 04:00:32,064 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:00:42,862 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 04:00:57,668 [INFO]   Ens→S2: minRMSD=14.02Å maxTM=0.129
+2026-06-23 04:00:57,668 [INFO]   Dual-state(TM>0.5): False | Time: 29.1s
+2026-06-23 04:00:57,670 [INFO] 
+  [2/6] XCL1 (foldswitch)
+2026-06-23 04:00:58,219 [INFO] Downloaded 1J8I from RCSB (2395413 bytes)
+2026-06-23 04:00:58,467 [INFO] Downloaded 1E8O from RCSB (334044 bytes)
+2026-06-23 04:00:58,470 [INFO]   S1↔S2: RMSD=11.01Å TM=0.137 (n_common=74)
+2026-06-23 04:00:58,537 [INFO]   Running VQE for protein (93 residues)...
+2026-06-23 04:01:02,082 [INFO]   VQE complete: 16 qubits, E_ground = -54.1578
+2026-06-23 04:01:02,083 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:01:13,410 [INFO]   QAOA complete: 18 qubits, E=-1.5682
+2026-06-23 04:01:28,138 [INFO]   Ens→S2: minRMSD=10.37Å maxTM=0.162
+2026-06-23 04:01:28,138 [INFO]   Dual-state(TM>0.5): False | Time: 29.6s
+2026-06-23 04:01:28,141 [INFO] 
+  [3/6] RFAH (foldswitch)
+2026-06-23 04:01:28,490 [INFO] Downloaded 2OUG from RCSB (449631 bytes)
+2026-06-23 04:01:28,820 [INFO] Downloaded 2LCL from RCSB (1693062 bytes)
+2026-06-23 04:01:28,824 [INFO]   S1↔S2: RMSD=11.91Å TM=0.056 (n_common=46)
+2026-06-23 04:01:28,936 [INFO]   Running VQE for protein (141 residues)...
+2026-06-23 04:01:32,385 [INFO]   VQE complete: 16 qubits, E_ground = -43.7110
+2026-06-23 04:01:32,385 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:01:44,275 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 04:01:59,704 [INFO]   Ens→S2: minRMSD=11.89Å maxTM=0.057
+2026-06-23 04:01:59,704 [INFO]   Dual-state(TM>0.5): False | Time: 30.9s
+2026-06-23 04:01:59,709 [INFO] 
+  [4/6] MAD2 (foldswitch)
+2026-06-23 04:02:00,033 [INFO] Downloaded 1DUJ from RCSB (267624 bytes)
+2026-06-23 04:02:00,374 [INFO] Downloaded 2V64 from RCSB (856251 bytes)
+2026-06-23 04:02:00,381 [INFO]   S1↔S2: RMSD=11.43Å TM=0.317 (n_common=187)
+2026-06-23 04:02:00,547 [INFO]   Running VQE for protein (187 residues)...
+2026-06-23 04:02:04,039 [INFO]   VQE complete: 16 qubits, E_ground = -57.0882
+2026-06-23 04:02:04,039 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:02:18,477 [INFO]   QAOA complete: 18 qubits, E=-1.1495
+2026-06-23 04:02:34,084 [INFO]   Ens→S2: minRMSD=11.10Å maxTM=0.322
+2026-06-23 04:02:34,084 [INFO]   Dual-state(TM>0.5): False | Time: 33.7s
+2026-06-23 04:02:34,086 [INFO] 
+  [5/6] REV (foldswitch)
+2026-06-23 04:02:34,387 [INFO] Downloaded 1EX5 from RCSB (1434996 bytes)
+2026-06-23 04:02:34,616 [INFO] Downloaded 1ETF from RCSB (142884 bytes)
+2026-06-23 04:02:34,622 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/1ETF.pdb (chain=A)
+2026-06-23 04:02:34,623 [INFO]   S1↔S2: RMSD=5.25Å TM=0.049 (n_common=23)
+2026-06-23 04:02:34,912 [INFO]   Running VQE for protein (378 residues)...
+2026-06-23 04:02:38,550 [INFO]   VQE complete: 16 qubits, E_ground = -55.7499
+2026-06-23 04:02:38,550 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:02:53,224 [INFO]   QAOA complete: 18 qubits, E=-0.9834
+2026-06-23 04:03:09,643 [INFO]   Ens→S2: minRMSD=4.12Å maxTM=0.080
+2026-06-23 04:03:09,643 [INFO]   Dual-state(TM>0.5): False | Time: 35.0s
+2026-06-23 04:03:09,647 [INFO] 
+  [6/6] HBA1 (foldswitch)
+2026-06-23 04:03:11,688 [INFO] Downloaded 2K0E from RCSB (29413206 bytes)
+2026-06-23 04:03:14,192 [INFO] Downloaded 2K0F from RCSB (32420898 bytes)
+2026-06-23 04:03:14,197 [INFO]   S1↔S2: RMSD=14.56Å TM=0.121 (n_common=142)
+2026-06-23 04:03:14,449 [INFO]   Running VQE for protein (148 residues)...
+2026-06-23 04:03:18,128 [INFO]   VQE complete: 16 qubits, E_ground = -41.5018
+2026-06-23 04:03:18,128 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:03:32,895 [INFO]   QAOA complete: 18 qubits, E=-1.1276
+2026-06-23 04:03:48,511 [INFO]   Ens→S2: minRMSD=12.34Å maxTM=0.169
+2026-06-23 04:03:48,511 [INFO]   Dual-state(TM>0.5): False | Time: 34.3s
+2026-06-23 04:03:48,517 [INFO] 
+  FOLDSWITCH COMPLETE: 6/6 success, 0/6 dual-state covered, 202s
+2026-06-23 04:03:48,517 [INFO]   Coverage: 0/6 = 0.0% (AF3 baseline: 7.6%, p=1.0000)
+2026-06-23 04:03:48,517 [INFO] 
+================================================================================
+2026-06-23 04:03:48,517 [INFO] BENCHMARK: MULTISTATE
+2026-06-23 04:03:48,517 [INFO] ================================================================================
+2026-06-23 04:03:48,517 [INFO] 
+  [1/6] ABL1_MS (multistate)
+2026-06-23 04:03:48,810 [INFO] Downloaded 1ATP from RCSB (299538 bytes)
+2026-06-23 04:03:49,210 [INFO] Downloaded 3B6F from RCSB (1069443 bytes)
+2026-06-23 04:03:49,212 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/1ATP.pdb (chain=A)
+2026-06-23 04:03:49,217 [INFO]   S1↔S2: RMSD=18.39Å TM=0.103 (n_common=103)
+2026-06-23 04:03:49,551 [INFO]   Running VQE for protein (334 residues)...
+2026-06-23 04:03:53,045 [INFO]   VQE complete: 16 qubits, E_ground = -44.9398
+2026-06-23 04:03:53,045 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:04:09,184 [INFO]   QAOA complete: 18 qubits, E=-0.9338
+2026-06-23 04:04:55,967 [INFO]   Ens→S2: minRMSD=17.92Å maxTM=0.125
+2026-06-23 04:04:55,974 [INFO]   Dual-state(TM>0.5): False | Time: 66.6s
+2026-06-23 04:04:56,014 [INFO] 
+  [2/6] EGFR_MS (multistate)
+2026-06-23 04:04:56,410 [INFO] Downloaded 3LVP from RCSB (844101 bytes)
+2026-06-23 04:04:56,654 [ERROR] Failed to fetch 3LVO: 404 Client Error: Not Found for url: https://files.rcsb.org/download/3LVO.pdb
+2026-06-23 04:04:56,657 [INFO] 
+  [3/6] BRAF_MS (multistate)
+2026-06-23 04:04:56,896 [INFO] Downloaded 4HJO from RCSB (224208 bytes)
+2026-06-23 04:04:57,228 [INFO] Downloaded 4HJP from RCSB (441045 bytes)
+2026-06-23 04:04:57,232 [INFO]   S1↔S2: RMSD=21.98Å TM=0.140 (n_common=278)
+2026-06-23 04:04:57,565 [INFO]   Running VQE for protein (278 residues)...
+2026-06-23 04:05:01,168 [INFO]   VQE complete: 16 qubits, E_ground = -56.1965
+2026-06-23 04:05:01,168 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:05:13,229 [INFO]   QAOA complete: 18 qubits, E=-1.6395
+2026-06-23 04:05:30,413 [INFO]   Ens→S2: minRMSD=20.03Å maxTM=0.155
+2026-06-23 04:05:30,414 [INFO]   Dual-state(TM>0.5): False | Time: 33.1s
+2026-06-23 04:05:30,418 [INFO] 
+  [4/6] INSR (multistate)
+2026-06-23 04:05:30,623 [INFO] Downloaded 1JWO from RCSB (104895 bytes)
+2026-06-23 04:05:30,932 [INFO] Downloaded 1JW1 from RCSB (480249 bytes)
+2026-06-23 04:05:30,936 [INFO]   S1↔S2: RMSD=11.67Å TM=0.196 (n_common=97)
+2026-06-23 04:05:31,000 [INFO]   Running VQE for protein (97 residues)...
+2026-06-23 04:05:34,260 [INFO]   VQE complete: 16 qubits, E_ground = -50.5763
+2026-06-23 04:05:34,260 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:05:45,918 [INFO]   QAOA complete: 18 qubits, E=-1.2915
+2026-06-23 04:06:00,960 [INFO]   Ens→S2: minRMSD=11.21Å maxTM=0.201
+2026-06-23 04:06:00,960 [INFO]   Dual-state(TM>0.5): False | Time: 30.0s
+2026-06-23 04:06:00,965 [INFO] 
+  [5/6] RET (multistate)
+2026-06-23 04:06:01,257 [INFO] Downloaded 3PXQ from RCSB (255636 bytes)
+2026-06-23 04:06:01,443 [INFO] Downloaded 3PXF from RCSB (257985 bytes)
+2026-06-23 04:06:01,447 [INFO]   S1↔S2: RMSD=1.83Å TM=0.963 (n_common=298)
+2026-06-23 04:06:01,735 [INFO]   Running VQE for protein (298 residues)...
+2026-06-23 04:06:05,040 [INFO]   VQE complete: 16 qubits, E_ground = -57.9057
+2026-06-23 04:06:05,040 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:06:17,082 [INFO]   QAOA complete: 18 qubits, E=-1.4982
+2026-06-23 04:06:34,764 [INFO]   Ens→S2: minRMSD=1.83Å maxTM=0.963
+2026-06-23 04:06:34,764 [INFO]   Dual-state(TM>0.5): True | Time: 33.3s
+2026-06-23 04:06:34,769 [INFO] 
+  [6/6] SRC_MS (multistate)
+2026-06-23 04:06:34,774 [INFO]   S1↔S2: RMSD=23.20Å TM=0.198 (n_common=449)
+2026-06-23 04:06:35,311 [INFO]   Running VQE for protein (449 residues)...
+2026-06-23 04:06:35,311 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:06:46,853 [INFO]   Ens→S2: minRMSD=22.84Å maxTM=0.218
+2026-06-23 04:06:46,853 [INFO]   Dual-state(TM>0.5): False | Time: 12.1s
+2026-06-23 04:06:46,862 [INFO] 
+  MULTISTATE COMPLETE: 5/6 success, 1/5 dual-state covered, 178s
+2026-06-23 04:06:46,862 [INFO]   Coverage: 1/5 = 20.0% (AF3 baseline: 23.3%, p=0.7346)
+2026-06-23 04:06:46,862 [INFO] 
+================================================================================
+2026-06-23 04:06:46,862 [INFO] RUNNING ABLATION STUDY
+2026-06-23 04:06:46,862 [INFO] ================================================================================
+2026-06-23 04:06:46,870 [INFO] ================================================================================
+2026-06-23 04:06:46,870 [INFO] QUANTUM SCORING ABLATION STUDY
+2026-06-23 04:06:46,870 [INFO] Does the VQE layer actually contribute to ranking quality?
+2026-06-23 04:06:46,870 [INFO] ================================================================================
+2026-06-23 04:06:46,870 [INFO] 
+[1/16] ABL1
+2026-06-23 04:06:47,018 [INFO]   Ensemble: 65 conformations, 263 residues
+2026-06-23 04:06:47,018 [INFO]   Running VQE for protein (263 residues)...
+2026-06-23 04:06:50,574 [INFO]   VQE complete: 16 qubits, E_ground = -51.4058
+2026-06-23 04:06:50,574 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:07:03,187 [INFO]   QAOA complete: 18 qubits, E=-1.4157
+2026-06-23 04:07:18,203 [INFO]     Exact diag: 65,536 states in 1007.4ms, E_ground=-67.1175
+2026-06-23 04:07:20,096 [INFO]     VQE vs Exact: Hamming=4, Match=NO
+2026-06-23 04:07:20,096 [INFO]     VQE: 30.2s | Exact: 2.9s | VQE is 10x SLOWER
+2026-06-23 04:07:24,281 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:07:24,281 [INFO]     QICESS-VQE          : 0.8879
+2026-06-23 04:07:24,281 [INFO]     QICESS-Exact        : 0.8879
+2026-06-23 04:07:24,281 [INFO]     Classical-MJ        : 0.5569
+2026-06-23 04:07:24,281 [INFO]     No-Quantum          : 0.5315
+2026-06-23 04:07:24,281 [INFO]     Random              : 0.8416
+2026-06-23 04:07:24,285 [INFO] 
+[2/16] SRC
+2026-06-23 04:07:24,827 [INFO]   Ensemble: 40 conformations, 449 residues
+2026-06-23 04:07:24,827 [INFO]   Running VQE for protein (449 residues)...
+2026-06-23 04:07:28,408 [INFO]   VQE complete: 16 qubits, E_ground = -23.2200
+2026-06-23 04:07:28,408 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:07:39,747 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 04:07:50,271 [INFO]     Exact diag: 65,536 states in 1393.1ms, E_ground=-23.5475
+2026-06-23 04:07:51,843 [INFO]     VQE vs Exact: Hamming=2, Match=NO
+2026-06-23 04:07:51,843 [INFO]     VQE: 24.0s | Exact: 3.0s | VQE is 8x SLOWER
+2026-06-23 04:07:55,147 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:07:55,147 [INFO]     QICESS-VQE          : 0.1921
+2026-06-23 04:07:55,147 [INFO]     QICESS-Exact        : 0.1921
+2026-06-23 04:07:55,147 [INFO]     Classical-MJ        : 0.1927
+2026-06-23 04:07:55,147 [INFO]     No-Quantum          : 0.1920
+2026-06-23 04:07:55,147 [INFO]     Random              : 0.1966
+2026-06-23 04:07:55,149 [INFO] 
+[3/16] HCK
+2026-06-23 04:07:55,547 [INFO]   Ensemble: 40 conformations, 437 residues
+2026-06-23 04:07:55,547 [INFO]   Running VQE for protein (437 residues)...
+2026-06-23 04:07:58,903 [INFO]   VQE complete: 16 qubits, E_ground = -20.0127
+2026-06-23 04:07:58,904 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:08:10,173 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 04:08:20,379 [INFO]     Exact diag: 65,536 states in 1171.4ms, E_ground=-23.2650
+2026-06-23 04:08:21,844 [INFO]     VQE vs Exact: Hamming=4, Match=NO
+2026-06-23 04:08:21,845 [INFO]     VQE: 23.6s | Exact: 2.7s | VQE is 9x SLOWER
+2026-06-23 04:08:24,980 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:08:24,980 [INFO]     QICESS-VQE          : 0.0551
+2026-06-23 04:08:24,980 [INFO]     QICESS-Exact        : 0.0551
+2026-06-23 04:08:24,980 [INFO]     Classical-MJ        : 0.0551
+2026-06-23 04:08:24,980 [INFO]     No-Quantum          : 0.0551
+2026-06-23 04:08:24,980 [INFO]     Random              : 0.0551
+2026-06-23 04:08:24,982 [INFO] 
+[4/16] FYN
+2026-06-23 04:08:24,983 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/2DQ7.pdb (chain=A)
+2026-06-23 04:08:24,985 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/1A6U.pdb (chain=A)
+2026-06-23 04:08:25,134 [INFO]   Ensemble: 65 conformations, 262 residues
+2026-06-23 04:08:25,134 [INFO]   Running VQE for protein (262 residues)...
+2026-06-23 04:08:28,790 [INFO]   VQE complete: 16 qubits, E_ground = -56.2233
+2026-06-23 04:08:28,790 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:08:40,880 [INFO]   QAOA complete: 18 qubits, E=-1.6038
+2026-06-23 04:08:55,291 [INFO]     Exact diag: 65,536 states in 1592.1ms, E_ground=-56.6700
+2026-06-23 04:08:56,264 [INFO]     VQE vs Exact: Hamming=4, Match=NO
+2026-06-23 04:08:56,264 [INFO]     VQE: 28.5s | Exact: 2.6s | VQE is 11x SLOWER
+2026-06-23 04:08:58,383 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:08:58,383 [INFO]     QICESS-VQE          : 0.0670
+2026-06-23 04:08:58,383 [INFO]     QICESS-Exact        : 0.0684
+2026-06-23 04:08:58,383 [INFO]     Classical-MJ        : 0.0762
+2026-06-23 04:08:58,383 [INFO]     No-Quantum          : 0.0694
+2026-06-23 04:08:58,383 [INFO]     Random              : 0.0660
+2026-06-23 04:08:58,385 [INFO] 
+[5/16] LCK
+2026-06-23 04:08:58,555 [INFO]   Ensemble: 65 conformations, 288 residues
+2026-06-23 04:08:58,555 [INFO]   Running VQE for protein (288 residues)...
+2026-06-23 04:09:01,897 [INFO]   VQE complete: 16 qubits, E_ground = -50.0461
+2026-06-23 04:09:01,897 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:09:16,482 [INFO]   QAOA complete: 18 qubits, E=-0.9783
+2026-06-23 04:10:00,510 [INFO]     Exact diag: 65,536 states in 1165.8ms, E_ground=-61.4850
+2026-06-23 04:10:02,834 [INFO]     VQE vs Exact: Hamming=9, Match=NO
+2026-06-23 04:10:02,834 [INFO]     VQE: 60.7s | Exact: 3.5s | VQE is 17x SLOWER
+2026-06-23 04:10:07,557 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:10:07,557 [INFO]     QICESS-VQE          : 0.2193
+2026-06-23 04:10:07,557 [INFO]     QICESS-Exact        : 0.2196
+2026-06-23 04:10:07,557 [INFO]     Classical-MJ        : 0.2100
+2026-06-23 04:10:07,557 [INFO]     No-Quantum          : 0.2084
+2026-06-23 04:10:07,558 [INFO]     Random              : 0.2195
+2026-06-23 04:10:07,577 [INFO] 
+[6/16] PTPN6
+2026-06-23 04:10:08,198 [INFO]   Ensemble: 40 conformations, 504 residues
+2026-06-23 04:10:08,198 [INFO]   Running VQE for protein (504 residues)...
+2026-06-23 04:10:11,772 [INFO]   VQE complete: 16 qubits, E_ground = -31.3788
+2026-06-23 04:10:11,772 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:10:26,036 [INFO]   QAOA complete: 18 qubits, E=-1.6839
+2026-06-23 04:10:36,927 [INFO]     Exact diag: 65,536 states in 936.4ms, E_ground=-37.7475
+2026-06-23 04:10:39,406 [INFO]     VQE vs Exact: Hamming=5, Match=NO
+2026-06-23 04:10:39,407 [INFO]     VQE: 27.7s | Exact: 3.5s | VQE is 8x SLOWER
+2026-06-23 04:10:44,627 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:10:44,628 [INFO]     QICESS-VQE          : 0.2263
+2026-06-23 04:10:44,628 [INFO]     QICESS-Exact        : 0.2018
+2026-06-23 04:10:44,628 [INFO]     Classical-MJ        : 0.2714
+2026-06-23 04:10:44,628 [INFO]     No-Quantum          : 0.2710
+2026-06-23 04:10:44,628 [INFO]     Random              : 0.2099
+2026-06-23 04:10:44,633 [INFO] 
+[7/16] EGFR
+2026-06-23 04:10:44,891 [INFO]   Ensemble: 65 conformations, 311 residues
+2026-06-23 04:10:44,891 [INFO]   Running VQE for protein (311 residues)...
+2026-06-23 04:10:48,758 [INFO]   VQE complete: 16 qubits, E_ground = -63.7198
+2026-06-23 04:10:48,758 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:11:03,959 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 04:11:18,846 [INFO]     Exact diag: 65,536 states in 1458.6ms, E_ground=-67.8825
+2026-06-23 04:11:20,101 [INFO]     VQE vs Exact: Hamming=6, Match=NO
+2026-06-23 04:11:20,102 [INFO]     VQE: 32.5s | Exact: 2.7s | VQE is 12x SLOWER
+2026-06-23 04:11:22,754 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:11:22,755 [INFO]     QICESS-VQE          : 0.8461
+2026-06-23 04:11:22,755 [INFO]     QICESS-Exact        : 0.8335
+2026-06-23 04:11:22,755 [INFO]     Classical-MJ        : 0.8157
+2026-06-23 04:11:22,755 [INFO]     No-Quantum          : 0.7893
+2026-06-23 04:11:22,755 [INFO]     Random              : 0.8491
+2026-06-23 04:11:22,764 [INFO] 
+[8/16] PTK2
+2026-06-23 04:11:23,654 [INFO]   Ensemble: 40 conformations, 611 residues
+2026-06-23 04:11:23,655 [INFO]   Running VQE for protein (611 residues)...
+2026-06-23 04:11:27,532 [INFO]   VQE complete: 16 qubits, E_ground = -27.3727
+2026-06-23 04:11:27,532 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:11:38,759 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 04:11:53,871 [INFO]     Exact diag: 65,536 states in 934.4ms, E_ground=-36.5700
+2026-06-23 04:12:00,101 [INFO]     VQE vs Exact: Hamming=3, Match=NO
+2026-06-23 04:12:00,102 [INFO]     VQE: 29.2s | Exact: 7.3s | VQE is 4x SLOWER
+2026-06-23 04:12:13,191 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:12:13,192 [INFO]     QICESS-VQE          : 0.0000
+2026-06-23 04:12:13,192 [INFO]     QICESS-Exact        : 0.0000
+2026-06-23 04:12:13,192 [INFO]     Classical-MJ        : 0.0000
+2026-06-23 04:12:13,192 [INFO]     No-Quantum          : 0.0000
+2026-06-23 04:12:13,192 [INFO]     Random              : 0.0000
+2026-06-23 04:12:13,197 [INFO] 
+[9/16] STAT3
+2026-06-23 04:12:13,897 [INFO]   Ensemble: 40 conformations, 558 residues
+2026-06-23 04:12:13,897 [INFO]   Running VQE for protein (558 residues)...
+2026-06-23 04:12:17,413 [INFO]   VQE complete: 16 qubits, E_ground = -24.5887
+2026-06-23 04:12:17,414 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:12:32,689 [INFO]   QAOA complete: 18 qubits, E=-0.7500
+2026-06-23 04:12:43,677 [INFO]     Exact diag: 65,536 states in 1039.4ms, E_ground=-24.6775
+2026-06-23 04:12:45,991 [INFO]     VQE vs Exact: Hamming=4, Match=NO
+2026-06-23 04:12:45,991 [INFO]     VQE: 28.7s | Exact: 3.4s | VQE is 8x SLOWER
+2026-06-23 04:12:50,823 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:12:50,823 [INFO]     QICESS-VQE          : 0.7299
+2026-06-23 04:12:50,823 [INFO]     QICESS-Exact        : 0.7333
+2026-06-23 04:12:50,823 [INFO]     Classical-MJ        : 0.7290
+2026-06-23 04:12:50,823 [INFO]     No-Quantum          : 0.7299
+2026-06-23 04:12:50,823 [INFO]     Random              : 0.8961
+2026-06-23 04:12:50,828 [INFO] 
+[10/16] CBS
+2026-06-23 04:12:51,392 [INFO]   Ensemble: 40 conformations, 498 residues
+2026-06-23 04:12:51,392 [INFO]   Running VQE for protein (498 residues)...
+2026-06-23 04:12:54,802 [INFO]   VQE complete: 16 qubits, E_ground = -20.1713
+2026-06-23 04:12:54,802 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:13:05,279 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 04:13:16,785 [INFO]     Exact diag: 65,536 states in 626.7ms, E_ground=-24.6025
+2026-06-23 04:13:20,063 [INFO]     VQE vs Exact: Hamming=8, Match=NO
+2026-06-23 04:13:20,063 [INFO]     VQE: 24.7s | Exact: 4.0s | VQE is 6x SLOWER
+2026-06-23 04:13:26,857 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:13:26,857 [INFO]     QICESS-VQE          : 0.3834
+2026-06-23 04:13:26,857 [INFO]     QICESS-Exact        : 0.3834
+2026-06-23 04:13:26,857 [INFO]     Classical-MJ        : 0.3733
+2026-06-23 04:13:26,857 [INFO]     No-Quantum          : 0.3834
+2026-06-23 04:13:26,857 [INFO]     Random              : 0.3690
+2026-06-23 04:13:26,859 [INFO] 
+[11/16] WAS
+2026-06-23 04:13:26,911 [INFO]   Ensemble: 65 conformations, 107 residues
+2026-06-23 04:13:26,911 [INFO]   Running VQE for protein (107 residues)...
+2026-06-23 04:13:30,454 [INFO]   VQE complete: 16 qubits, E_ground = -60.3094
+2026-06-23 04:13:30,454 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:13:41,633 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 04:13:55,581 [INFO]     Exact diag: 65,536 states in 1652.4ms, E_ground=-70.2525
+2026-06-23 04:13:55,900 [INFO]     VQE vs Exact: Hamming=7, Match=NO
+2026-06-23 04:13:55,901 [INFO]     VQE: 27.0s | Exact: 2.0s | VQE is 14x SLOWER
+2026-06-23 04:13:56,566 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:13:56,566 [INFO]     QICESS-VQE          : 0.0527
+2026-06-23 04:13:56,566 [INFO]     QICESS-Exact        : 0.0527
+2026-06-23 04:13:56,566 [INFO]     Classical-MJ        : 0.0527
+2026-06-23 04:13:56,566 [INFO]     No-Quantum          : 0.0527
+2026-06-23 04:13:56,566 [INFO]     Random              : 0.0527
+2026-06-23 04:13:56,568 [INFO] 
+[12/16] BRAF
+2026-06-23 04:13:56,750 [INFO]   Ensemble: 65 conformations, 289 residues
+2026-06-23 04:13:56,750 [INFO]   Running VQE for protein (289 residues)...
+2026-06-23 04:14:00,345 [INFO]   VQE complete: 16 qubits, E_ground = -47.2458
+2026-06-23 04:14:00,345 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:14:12,628 [INFO]   QAOA complete: 18 qubits, E=-1.6532
+2026-06-23 04:14:56,527 [INFO]     Exact diag: 65,536 states in 1377.5ms, E_ground=-54.9825
+2026-06-23 04:14:58,884 [INFO]     VQE vs Exact: Hamming=7, Match=NO
+2026-06-23 04:14:58,884 [INFO]     VQE: 58.4s | Exact: 3.8s | VQE is 15x SLOWER
+2026-06-23 04:15:03,679 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:15:03,679 [INFO]     QICESS-VQE          : 0.3118
+2026-06-23 04:15:03,679 [INFO]     QICESS-Exact        : 0.3119
+2026-06-23 04:15:03,679 [INFO]     Classical-MJ        : 0.2600
+2026-06-23 04:15:03,679 [INFO]     No-Quantum          : 0.2499
+2026-06-23 04:15:03,679 [INFO]     Random              : 0.3175
+2026-06-23 04:15:03,700 [INFO] 
+[13/16] JAK1
+2026-06-23 04:15:03,898 [INFO]   Ensemble: 65 conformations, 281 residues
+2026-06-23 04:15:03,898 [INFO]   Running VQE for protein (281 residues)...
+2026-06-23 04:15:07,553 [INFO]   VQE complete: 16 qubits, E_ground = -50.4452
+2026-06-23 04:15:07,553 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:15:20,087 [INFO]   QAOA complete: 18 qubits, E=-1.6192
+2026-06-23 04:15:35,255 [INFO]     Exact diag: 65,536 states in 880.3ms, E_ground=-56.0625
+2026-06-23 04:15:37,496 [INFO]     VQE vs Exact: Hamming=3, Match=NO
+2026-06-23 04:15:37,496 [INFO]     VQE: 30.5s | Exact: 3.1s | VQE is 10x SLOWER
+2026-06-23 04:15:42,035 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:15:42,035 [INFO]     QICESS-VQE          : 0.1594
+2026-06-23 04:15:42,035 [INFO]     QICESS-Exact        : 0.1589
+2026-06-23 04:15:42,035 [INFO]     Classical-MJ        : 0.1453
+2026-06-23 04:15:42,035 [INFO]     No-Quantum          : 0.1426
+2026-06-23 04:15:42,035 [INFO]     Random              : 0.1576
+2026-06-23 04:15:42,040 [INFO] 
+[14/16] KIT
+2026-06-23 04:15:42,237 [INFO]   Ensemble: 65 conformations, 297 residues
+2026-06-23 04:15:42,238 [INFO]   Running VQE for protein (297 residues)...
+2026-06-23 04:15:45,742 [INFO]   VQE complete: 16 qubits, E_ground = -56.1639
+2026-06-23 04:15:45,742 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:15:58,433 [INFO]   QAOA complete: 18 qubits, E=-1.6587
+2026-06-23 04:16:15,141 [INFO]     Exact diag: 65,536 states in 1017.9ms, E_ground=-66.9600
+2026-06-23 04:16:17,572 [INFO]     VQE vs Exact: Hamming=7, Match=NO
+2026-06-23 04:16:17,572 [INFO]     VQE: 31.9s | Exact: 3.5s | VQE is 9x SLOWER
+2026-06-23 04:16:22,765 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:16:22,765 [INFO]     QICESS-VQE          : 0.8378
+2026-06-23 04:16:22,765 [INFO]     QICESS-Exact        : 0.8253
+2026-06-23 04:16:22,765 [INFO]     Classical-MJ        : 0.5557
+2026-06-23 04:16:22,765 [INFO]     No-Quantum          : 0.5120
+2026-06-23 04:16:22,765 [INFO]     Random              : 0.8076
+2026-06-23 04:16:22,768 [INFO] 
+[15/16] FGFR1
+2026-06-23 04:16:22,770 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/2FDB.pdb (chain=A)
+2026-06-23 04:16:22,839 [INFO]   Ensemble: 65 conformations, 149 residues
+2026-06-23 04:16:22,839 [INFO]   Running VQE for protein (149 residues)...
+2026-06-23 04:16:26,280 [INFO]   VQE complete: 16 qubits, E_ground = -62.3361
+2026-06-23 04:16:26,280 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:16:43,663 [INFO]   QAOA complete: 18 qubits, E=-0.5476
+2026-06-23 04:16:57,587 [INFO]     Exact diag: 65,536 states in 1547.6ms, E_ground=-64.4775
+2026-06-23 04:16:58,195 [INFO]     VQE vs Exact: Hamming=4, Match=NO
+2026-06-23 04:16:58,195 [INFO]     VQE: 33.2s | Exact: 2.2s | VQE is 15x SLOWER
+2026-06-23 04:16:59,454 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:16:59,454 [INFO]     QICESS-VQE          : 0.0973
+2026-06-23 04:16:59,454 [INFO]     QICESS-Exact        : 0.0964
+2026-06-23 04:16:59,454 [INFO]     Classical-MJ        : 0.1011
+2026-06-23 04:16:59,454 [INFO]     No-Quantum          : 0.1010
+2026-06-23 04:16:59,454 [INFO]     Random              : 0.0928
+2026-06-23 04:16:59,457 [INFO] 
+[16/16] AK1
+2026-06-23 04:16:59,570 [INFO]   Ensemble: 65 conformations, 214 residues
+2026-06-23 04:16:59,570 [INFO]   Running VQE for protein (214 residues)...
+2026-06-23 04:17:03,234 [INFO]   VQE complete: 16 qubits, E_ground = -72.4888
+2026-06-23 04:17:03,234 [INFO]   Running QAOA rotamer optimization...
+2026-06-23 04:17:13,864 [INFO]   QAOA complete: 18 qubits, E=-1.8000
+2026-06-23 04:17:29,080 [INFO]     Exact diag: 65,536 states in 2257.4ms, E_ground=-73.8900
+2026-06-23 04:17:29,900 [INFO]     VQE vs Exact: Hamming=4, Match=NO
+2026-06-23 04:17:29,900 [INFO]     VQE: 27.2s | Exact: 3.1s | VQE is 9x SLOWER
+2026-06-23 04:17:31,607 [INFO]   Ranking quality (top-10 mean TM to state 2):
+2026-06-23 04:17:31,607 [INFO]     QICESS-VQE          : 0.5229
+2026-06-23 04:17:31,607 [INFO]     QICESS-Exact        : 0.5194
+2026-06-23 04:17:31,607 [INFO]     Classical-MJ        : 0.4935
+2026-06-23 04:17:31,607 [INFO]     No-Quantum          : 0.4963
+2026-06-23 04:17:31,607 [INFO]     Random              : 0.5579
+2026-06-23 04:17:31,610 [INFO] 
+================================================================================
+2026-06-23 04:17:31,610 [INFO] ABLATION RESULTS (16 proteins)
+2026-06-23 04:17:31,610 [INFO] ================================================================================
+2026-06-23 04:17:31,616 [INFO] 
+================================================================================
+2026-06-23 04:17:31,616 [INFO] TOP-10 MEAN TM TO STATE 2 (higher = better ranking)
+2026-06-23 04:17:31,616 [INFO] ================================================================================
+2026-06-23 04:17:31,616 [INFO]   QICESS-VQE          : 0.3493 ± 0.3147
+2026-06-23 04:17:31,616 [INFO]   QICESS-Exact        : 0.3462 ± 0.3129
+2026-06-23 04:17:31,616 [INFO]   Classical-MJ        : 0.3055 ± 0.2544
+2026-06-23 04:17:31,616 [INFO]   No-Quantum          : 0.2990 ± 0.2477
+2026-06-23 04:17:31,616 [INFO]   Random              : 0.3556 ± 0.3250
+2026-06-23 04:17:31,616 [INFO] 
+================================================================================
+2026-06-23 04:17:31,616 [INFO] PAIRED TESTS: VQE vs EACH BASELINE
+2026-06-23 04:17:31,616 [INFO] ================================================================================
+2026-06-23 04:17:31,616 [INFO]   VQE_vs_QICESS-Exact           : Δ=+0.0031, p=0.1197 ✗ NS, W/T/L=4/10/2
+2026-06-23 04:17:31,616 [INFO]   VQE_vs_Classical-MJ           : Δ=+0.0438, p=0.0267 ✓ SIG, W/T/L=8/5/3
+2026-06-23 04:17:31,616 [INFO]   VQE_vs_No-Quantum             : Δ=+0.0503, p=0.0278 ✓ SIG, W/T/L=7/6/3
+2026-06-23 04:17:31,616 [INFO]   VQE_vs_Random                 : Δ=-0.0062, p=0.3455 ✗ NS, W/T/L=7/4/5
+2026-06-23 04:17:31,616 [INFO] 
+================================================================================
+2026-06-23 04:17:31,616 [INFO] VQE vs EXACT DIAGONALIZATION GROUND STATE
+2026-06-23 04:17:31,616 [INFO] ================================================================================
+2026-06-23 04:17:31,616 [INFO]   Bitstring match rate: 0.0% (0/16)
+2026-06-23 04:17:31,616 [INFO]   Mean Hamming distance: 5.1
+2026-06-23 04:17:31,616 [INFO]   ⚠ Exact diag is 10x FASTER than VQE
+2026-06-23 04:17:31,621 [INFO] 
+Results saved to /workspace/results/ablation
+2026-06-23 04:17:31,621 [INFO] 
+================================================================================
+2026-06-23 04:17:31,621 [INFO] GENERATING FIGURES
+2026-06-23 04:17:31,621 [INFO] ================================================================================
+/workspace/benchmarks/analyze_results.py:244: UserWarning: You passed an edgecolor/edgecolors ('black') for an unfilled marker ('x').  Matplotlib is ignoring the edgecolor in favor of the facecolor.  This behavior may change in the future.
+  ax.scatter(sizes[i], times[i], c=color, s=60, marker=marker, edgecolor='black', linewidth=0.5, zorder=5)
+2026-06-23 04:17:34,043 [INFO] 
+================================================================================
+2026-06-23 04:17:34,044 [INFO] CROSS-SUITE SUMMARY
+2026-06-23 04:17:34,044 [INFO] ================================================================================
+2026-06-23 04:17:34,044 [INFO]   autoinhibited  : 6/16 = 37.5% vs AF3 14.0% (p=0.0171 ✓)
+2026-06-23 04:17:34,044 [INFO]   foldswitch     : 0/6 = 0.0% vs AF3 7.6% (p=1.0000 ✗)
+2026-06-23 04:17:34,044 [INFO]   multistate     : 1/5 = 20.0% vs AF3 23.3% (p=0.7346 ✗)
+2026-06-23 04:17:34,044 [INFO] 
+Total benchmark time: 1567s (26.1 min)
+2026-06-23 04:17:34,044 [INFO] Results saved to /workspace/results
+Analyzing 16 successfully benchmarked proteins
+
+======================================================================
+PRIMARY ENDPOINT: Dual-State Conformational Coverage
+======================================================================
+  QFX rate: 6/16 = 37.5%  (95% CI: [18.5%, 61.4%])
+  AF3 (autoinhibited): 14%  | Binomial p = 0.0171 ✓ SIG
+  AF3 (multi-state):   23.3% | Binomial p = 0.1474 ✗ NS
+
+  Stratified by difficulty (baseline S1↔S2 TM-score):
+    EASY (TM>0.5): 6/6 = 100%
+    MEDIUM (TM>0.3): 0/2 = 0%
+    HARD (TM>0): 0/8 = 0%
+
+======================================================================
+SECONDARY: Ensemble RMSD Improvement Toward State 2
+======================================================================
+  All 16 proteins show positive improvement: 100%
+  Mean improvement: 0.79Å (4.6%)
+  Median improvement: 0.23Å
+  Max improvement: 5.61Å (24.0%)
+  Wilcoxon signed-rank p = 0.000015 ✓ SIG
+
+======================================================================
+QUANTUM SCORING ANALYSIS
+======================================================================
+  Spearman ρ (QICESS rank vs TM to state 2): mean=-0.204
+  Proteins where quantum score correlates with state 2 proximity: 12/16
+
+======================================================================
+PER-PROTEIN RESULTS
+======================================================================
+ gene  n_residues_state1  state1_vs_state2_rmsd  state1_vs_state2_tm  ens_min_rmsd_state2  ens_max_tm_state2  state2_rmsd_improvement  state2_rmsd_improvement_pct  dual_state_covered_tm05 difficulty
+ ABL1                263                  4.965                0.888                4.882              0.890                    0.083                        1.676                     True       easy
+  AK1                214                  7.117                0.565                6.766              0.584                    0.350                        4.924                     True       easy
+ BRAF                289                 13.156                0.323               12.803              0.334                    0.353                        2.681                    False     medium
+  CBS                498                 14.447                0.369               12.555              0.431                    1.893                       13.100                    False     medium
+ EGFR                311                  3.928                0.859                3.901              0.861                    0.027                        0.686                     True       easy
+FGFR1                149                 18.193                0.091               16.416              0.129                    1.777                        9.768                    False       hard
+  FYN                262                 18.039                0.067               16.374              0.098                    1.665                        9.231                    False       hard
+  HCK                437                 19.290                0.170               19.272              0.170                    0.017                        0.091                    False       hard
+ JAK1                281                 19.498                0.157               19.184              0.160                    0.314                        1.612                    False       hard
+  KIT                297                  5.471                0.853                5.421              0.857                    0.050                        0.913                     True       easy
+  LCK                288                 15.250                0.220               15.101              0.241                    0.149                        0.980                    False       hard
+ PTK2                611                  4.706                0.709                4.688              0.710                    0.018                        0.390                     True       easy
+PTPN6                504                 23.334                0.191               17.727              0.387                    5.607                       24.029                    False       hard
+  SRC                449                 23.198                0.198               22.841              0.218                    0.357                        1.539                    False       hard
+STAT3                558                  0.854                0.989                0.845              0.989                    0.009                        1.079                     True       easy
+  WAS                107                 15.149                0.053               15.110              0.053                    0.040                        0.261                    False       hard
+
+Saved: /workspace/results/figures/fig1_dual_state_coverage.png
+Saved: /workspace/results/figures/fig2_analysis.png
+Saved: /workspace/results/figures/fig3_comparison_table.png
+
+Saved: /workspace/results/tables/dual_state_coverage.csv
+
+======================================================================
+ANALYSIS COMPLETE
+======================================================================
+Saved: /workspace/results/figures/fig4_ablation.png
+Saved: /workspace/results/figures/fig5_ablation_verdict.png

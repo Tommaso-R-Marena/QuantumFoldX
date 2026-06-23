@@ -25,6 +25,7 @@ from ..quantum.ising_vqe import (
     build_ising_hamiltonian, IsingVQESolver,
     MJ_POTENTIALS, MJ_AA_TO_IDX
 )
+from ..quantum.qaoa_rotamer import build_rotamer_qubo, QAOARotamerOptimizer
 from ..data.pdb_fetcher import (
     compute_contact_map, compute_distance_matrix
 )
@@ -158,20 +159,25 @@ class QICESSv2Scorer:
     """
     
     DEFAULT_WEIGHTS = {
-        'quantum_agreement': 0.35,
+        'quantum_agreement': 0.30,
         'ramachandran': 0.10,
         'compactness': 0.15,
         'contact_order': 0.10,
-        'interdomain_contacts': 0.30,
+        'interdomain_contacts': 0.25,
+        'qaoa_rotamer': 0.10,
     }
     
     def __init__(self, weights: Dict[str, float] = None, vqe_layers: int = 3,
-                 vqe_restarts: int = 3, vqe_steps: int = 80):
+                 vqe_restarts: int = 3, vqe_steps: int = 80,
+                 use_qaoa: bool = True, qaoa_layers: int = 3):
         self.weights = weights or self.DEFAULT_WEIGHTS.copy()
         self.vqe_layers = vqe_layers
         self.vqe_restarts = vqe_restarts
         self.vqe_steps = vqe_steps
+        self.use_qaoa = use_qaoa
+        self.qaoa_layers = qaoa_layers
         self._vqe_cache = {}  # Cache VQE results per protein
+        self._qaoa_cache = {}
     
     def _run_vqe_for_protein(self, sequence: str, reference_coords: np.ndarray,
                               fd_indices: List[int] = None,
@@ -211,12 +217,85 @@ class QICESSv2Scorer:
         self._vqe_cache[cache_key] = vqe_result
         return vqe_result
     
+    def _run_qaoa_for_protein(self, sequence: str, reference_coords: np.ndarray) -> Dict:
+        """Run QAOA rotamer optimization once per protein and cache."""
+        cache_key = sequence[:20] + str(len(sequence))
+        if cache_key in self._qaoa_cache:
+            return self._qaoa_cache[cache_key]
+        
+        if not self.use_qaoa:
+            return {'optimal_bitstring': None, 'mapping': {}, 'n_qubits': 0}
+        
+        contact_map = compute_contact_map(reference_coords, threshold=8.0)
+        Q, mapping = build_rotamer_qubo(sequence, reference_coords, contact_map)
+        n_qubits = Q.shape[0]
+        
+        if n_qubits < 2 or not mapping:
+            result = {'optimal_bitstring': None, 'mapping': {}, 'n_qubits': 0}
+        else:
+            optimizer = QAOARotamerOptimizer(n_qubits, p_layers=self.qaoa_layers)
+            qaoa_out = optimizer.optimize(Q, max_steps=80)
+            result = {
+                'optimal_bitstring': qaoa_out['optimal_bitstring'],
+                'mapping': mapping,
+                'n_qubits': n_qubits,
+                'energy': qaoa_out['energy'],
+            }
+            logger.info(f"  QAOA complete: {n_qubits} qubits, E={qaoa_out['energy']:.4f}")
+        
+        self._qaoa_cache[cache_key] = result
+        return result
+    
+    def qaoa_rotamer_agreement(self, coords: np.ndarray, sequence: str,
+                                qaoa_result: Dict) -> float:
+        """Score conformation agreement with QAOA-optimal rotamer packing."""
+        if not qaoa_result.get('optimal_bitstring') or not qaoa_result.get('mapping'):
+            return 0.5
+        
+        contact_map = compute_contact_map(coords, threshold=8.0)
+        Q, _ = build_rotamer_qubo(sequence, coords, contact_map)
+        if Q.size == 0:
+            return 0.5
+        
+        n_qubits = Q.shape[0]
+        n_states = 2 ** n_qubits
+        best_energy = float('inf')
+        
+        # Evaluate energy of QAOA bitstring on this conformation's QUBO
+        bs = qaoa_result['optimal_bitstring']
+        energy = 0.0
+        for i in range(n_qubits):
+            zi = 1 - 2 * int(bs[i])
+            energy += Q[i, i] * (1 + zi) / 2
+            for j in range(i + 1, n_qubits):
+                zj = 1 - 2 * int(bs[j])
+                energy += Q[i, j] * (1 + zi * zj) / 4
+        
+        # Also evaluate conformation's own optimal (for normalization)
+        for state_idx in range(min(n_states, 4096)):
+            bits = format(state_idx, f'0{n_qubits}b')
+            e = 0.0
+            for i in range(n_qubits):
+                zi = 1 - 2 * int(bits[i])
+                e += Q[i, i] * (1 + zi) / 2
+                for j in range(i + 1, n_qubits):
+                    zj = 1 - 2 * int(bits[j])
+                    e += Q[i, j] * (1 + zi * zj) / 4
+            best_energy = min(best_energy, e)
+        
+        # Lower energy = better agreement; normalize to [0, 1]
+        if best_energy == float('inf'):
+            return 0.5
+        delta = energy - best_energy
+        return float(np.exp(-max(delta, 0) / max(abs(best_energy), 0.1)))
+    
     def score_conformation(self, coords: np.ndarray, sequence: str,
                            vqe_result: Dict,
                            phi_psi: List[Tuple[float, float]] = None,
                            fd_indices: List[int] = None,
                            im_indices: List[int] = None,
-                           expected_rg: float = None) -> Dict:
+                           expected_rg: float = None,
+                           qaoa_result: Dict = None) -> Dict:
         """Score a single conformation against VQE-optimal contacts."""
         scores = {}
         
@@ -247,6 +326,13 @@ class QICESSv2Scorer:
         else:
             scores['interdomain_contacts'] = 0.0
         
+        # 6. QAOA rotamer agreement
+        if qaoa_result and self.use_qaoa:
+            scores['qaoa_rotamer'] = self.qaoa_rotamer_agreement(
+                coords, sequence, qaoa_result)
+        else:
+            scores['qaoa_rotamer'] = 0.5
+        
         # Composite
         composite = 0.0
         for key, weight in self.weights.items():
@@ -275,6 +361,12 @@ class QICESSv2Scorer:
             sequence, reference_coords, fd_indices, im_indices
         )
         
+        # Run QAOA once (optional)
+        qaoa_result = None
+        if self.use_qaoa:
+            logger.info(f"  Running QAOA rotamer optimization...")
+            qaoa_result = self._run_qaoa_for_protein(sequence, reference_coords)
+        
         # Score all conformations
         scored = []
         for idx, conf in enumerate(ensemble):
@@ -282,7 +374,8 @@ class QICESSv2Scorer:
                 conf['coords'], sequence, vqe_result,
                 phi_psi=conf.get('phi_psi'),
                 fd_indices=fd_indices, im_indices=im_indices,
-                expected_rg=conf.get('expected_rg')
+                expected_rg=conf.get('expected_rg'),
+                qaoa_result=qaoa_result
             )
             result = {**conf, **scores, 'original_idx': idx}
             scored.append(result)

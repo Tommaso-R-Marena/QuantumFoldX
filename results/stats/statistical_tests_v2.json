@@ -1,26 +1,26 @@
 {
   "primary": {
     "metric": "Dual-State Coverage (TM>0.5)",
-    "n": 14,
-    "n_covered": 5,
-    "rate": 0.35714285714285715,
+    "n": 16,
+    "n_covered": 6,
+    "rate": 0.375,
     "wilson_95ci": [
-      0.16344490737202735,
-      0.6123599531785959
+      0.18480982554752806,
+      0.613593529020652
     ],
     "af3_auto_rate": 0.14,
     "af3_multi_rate": 0.233,
-    "p_vs_af3_auto": 0.035931893084180315,
-    "p_vs_af3_multi": 0.21040062903691087,
+    "p_vs_af3_auto": 0.017107722261230376,
+    "p_vs_af3_multi": 0.1473855306510558,
     "sig_vs_auto": "True",
     "sig_vs_multi": "False"
   },
   "stratification": {
     "easy": {
-      "n": 5,
-      "covered": 5,
+      "n": 6,
+      "covered": 6,
       "rate": 1.0,
-      "mean_baseline_tm": 0.8307366774020017
+      "mean_baseline_tm": 0.8104730125348111
     },
     "medium": {
       "n": 2,
@@ -29,26 +29,26 @@
       "mean_baseline_tm": 0.34608335607013396
     },
     "hard": {
-      "n": 7,
+      "n": 8,
       "covered": 0,
       "rate": 0.0,
-      "mean_baseline_tm": 0.1561866589455023
+      "mean_baseline_tm": 0.14325022848184593
     }
   },
   "improvement": {
-    "n": 14,
-    "mean_angstrom": 0.9026444719886035,
-    "median_angstrom": 0.3324008231885931,
-    "mean_pct": 5.1448046122490405,
+    "n": 16,
+    "mean_angstrom": 0.7943961310466948,
+    "median_angstrom": 0.2318931697844677,
+    "mean_pct": 4.560006669434742,
     "frac_improved": 1.0,
     "max_improvement": 5.606863807765688,
-    "wilcoxon_p": 6.103515625e-05,
+    "wilcoxon_p": 1.52587890625e-05,
     "sig": "True"
   },
   "quantum_ranking": {
-    "n": 14,
-    "mean_rho": -0.26947415562697846,
-    "n_negative": 10,
+    "n": 16,
+    "mean_rho": -0.2035777582499762,
+    "n_negative": 12,
     "note": "Negative rho = QICESS ranks conformations closer to state 2 higher"
   }
 }

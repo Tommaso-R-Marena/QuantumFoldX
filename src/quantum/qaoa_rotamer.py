@@ -15,6 +15,7 @@ need only ceil(log2(K)) qubits instead of K (one-hot).
 """
 
 import numpy as np
+from pennylane import numpy as pnp
 import pennylane as qml
 from typing import Dict, List, Tuple, Optional
 import logging
@@ -204,10 +205,8 @@ class QAOARotamerOptimizer:
             return qml.probs(wires=wires)
         
         # Initialize parameters
-        gammas = self.rng.uniform(0, 2 * np.pi, self.p_layers)
-        betas = self.rng.uniform(0, np.pi, self.p_layers)
-        gammas = np.array(gammas, requires_grad=True)
-        betas = np.array(betas, requires_grad=True)
+        gammas = pnp.array(self.rng.uniform(0, 2 * np.pi, self.p_layers), requires_grad=True)
+        betas = pnp.array(self.rng.uniform(0, np.pi, self.p_layers), requires_grad=True)
         
         opt = qml.AdamOptimizer(stepsize=0.05)
         

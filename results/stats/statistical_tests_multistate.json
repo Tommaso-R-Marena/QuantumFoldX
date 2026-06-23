@@ -1,0 +1,39 @@
+{
+  "n_valid": 5,
+  "category": "multistate",
+  "primary": {
+    "metric": "Dual-State Coverage (TM>0.5)",
+    "n": 5,
+    "n_covered": 1,
+    "rate": 0.2,
+    "wilson_95ci": [
+      0.03622316096978745,
+      0.6244717358814613
+    ],
+    "af3_category_rate": 0.233,
+    "af3_multi_rate": 0.233,
+    "p_vs_af3_category": 0.7345536122513929,
+    "p_vs_af3_multi": 0.7345536122513929,
+    "sig_vs_category": false,
+    "sig_vs_multi": false
+  },
+  "improvement": {
+    "mean": 0.6490549031137196,
+    "frac_improved": 1.0,
+    "wilcoxon_p": 0.03125,
+    "sig": "True"
+  },
+  "state2_tm": {
+    "mean": 0.3323977871829479,
+    "median": 0.20142643011166902,
+    "frac_above_05": 0.2
+  },
+  "quantum_ranking": {
+    "mean_rho": -0.4326216708905785,
+    "n_negative": 5
+  },
+  "timing": {
+    "suite_s": 178.3379306793213,
+    "timestamp": "2026-06-23T04:06:46.861379"
+  }
+}

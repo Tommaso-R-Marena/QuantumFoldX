@@ -68,10 +68,14 @@ def fetch_alphafold_prediction(uniprot_id: str, force: bool = False) -> Optional
         return None
 
 
-def parse_pdb_ca_coords(pdb_path: str, chain: str = None, 
-                         res_range: Tuple[int, int] = None) -> Dict:
+def parse_pdb_ca_coords(pdb_path: str, chain: str = None,
+                         res_range: Tuple[int, int] = None,
+                         model: int = 1) -> Dict:
     """
     Parse Cα coordinates from a PDB file.
+    
+    For NMR structures with multiple MODEL blocks, only the requested
+    model is parsed (default: model 1).
     
     Returns:
         dict with keys:
@@ -86,9 +90,25 @@ def parse_pdb_ca_coords(pdb_path: str, chain: str = None,
     residue_ids = []
     bfactors = []
     chain_id = chain
+    use_model_filter = False
+    in_target_model = True
+    current_model = 0
     
     with open(pdb_path) as f:
         for line in f:
+            if line.startswith("MODEL"):
+                use_model_filter = True
+                current_model = int(line.split()[1])
+                in_target_model = model is None or current_model == model
+                continue
+            if line.startswith("ENDMDL"):
+                if use_model_filter and in_target_model and model is not None:
+                    break
+                in_target_model = False
+                continue
+            
+            if use_model_filter and not in_target_model:
+                continue
             if not (line.startswith("ATOM") or line.startswith("HETATM")):
                 continue
             

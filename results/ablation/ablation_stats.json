@@ -1,5 +1,5 @@
 {
-  "n_proteins": 14,
+  "n_proteins": 16,
   "methods": [
     "QICESS-VQE",
     "QICESS-Exact",
@@ -9,127 +9,127 @@
   ],
   "QICESS-VQE": {
     "top10_mean_tm": {
-      "mean": 0.390589227241463,
-      "std": 0.30799850431748604,
-      "n": 14
+      "mean": 0.34931764740526955,
+      "std": 0.3147127703786693,
+      "n": 16
     },
     "spearman_rho": {
-      "mean": -0.2747722788034383,
-      "std": 0.4134320047359198
+      "mean": -0.25917533757914085,
+      "std": 0.38726864156709834
     },
     "ndcg_10": {
-      "mean": 0.8835016367741492,
-      "std": 0.11813061238976538
+      "mean": 0.8512802440922806,
+      "std": 0.24638881914776106
     }
   },
   "QICESS-Exact": {
     "top10_mean_tm": {
-      "mean": 0.388271802202533,
-      "std": 0.30522602854279174,
-      "n": 14
+      "mean": 0.3462350489311575,
+      "std": 0.3129337518508848,
+      "n": 16
     },
     "spearman_rho": {
-      "mean": -0.2870628944389062,
-      "std": 0.39286599175269754
+      "mean": -0.2650621326580799,
+      "std": 0.3875764840281112
     },
     "ndcg_10": {
-      "mean": 0.8833489836220975,
-      "std": 0.11483081142129646
+      "mean": 0.8464040531118142,
+      "std": 0.24683472949562188
     }
   },
   "Classical-MJ": {
     "top10_mean_tm": {
-      "mean": 0.33780278973208894,
-      "std": 0.2381112779743259,
-      "n": 14
+      "mean": 0.30554364695549824,
+      "std": 0.25436064101797573,
+      "n": 16
     },
     "spearman_rho": {
-      "mean": -0.0692918211206891,
-      "std": 0.21568219444103978
+      "mean": -0.06886638083383861,
+      "std": 0.18296230599488658
     },
     "ndcg_10": {
-      "mean": 0.8219440503332303,
-      "std": 0.13209007217241378
+      "mean": 0.7954883462123614,
+      "std": 0.245067228720347
     }
   },
   "No-Quantum": {
     "top10_mean_tm": {
-      "mean": 0.33194083921584205,
-      "std": 0.2338904053129014,
-      "n": 14
+      "mean": 0.29903804997837097,
+      "std": 0.2477051374558913,
+      "n": 16
     },
     "spearman_rho": {
-      "mean": 0.0018644676375693787,
-      "std": 0.1970359487979392
+      "mean": -0.009715668567955096,
+      "std": 0.20595569007694486
     },
     "ndcg_10": {
-      "mean": 0.8083221448915773,
-      "std": 0.1452087292322551
+      "mean": 0.7813890146916757,
+      "std": 0.24930155081088348
     }
   },
   "Random": {
     "top10_mean_tm": {
-      "mean": 0.3941362051217777,
-      "std": 0.31280795362898206,
-      "n": 14
+      "mean": 0.35555700099567733,
+      "std": 0.3250126285332882,
+      "n": 16
     },
     "spearman_rho": {
-      "mean": -0.04408565163683692,
-      "std": 0.1458479365988942
+      "mean": -0.048352535655675814,
+      "std": 0.13727420409642047
     },
     "ndcg_10": {
-      "mean": 0.8925562110477445,
-      "std": 0.11081821127107216
+      "mean": 0.856247651126503,
+      "std": 0.250445908110246
     }
   },
   "paired_tests": {
     "VQE_vs_QICESS-Exact": {
-      "mean_diff": 0.002317425038929884,
+      "mean_diff": 0.003082598474112051,
       "median_diff": 0.0,
-      "wilcoxon_p": 0.47967681702008175,
+      "wilcoxon_p": 0.11965827061074763,
       "significant": "False",
-      "vqe_wins": 3,
-      "ties": 8,
-      "other_wins": 3,
-      "effect_size": 0.3437822249774832
+      "vqe_wins": 4,
+      "ties": 10,
+      "other_wins": 2,
+      "effect_size": 0.4390626474600229
     },
     "VQE_vs_Classical-MJ": {
-      "mean_diff": 0.05278643750937403,
-      "median_diff": 0.007427986267036016,
-      "wilcoxon_p": 0.0594482421875,
-      "significant": "False",
-      "vqe_wins": 9,
-      "ties": 1,
-      "other_wins": 4,
-      "effect_size": 0.4307643355729412
+      "mean_diff": 0.04377400044977132,
+      "median_diff": 0.005100447598353153,
+      "wilcoxon_p": 0.02673718357724215,
+      "significant": "True",
+      "vqe_wins": 8,
+      "ties": 5,
+      "other_wins": 3,
+      "effect_size": 0.430500721852577
     },
     "VQE_vs_No-Quantum": {
-      "mean_diff": 0.05864838802562084,
-      "median_diff": 0.005676053085909835,
-      "wilcoxon_p": 0.057925748762965044,
-      "significant": "False",
-      "vqe_wins": 8,
-      "ties": 2,
-      "other_wins": 4,
-      "effect_size": 0.4456756835106312
+      "mean_diff": 0.05027959742689861,
+      "median_diff": 4.592388362541222e-05,
+      "wilcoxon_p": 0.027766490407971335,
+      "significant": "True",
+      "vqe_wins": 7,
+      "ties": 6,
+      "other_wins": 3,
+      "effect_size": 0.4465157882647616
     },
     "VQE_vs_Random": {
-      "mean_diff": -0.003546977880314802,
-      "median_diff": 0.00011433629792179795,
-      "wilcoxon_p": 0.25079345703125,
+      "mean_diff": -0.006239353590407789,
+      "median_diff": 1.6278508328242125e-05,
+      "wilcoxon_p": 0.34547237844896683,
       "significant": "False",
-      "vqe_wins": 6,
+      "vqe_wins": 7,
       "ties": 4,
-      "other_wins": 4,
-      "effect_size": -0.06598558638183344
+      "other_wins": 5,
+      "effect_size": -0.1399507431649368
     }
   },
   "vqe_vs_exact": {
-    "n_proteins": 14,
+    "n_proteins": 16,
     "n_identical": 0,
     "match_rate": 0.0,
-    "mean_hamming": 5.071428571428571,
-    "mean_speedup_factor": 2.1396333089051187,
-    "note": "Exact diag is 2x faster than VQE on average"
+    "mean_hamming": 5.0625,
+    "mean_speedup_factor": 10.37754024697291,
+    "note": "Exact diag is 10x faster than VQE on average"
   }
 }
