@@ -34,7 +34,7 @@ def main():
     logger.info("QuantumFoldX v2 — Dual-State Coverage Benchmark (Fast)")
     logger.info("="*80)
     
-    scorer = QICESSv2Scorer(vqe_layers=3, vqe_restarts=2, vqe_steps=50, use_qaoa=True)
+    scorer = QICESSv3Scorer()
     targets = get_autoinhibited_benchmark()
     af3_base = get_af3_baseline()
     

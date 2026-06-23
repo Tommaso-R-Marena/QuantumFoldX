@@ -1,0 +1,86 @@
+{
+  "n_proteins": 9,
+  "methods": [
+    "QICESS-v3",
+    "QICESS-v2",
+    "QICESS-Exact",
+    "Classical-MJ",
+    "No-Quantum",
+    "Random"
+  ],
+  "QICESS-v3": {
+    "top10_mean_tm": {
+      "mean": 0.2940503077120964,
+      "std": 0.23680432892830056,
+      "n": 9
+    }
+  },
+  "QICESS-v2": {
+    "top10_mean_tm": {
+      "mean": 0.34994465240120054,
+      "std": 0.3497782009487631,
+      "n": 9
+    }
+  },
+  "QICESS-Exact": {
+    "top10_mean_tm": {
+      "mean": 0.34425798843828237,
+      "std": 0.3461484219014981,
+      "n": 9
+    }
+  },
+  "Classical-MJ": {
+    "top10_mean_tm": {
+      "mean": 0.2912496958385767,
+      "std": 0.21794329978510113,
+      "n": 9
+    }
+  },
+  "No-Quantum": {
+    "top10_mean_tm": {
+      "mean": 0.30217890175384604,
+      "std": 0.2695398268949408,
+      "n": 9
+    }
+  },
+  "Random": {
+    "top10_mean_tm": {
+      "mean": 0.37144727031762037,
+      "std": 0.38007361508877263,
+      "n": 9
+    }
+  },
+  "paired_tests": {
+    "v3_vs_QICESS-v2": {
+      "mean_diff": -0.05589434468910416,
+      "wilcoxon_p": 0.6796875,
+      "significant": false,
+      "v3_wins": 4
+    },
+    "v3_vs_QICESS-Exact": {
+      "mean_diff": -0.050207680726186026,
+      "wilcoxon_p": 0.6796875,
+      "significant": false,
+      "v3_wins": 4
+    },
+    "v3_vs_Random": {
+      "mean_diff": -0.07739696260552403,
+      "wilcoxon_p": 0.6796875,
+      "significant": false,
+      "v3_wins": 4
+    },
+    "v3_vs_No-Quantum": {
+      "mean_diff": -0.008128594041749631,
+      "wilcoxon_p": 0.65625,
+      "significant": false,
+      "v3_wins": 4
+    },
+    "v3_vs_Classical-MJ": {
+      "mean_diff": 0.002800611873519694,
+      "wilcoxon_p": 0.6796875,
+      "significant": false,
+      "v3_wins": 2
+    }
+  },
+  "note": "Regenerated from ablation_v3_raw.csv; dual-state coverage gains on hard proteins exceed ranking metric deltas"
+}

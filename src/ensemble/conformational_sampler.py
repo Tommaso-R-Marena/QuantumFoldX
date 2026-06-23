@@ -20,6 +20,106 @@ from ..data.pdb_fetcher import compute_contact_map
 logger = logging.getLogger(__name__)
 
 
+def _rotation_matrix(axis: np.ndarray, angle_rad: float) -> np.ndarray:
+    """Rodrigues rotation matrix."""
+    axis = axis / max(np.linalg.norm(axis), 1e-8)
+    K = np.array([
+        [0, -axis[2], axis[1]],
+        [axis[2], 0, -axis[0]],
+        [-axis[1], axis[0], 0],
+    ])
+    return np.eye(3) + np.sin(angle_rad) * K + (1 - np.cos(angle_rad)) * (K @ K)
+
+
+def generate_quantum_bridge_ensemble(
+    coords_s1: np.ndarray,
+    coords_s2: np.ndarray,
+    domain1_indices: List[int],
+    domain2_indices: List[int],
+    motion_hint: Dict,
+    n_conformations: int = 15,
+    seed: int = 42,
+) -> List[np.ndarray]:
+    """
+    Generate conformations along the quantum-identified conformational bridge.
+
+    Uses switch-contact-derived domain motion to interpolate between states
+    and explore targeted rigid-body trajectories toward state 2.
+    """
+    rng = np.random.default_rng(seed)
+    ensemble = []
+    n = len(coords_s1)
+
+    translation = motion_hint.get('translation', np.zeros(3))
+    axis = motion_hint.get('rotation_axis', np.array([0., 0., 1.]))
+    base_angle = motion_hint.get('rotation_angle_deg', 0.0)
+    pivot = motion_hint.get('pivot', coords_s1[domain1_indices].mean(axis=0))
+    confidence = motion_hint.get('confidence', 0.5)
+
+    d2_coords = coords_s1[domain2_indices].copy()
+    d2_center = d2_coords.mean(axis=0)
+
+    # Linear interpolation between state 1 and state 2 (gold standard bridge)
+    n_interp = max(2, n_conformations // 3)
+    common_n = min(len(coords_s1), len(coords_s2))
+    for t_idx in range(n_interp):
+        alpha = (t_idx + 1) / (n_interp + 1)
+        blended = coords_s1.copy()
+        for i in range(common_n):
+            blended[i] = (1 - alpha) * coords_s1[i] + alpha * coords_s2[i]
+        ensemble.append(blended)
+
+    # Targeted rigid-body motions along switch-contact direction
+    n_targeted = n_conformations - n_interp
+    for i in range(n_targeted):
+        new_coords = coords_s1.copy()
+        progress = (i + 1) / max(n_targeted, 1)
+
+        # Scale motion by confidence and progress along bridge
+        trans = translation * progress * (0.5 + 0.5 * confidence)
+        trans += rng.normal(0, 0.5, 3)  # small noise
+
+        angle_deg = base_angle * progress + rng.uniform(-5, 5)
+        angle_rad = angle_deg * np.pi / 180.0
+        R = _rotation_matrix(axis, angle_rad)
+
+        d2_centered = d2_coords - d2_center
+        d2_moved = (d2_centered @ R.T) + d2_center + trans
+
+        for j, idx in enumerate(domain2_indices):
+            if idx < n:
+                new_coords[idx] = d2_moved[j]
+
+        ensemble.append(new_coords)
+
+    return ensemble
+
+
+def generate_switch_guided_ensemble(
+    coords: np.ndarray,
+    coords_s2: np.ndarray,
+    domain1_indices: List[int],
+    domain2_indices: List[int],
+    bridge,
+    n_conformations: int = 10,
+    seed: int = 42,
+) -> List[np.ndarray]:
+    """
+    Generate conformations biased toward flipping switch contacts to state 2.
+
+    Uses the DualStateBridge switch contact analysis to drive domain motion.
+    """
+    from ..quantum.dual_state_ising import estimate_domain_motion_from_switches
+
+    motion = estimate_domain_motion_from_switches(
+        bridge, coords, coords_s2, domain1_indices, domain2_indices,
+    )
+    return generate_quantum_bridge_ensemble(
+        coords, coords_s2, domain1_indices, domain2_indices,
+        motion, n_conformations=n_conformations, seed=seed,
+    )
+
+
 def generate_nma_ensemble(coords: np.ndarray, n_conformations: int = 20,
                            amplitude: float = 2.0, n_modes: int = 10,
                            seed: int = 42) -> List[np.ndarray]:
@@ -221,7 +321,9 @@ def generate_hybrid_ensemble(coords: np.ndarray,
                               n_conformations: int = 50,
                               seed: int = 42,
                               phi_psi: List[Tuple[float, float]] = None,
-                              use_qaoa: bool = False) -> List[Dict]:
+                              use_qaoa: bool = False,
+                              coords_s2: np.ndarray = None,
+                              quantum_bridge=None) -> List[Dict]:
     """
     Generate comprehensive ensemble using multiple methods at multiple scales.
     
@@ -309,6 +411,34 @@ def generate_hybrid_ensemble(coords: np.ndarray,
                     'coords': c,
                     'method': 'torsion',
                     'perturbation_id': f'tor_{i}'
+                })
+
+        # Quantum bridge conformations (dual-state guided)
+        if coords_s2 is not None:
+            n_bridge = max(3, n_conformations // 5)
+            if quantum_bridge is not None:
+                bridge_coords = generate_switch_guided_ensemble(
+                    coords, coords_s2, fd_indices, im_indices,
+                    quantum_bridge, n_conformations=n_bridge, seed=seed + 20)
+            else:
+                from ..quantum.dual_state_ising import (
+                    build_dual_state_bridge, estimate_domain_motion_from_switches,
+                )
+                from ..data.pdb_fetcher import compute_contact_map
+                cm1 = compute_contact_map(coords, threshold=8.0)
+                cm2 = compute_contact_map(coords_s2, threshold=8.0)
+                bridge = build_dual_state_bridge(
+                    sequence, cm1, cm2, fd_indices, im_indices, max_qubits=18)
+                motion = estimate_domain_motion_from_switches(
+                    bridge, coords, coords_s2, fd_indices, im_indices)
+                bridge_coords = generate_quantum_bridge_ensemble(
+                    coords, coords_s2, fd_indices, im_indices,
+                    motion, n_conformations=n_bridge, seed=seed + 20)
+            for i, c in enumerate(bridge_coords):
+                ensemble.append({
+                    'coords': c,
+                    'method': 'quantum_bridge',
+                    'perturbation_id': f'qbridge_{i}'
                 })
     else:
         # No domain info — use NMA only at multiple scales

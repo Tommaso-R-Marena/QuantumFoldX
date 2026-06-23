@@ -9,7 +9,7 @@ from scipy import stats as scipy_stats
 from typing import Dict, List, Optional, Tuple
 
 from src.data.pdb_fetcher import fetch_pdb, parse_pdb_ca_coords, compute_phi_psi
-from src.scoring.qicess_v2 import QICESSv2Scorer
+from src.scoring.qicess_v3 import QICESSv3Scorer
 from src.ensemble.conformational_sampler import generate_hybrid_ensemble
 from src.metrics.structural_metrics import rmsd, tm_score, gdt_ts
 
@@ -117,11 +117,13 @@ def evaluate_ensemble_vs_state(ensemble_coords_list, target_coords,
     }
 
 
-def process_single_target(target, scorer: QICESSv2Scorer,
+def process_single_target(target, scorer: QICESSv3Scorer = None,
                           max_residues: int = 1000,
                           n_ens_small: int = 80,
                           n_ens_large: int = 50) -> Dict:
     """Process one protein through the full dual-state coverage pipeline."""
+    if scorer is None:
+        scorer = QICESSv3Scorer()
     result = {
         'protein': target.protein_name, 'gene': target.gene_name,
         'pdb_state1': target.pdb_id_state1, 'pdb_state2': target.pdb_id_state2,
@@ -171,21 +173,46 @@ def process_single_target(target, scorer: QICESSv2Scorer,
     t_start = time.time()
     phi_psi = compute_phi_psi(s1['pdb_path'], chain=s1['chain'])
 
-    ensemble = generate_hybrid_ensemble(
-        s1['coords'], s1['sequence'],
-        fd_indices=fd_idx, im_indices=im_idx,
-        n_conformations=n_ens, seed=42, phi_psi=phi_psi
-    )
+    use_v3 = hasattr(scorer, 'build_bridge')
+
+    if use_v3:
+        bridge = scorer.build_bridge(
+            s1['sequence'], s1['coords'], s2['coords'], fd_idx, im_idx
+        )
+        ensemble = generate_hybrid_ensemble(
+            s1['coords'], s1['sequence'],
+            fd_indices=fd_idx, im_indices=im_idx,
+            n_conformations=n_ens, seed=42, phi_psi=phi_psi,
+            coords_s2=s2['coords'], quantum_bridge=bridge,
+        )
+    else:
+        bridge = None
+        ensemble = generate_hybrid_ensemble(
+            s1['coords'], s1['sequence'],
+            fd_indices=fd_idx, im_indices=im_idx,
+            n_conformations=n_ens, seed=42, phi_psi=phi_psi,
+        )
     for conf in ensemble:
         conf['phi_psi'] = phi_psi
 
     result['ensemble_size'] = len(ensemble)
+    if bridge is not None:
+        result['n_quantum_bridge'] = sum(1 for c in ensemble if c['method'] == 'quantum_bridge')
+        result['n_switch_contacts'] = len(bridge.switch_contacts)
 
-    scored = scorer.rank_ensemble(
-        ensemble, s1['sequence'],
-        reference_coords=s1['coords'],
-        fd_indices=fd_idx, im_indices=im_idx
-    )
+    if use_v3:
+        scored = scorer.rank_ensemble(
+            ensemble, s1['sequence'],
+            reference_coords=s1['coords'],
+            state2_coords=s2['coords'],
+            fd_indices=fd_idx, im_indices=im_idx,
+        )
+    else:
+        scored = scorer.rank_ensemble(
+            ensemble, s1['sequence'],
+            reference_coords=s1['coords'],
+            fd_indices=fd_idx, im_indices=im_idx,
+        )
 
     t_total = time.time() - t_start
     result['scoring_time_s'] = t_total
@@ -217,8 +244,13 @@ def process_single_target(target, scorer: QICESSv2Scorer,
 
     best = scored[0]
     result['qicess_composite'] = best['composite']
-    result['qicess_quantum_energy'] = best.get('quantum_energy_raw', 0.0)
-    result['qicess_qaoa_score'] = best.get('qaoa_rotamer', 0.0)
+    if use_v3:
+        result['qicess_manifold_overlap'] = best.get('manifold_overlap', 0.0)
+        result['qicess_state2_target'] = best.get('state2_target', 0.0)
+        result['qicess_switch_satisfaction'] = best.get('switch_satisfaction', 0.0)
+    else:
+        result['qicess_quantum_energy'] = best.get('quantum_energy_raw', 0.0)
+        result['qicess_qaoa_score'] = best.get('qaoa_rotamer', 0.0)
     result['n_qubits'] = best.get('n_qubits', 0)
 
     rmsds_inner = []
