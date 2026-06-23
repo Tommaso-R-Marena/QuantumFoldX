@@ -78,7 +78,7 @@ def select_shared_contact_qubits(
     contact_map_s2: np.ndarray,
     fd_indices: Optional[List[int]] = None,
     im_indices: Optional[List[int]] = None,
-    max_qubits: int = 18,
+    max_qubits: int = 20,
 ) -> List[ContactQubit]:
     """
     Select qubits for the dual-state Hamiltonian.
@@ -191,7 +191,7 @@ def build_dual_state_bridge(
     contact_map_s2: np.ndarray,
     fd_indices: Optional[List[int]] = None,
     im_indices: Optional[List[int]] = None,
-    max_qubits: int = 18,
+    max_qubits: int = 20,
     lambda_path: Optional[List[float]] = None,
     low_energy_delta: float = 0.4,
 ) -> DualStateBridge:

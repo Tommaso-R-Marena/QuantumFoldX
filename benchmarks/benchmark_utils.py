@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Tuple
 from src.data.pdb_fetcher import (
     fetch_pdb, parse_pdb_ca_coords, parse_pdb_ca_coords_best_chain, compute_phi_psi,
 )
-from src.scoring.qicess_v3 import QICESSv3Scorer
+from src.scoring.qicess_v3 import create_dsib_scorer, QICESSv3Scorer
 from src.scoring.geometry_utils import transition_difficulty
 from src.ensemble.conformational_sampler import generate_hybrid_ensemble
 from src.metrics.structural_metrics import rmsd, tm_score, gdt_ts
@@ -122,7 +122,7 @@ def process_single_target(target, scorer: QICESSv3Scorer = None,
                           n_ens_large: int = 50) -> Dict:
     """Process one protein through the full dual-state coverage pipeline."""
     if scorer is None:
-        scorer = QICESSv3Scorer()
+        scorer = create_dsib_scorer()
     result = {
         'protein': target.protein_name, 'gene': target.gene_name,
         'pdb_state1': target.pdb_id_state1, 'pdb_state2': target.pdb_id_state2,

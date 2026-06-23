@@ -12,13 +12,14 @@ from src.data.pdb_fetcher import (
     list_pdb_chains, compute_contact_map, compute_phi_psi,
 )
 from src.ensemble.conformational_sampler import (
-    generate_nma_ensemble, generate_torsion_ensemble, generate_hybrid_ensemble
+    generate_nma_ensemble, generate_torsion_ensemble, generate_hybrid_ensemble,
+    generate_manifold_bridge_ensemble,
 )
 from src.metrics.structural_metrics import rmsd, tm_score, imfd_rmsd
 from src.quantum.ising_vqe import build_ising_hamiltonian, IsingVQESolver
 from src.quantum.qaoa_rotamer import build_rotamer_qubo, QAOARotamerOptimizer
 from src.scoring.qicess_v2 import QICESSv2Scorer, ramachandran_score
-from src.scoring.qicess_v3 import QICESSv3Scorer
+from src.scoring.qicess_v3 import QICESSv3Scorer, create_dsib_scorer
 from src.scoring.geometry_utils import (
     state2_imfd_score, state2_aligned_tm_score,
     interpolate_coords_on_common, common_residue_pairs,
@@ -94,6 +95,23 @@ class TestEnsemble:
         assert 'quantum_bridge' in methods
         assert 'original' in methods
         assert len(ens) >= 20
+
+    def test_manifold_bridge_ensemble(self):
+        n = 40
+        coords1 = np.random.randn(n, 3) * 10
+        coords2 = coords1 + np.random.randn(n, 3) * 3
+        seq = 'A' * n
+        cm1 = compute_contact_map(coords1)
+        cm2 = compute_contact_map(coords2)
+        bridge = build_dual_state_bridge(seq, cm1, cm2, max_qubits=10)
+        ens = generate_manifold_bridge_ensemble(coords1, coords2, bridge, n_conformations=4)
+        assert len(ens) >= 1
+        assert ens[0].shape == coords1.shape
+
+    def test_create_dsib_scorer(self):
+        scorer = create_dsib_scorer()
+        assert scorer.max_qubits == 20
+        assert len(scorer.lambda_path) == 9
 
 
 class TestMetrics:
@@ -299,13 +317,16 @@ class TestBenchmarkDataset:
             )
 
     def test_autoinhibited_count(self):
-        assert len(get_autoinhibited_benchmark()) == 16
+        assert len(get_autoinhibited_benchmark()) == 24
 
     def test_foldswitch_count(self):
-        assert len(get_foldswitch_benchmark()) == 6
+        assert len(get_foldswitch_benchmark()) == 12
 
     def test_multistate_count(self):
-        assert len(get_multistate_benchmark()) == 6
+        assert len(get_multistate_benchmark()) == 13
+
+    def test_all_benchmarks_count(self):
+        assert len(get_all_benchmarks()) == 49
 
     def test_ptk2_was_parse(self):
         targets = {t.gene_name: t for t in get_autoinhibited_benchmark()}

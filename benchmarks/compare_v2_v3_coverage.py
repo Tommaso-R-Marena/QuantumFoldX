@@ -33,7 +33,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from configs.benchmark_dataset import get_autoinhibited_benchmark
 from src.scoring.qicess_v2 import QICESSv2Scorer
-from src.scoring.qicess_v3 import QICESSv3Scorer
+from src.scoring.qicess_v3 import create_dsib_scorer
 from src.scoring.geometry_utils import transition_difficulty
 from src.ensemble.conformational_sampler import generate_hybrid_ensemble
 from src.quantum.dual_state_ising import compute_transition_complexity
@@ -66,8 +66,8 @@ def _coverage_metrics(scored, s1, s2, ci1, ci2):
 
 
 def _merge_v2_plus_bridge(ens_v2, ens_v3):
-    """v2 ensemble augmented with quantum_bridge conformations from v3."""
-    bridge = [c for c in ens_v3 if c['method'] == 'quantum_bridge']
+    """v2 ensemble augmented with DSIB bridge conformations from v3."""
+    bridge = [c for c in ens_v3 if c['method'] in ('quantum_bridge', 'manifold_bridge')]
     merged = list(ens_v2)
     for i, c in enumerate(bridge):
         merged.append({
@@ -82,7 +82,7 @@ def run_comparison(resume: bool = True):
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     targets = get_autoinhibited_benchmark()
     scorer_v2 = QICESSv2Scorer(vqe_layers=2, vqe_restarts=1, vqe_steps=40, use_qaoa=False)
-    scorer_v3 = QICESSv3Scorer()
+    scorer_v3 = create_dsib_scorer()
 
     results = []
     done = set()

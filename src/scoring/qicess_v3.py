@@ -35,6 +35,19 @@ from .qicess_v2 import (
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_LAMBDA_PATH = [i / 8.0 for i in range(9)]  # 0, 0.125, ..., 1.0
+
+
+def create_dsib_scorer(**kwargs) -> "QICESSv3Scorer":
+    """Production DSIB scorer: 20 qubits, fine λ-path, wider low-energy manifold."""
+    defaults = dict(
+        max_qubits=20,
+        lambda_path=DEFAULT_LAMBDA_PATH,
+        low_energy_delta=0.5,
+    )
+    defaults.update(kwargs)
+    return QICESSv3Scorer(**defaults)
+
 
 class QICESSv3Scorer:
     """
@@ -57,12 +70,12 @@ class QICESSv3Scorer:
     }
 
     def __init__(self, weights: Optional[Dict[str, float]] = None,
-                 max_qubits: int = 18,
+                 max_qubits: int = 20,
                  lambda_path: Optional[List[float]] = None,
-                 low_energy_delta: float = 0.4):
+                 low_energy_delta: float = 0.5):
         self.weights = weights or self.DEFAULT_WEIGHTS.copy()
         self.max_qubits = max_qubits
-        self.lambda_path = lambda_path
+        self.lambda_path = lambda_path if lambda_path is not None else DEFAULT_LAMBDA_PATH.copy()
         self.low_energy_delta = low_energy_delta
         self._bridge_cache: Dict[str, DualStateBridge] = {}
 

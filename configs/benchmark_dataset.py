@@ -174,6 +174,71 @@ AUTOINHIBITED_BENCHMARK = [
         af3_imfd_rmsd=3.8,
         notes='Classic hinge-bending model.'
     ),
+    # Extended autoinhibited set (validated PDB pairs)
+    BenchmarkTarget(
+        pdb_id_state1='1F3M', pdb_id_state2='3Q52',
+        uniprot_id='P13109', protein_name='Serine/threonine-protein kinase PAK1',
+        gene_name='PAK1', chain_state1='A', chain_state2='A',
+        fd_residues=(67, 521), im_residues=(1, 66),
+        af3_imfd_rmsd=5.5,
+        notes='PAK1 autoinhibited vs active (kinase domain).'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1BYG', pdb_id_state2='1Y91',
+        uniprot_id='P41240', protein_name='Tyrosine-protein kinase CSK',
+        gene_name='CSK', chain_state1='A', chain_state2='A',
+        fd_residues=(80, 450), im_residues=(1, 79),
+        af3_imfd_rmsd=4.0,
+        notes='C-terminal Src kinase autoinhibition.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='2GQF', pdb_id_state2='2GQG',
+        uniprot_id='P26998', protein_name='Tyrosine-protein kinase ABL2',
+        gene_name='ABL2', chain_state1='A', chain_state2='A',
+        fd_residues=(272, 511), im_residues=(1, 120),
+        af3_imfd_rmsd=4.2,
+        notes='ABL2 family autoinhibited vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1LYN', pdb_id_state2='3A4K',
+        uniprot_id='P07949', protein_name='Tyrosine-protein kinase Lyn',
+        gene_name='LYN', chain_state1='A', chain_state2='A',
+        fd_residues=(230, 512), im_residues=(1, 120),
+        af3_imfd_rmsd=3.6,
+        notes='Lyn SH3-SH2 autoinhibition vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1YMK', pdb_id_state2='1O4A',
+        uniprot_id='P07947', protein_name='Tyrosine-protein kinase Yes',
+        gene_name='YES1', chain_state1='A', chain_state2='A',
+        fd_residues=(260, 520), im_residues=(1, 120),
+        af3_imfd_rmsd=3.4,
+        notes='Yes1 Src-family autoinhibition.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1SM2', pdb_id_state2='2NUX',
+        uniprot_id='Q08881', protein_name='Tyrosine-protein kinase ITK',
+        gene_name='ITK', chain_state1='A', chain_state2='A',
+        fd_residues=(250, 620), im_residues=(1, 120),
+        af3_imfd_rmsd=5.8,
+        notes='T-cell ITK autoinhibited vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='2Q0K', pdb_id_state2='1Z88',
+        uniprot_id='P43404', protein_name='Tyrosine-protein kinase ZAP70',
+        gene_name='ZAP70', chain_state1='A', chain_state2='A',
+        fd_residues=(220, 600), im_residues=(1, 120),
+        af3_imfd_rmsd=5.0,
+        notes='TCR ZAP70 autoinhibited vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='3GEN', pdb_id_state2='3PBR',
+        uniprot_id='Q06187', protein_name='Tyrosine-protein kinase BTK',
+        gene_name='BTK', chain_state1='A', chain_state2='A',
+        fd_residues=(280, 650), im_residues=(1, 150),
+        af3_imfd_rmsd=4.8,
+        notes='B-cell BTK autoinhibited vs active.'
+    ),
 ]
 
 
@@ -235,6 +300,56 @@ FOLDSWITCH_BENCHMARK = [
         category='foldswitch',
         notes='Tense vs relaxed hemoglobin states.'
     ),
+    BenchmarkTarget(
+        pdb_id_state1='1K0N', pdb_id_state2='1S32',
+        uniprot_id='O00299', protein_name='Chloride intracellular channel 1',
+        gene_name='CLIC1', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 120), im_residues=(121, 226),
+        category='foldswitch',
+        notes='Soluble vs membrane CLIC1 fold switch.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1NWZ', pdb_id_state2='2PHY',
+        uniprot_id='P16113', protein_name='Photoactive yellow protein',
+        gene_name='PYP', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 70), im_residues=(71, 141),
+        category='foldswitch',
+        species='Halorhodospira halophila',
+        notes='Signalling state vs ground state fold change.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='2AZX', pdb_id_state2='2AE8',
+        uniprot_id='Q13247', protein_name='Nova-1 KH domain',
+        gene_name='NOVA1', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 190), im_residues=(191, 379),
+        category='foldswitch',
+        notes='RNA-bound vs apo KH domain rearrangement.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1K86', pdb_id_state2='1GFW',
+        uniprot_id='P55210', protein_name='Caspase-7',
+        gene_name='CASP7', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 120), im_residues=(121, 232),
+        category='foldswitch',
+        notes='Procaspase vs active caspase conformation.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1CLL', pdb_id_state2='1A29',
+        uniprot_id='P62158', protein_name='Calmodulin',
+        gene_name='CALM1', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 72), im_residues=(73, 144),
+        category='foldswitch',
+        notes='Apo vs calcium-bound calmodulin.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1L63', pdb_id_state2='1L65',
+        uniprot_id='P00720', protein_name='T4 Lysozyme',
+        gene_name='T4L', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 80), im_residues=(81, 162),
+        category='foldswitch',
+        species='Enterobacteria phage T4',
+        notes='Open vs closed T4 lysozyme states.'
+    ),
 ]
 
 
@@ -292,6 +407,62 @@ MULTISTATE_BENCHMARK = [
         fd_residues=(260, 520), im_residues=(87, 146),
         category='multistate',
         notes='M-SADA: Src autoinhibited vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='3MJG', pdb_id_state2='3JVR',
+        uniprot_id='P09619', protein_name='Platelet-derived growth factor receptor beta',
+        gene_name='PDGFRB', chain_state1='A', chain_state2='A',
+        fd_residues=(600, 1100), im_residues=(1, 200),
+        category='multistate',
+        notes='M-SADA: PDGFRB inactive vs active kinase.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='3LQ8', pdb_id_state2='3LTJ',
+        uniprot_id='P08581', protein_name='Hepatocyte growth factor receptor',
+        gene_name='MET', chain_state1='A', chain_state2='A',
+        fd_residues=(720, 1390), im_residues=(1, 200),
+        category='multistate',
+        notes='M-SADA: MET inactive vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1RJB', pdb_id_state2='4RT7',
+        uniprot_id='P36888', protein_name='Receptor-type tyrosine-protein kinase FLT3',
+        gene_name='FLT3', chain_state1='A', chain_state2='A',
+        fd_residues=(550, 990), im_residues=(1, 200),
+        category='multistate',
+        notes='M-SADA: FLT3 inactive vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='2OGV', pdb_id_state2='3LCO',
+        uniprot_id='P07333', protein_name='Macrophage colony-stimulating factor 1 receptor',
+        gene_name='CSF1R', chain_state1='A', chain_state2='A',
+        fd_residues=(550, 980), im_residues=(1, 200),
+        category='multistate',
+        notes='M-SADA: CSF1R inactive vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='2OH4', pdb_id_state2='3VHE',
+        uniprot_id='P35968', protein_name='Vascular endothelial growth factor receptor 2',
+        gene_name='VEGFR2', chain_state1='A', chain_state2='A',
+        fd_residues=(810, 1356), im_residues=(1, 200),
+        category='multistate',
+        notes='M-SADA: VEGFR2 inactive vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='5U6B', pdb_id_state2='5U6C',
+        uniprot_id='P30530', protein_name='Receptor tyrosine-protein kinase AXL',
+        gene_name='AXL', chain_state1='A', chain_state2='A',
+        fd_residues=(530, 880), im_residues=(1, 200),
+        category='multistate',
+        notes='M-SADA: AXL inactive vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='4WB7', pdb_id_state2='4WB8',
+        uniprot_id='P17612', protein_name='cAMP-dependent protein kinase catalytic subunit',
+        gene_name='PKA_MS', chain_state1='A', chain_state2='A',
+        fd_residues=(40, 350), im_residues=(1, 39),
+        category='multistate',
+        notes='M-SADA: PKA inactive vs active.'
     ),
 ]
 
