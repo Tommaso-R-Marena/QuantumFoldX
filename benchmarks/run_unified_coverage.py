@@ -27,7 +27,6 @@ from configs.benchmark_dataset import (
     get_autoinhibited_benchmark, get_foldswitch_benchmark,
     get_multistate_benchmark, get_all_benchmarks, get_af3_baseline,
 )
-from src.scoring.qicess_v2 import QICESSv2Scorer
 from src.scoring.qicess_v3 import create_dsib_scorer
 from src.scoring.geometry_utils import transition_difficulty
 from src.ensemble.conformational_sampler import generate_hybrid_ensemble
@@ -49,7 +48,7 @@ CONDITIONS = ['A_v2_full', 'B_v3_full', 'E_v2plus_bridge']
 METRIC = 'ens_max_tm_state2'
 
 
-def _process_target(target, scorer_v2, scorer_v3, n_ens: int):
+def _process_target(target, scorer_v3, n_ens: int):
     from src.data.pdb_fetcher import compute_phi_psi
     from src.metrics.structural_metrics import tm_score
 
@@ -98,19 +97,12 @@ def _process_target(target, scorer_v2, scorer_v3, n_ens: int):
     }
 
     cond_map = {
-        'A_v2_full': (ens_v2, scorer_v2, False),
-        'B_v3_full': (ens_v3, scorer_v3, True),
-        'E_v2plus_bridge': (ens_v2_plus, scorer_v2, False),
+        'A_v2_full': ens_v2,
+        'B_v3_full': ens_v3,
+        'E_v2plus_bridge': ens_v2_plus,
     }
-    for label, (ens, scorer, use_v3) in cond_map.items():
-        if use_v3:
-            ranked = scorer.rank_ensemble(
-                ens, s1['sequence'], s1['coords'], s2['coords'],
-                fd_idx, im_idx, common_idx_ens=ci1, common_idx_s2=ci2)
-        else:
-            ranked = scorer.rank_ensemble(
-                ens, s1['sequence'], s1['coords'], fd_idx, im_idx)
-        m = _coverage_metrics(ranked, s1, s2, ci1, ci2)
+    for label, ens in cond_map.items():
+        m = _coverage_metrics(ens, s1, s2, ci1, ci2)
         for k, v in m.items():
             row[f'{label}_{k}'] = v
 
@@ -199,7 +191,6 @@ def run_unified(targets=None, resume: bool = True, n_ens: int = 80):
     if targets is None:
         targets = get_all_benchmarks()
 
-    scorer_v2 = QICESSv2Scorer(vqe_layers=2, vqe_restarts=1, vqe_steps=40, use_qaoa=False)
     scorer_v3 = create_dsib_scorer()
     af3_base = get_af3_baseline()
 
@@ -216,10 +207,8 @@ def run_unified(targets=None, resume: bool = True, n_ens: int = 80):
 
         logger.info("[%d/%d] %s (%s)", idx + 1, len(targets), target.gene_name, target.category)
         ens_n = n_ens if target.category != 'foldswitch' else min(n_ens, 60)
-        if target.category == 'multistate' and hasattr(target, 'n_residues'):
-            pass
         try:
-            row = _process_target(target, scorer_v2, scorer_v3, ens_n)
+            row = _process_target(target, scorer_v3, ens_n)
             if row is None:
                 logger.warning("  Skipped %s", target.gene_name)
                 continue

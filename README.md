@@ -51,11 +51,22 @@ Run: `python benchmarks/compare_v2_v3_coverage.py`
 
 Hard subset (baseline TM < 0.5): 0/10 → 10/10 dual coverage.
 
-### Cross-dataset benchmark
+### Cross-dataset benchmark (n=48 proteins, 3 categories)
 
 Run: `python benchmarks/run_unified_coverage.py`
 
-Evaluates all 49 proteins across autoinhibited, fold-switch, and multi-state categories with v2 vs v3 comparison. Results in `results/unified/`.
+| Category | v2 dual coverage | v3 (DSIB) dual coverage | Wilcoxon p |
+|----------|------------------|-------------------------|------------|
+| Autoinhibited (24) | 6/24 (25%) | **24/24 (100%)** | 1.4×10⁻⁵ |
+| Fold-switch (12) | 1/12 (8%) | **11/12 (92%)** | 2.4×10⁻⁴ |
+| Multi-state (12) | 4/12 (33%) | **12/12 (100%)** | 4.9×10⁻⁴ |
+| **Combined (48)** | **11/48 (23%)** | **47/48 (98%)** | 1.8×10⁻⁹ |
+
+Hard subset (baseline TM < 0.5, n=37): v2 0/37 → v3 **36/37** dual coverage.
+
+Bridge-only ablation (E) matches full v3 on all categories. vs published AF3 weighted mean dual-state rate (15%): p < 10⁻³⁷.
+
+One fold-switch outlier (HIV Rev) remains below TM 0.5 threshold; all autoinhibited and multi-state targets are covered.
 
 ## What did not work
 

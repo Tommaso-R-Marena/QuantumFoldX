@@ -369,12 +369,12 @@ MULTISTATE_BENCHMARK = [
         notes='M-SADA: ABL1 inactive vs active kinase.'
     ),
     BenchmarkTarget(
-        pdb_id_state1='3LVP', pdb_id_state2='3LVO',
+        pdb_id_state1='3LVP', pdb_id_state2='2GS7',
         uniprot_id='P00533', protein_name='Epidermal growth factor receptor',
         gene_name='EGFR_MS', chain_state1='A', chain_state2='A',
         fd_residues=(696, 960), im_residues=(1, 310),
         category='multistate',
-        notes='M-SADA: EGFR inactive vs active.'
+        notes='M-SADA: EGFR inactive (3LVP) vs active (2GS7).'
     ),
     BenchmarkTarget(
         pdb_id_state1='4HJO', pdb_id_state2='4HJP',

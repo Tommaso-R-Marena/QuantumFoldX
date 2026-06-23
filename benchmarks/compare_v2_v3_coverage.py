@@ -32,7 +32,6 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from configs.benchmark_dataset import get_autoinhibited_benchmark
-from src.scoring.qicess_v2 import QICESSv2Scorer
 from src.scoring.qicess_v3 import create_dsib_scorer
 from src.scoring.geometry_utils import transition_difficulty
 from src.ensemble.conformational_sampler import generate_hybrid_ensemble
@@ -50,8 +49,9 @@ RAW_FILE = OUT_DIR / 'v2_v3_comparison.csv'
 STATS_FILE = OUT_DIR / 'v2_v3_comparison_stats.json'
 
 
-def _coverage_metrics(scored, s1, s2, ci1, ci2):
-    all_coords = [c['coords'] for c in scored]
+def _coverage_metrics(ensemble, s1, s2, ci1, ci2):
+    """Dual-state coverage from raw ensemble (ranking not required for max TM)."""
+    all_coords = [c['coords'] for c in ensemble]
     eval_s1 = evaluate_ensemble_vs_state(
         all_coords, s1['coords'],
         list(range(s1['n_residues'])), list(range(s1['n_residues'])))
@@ -81,7 +81,6 @@ def _merge_v2_plus_bridge(ens_v2, ens_v3):
 def run_comparison(resume: bool = True):
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     targets = get_autoinhibited_benchmark()
-    scorer_v2 = QICESSv2Scorer(vqe_layers=2, vqe_restarts=1, vqe_steps=40, use_qaoa=False)
     scorer_v3 = create_dsib_scorer()
 
     results = []
@@ -133,11 +132,11 @@ def run_comparison(resume: bool = True):
                 c['phi_psi'] = phi_psi
 
         conditions = {
-            'A_v2_full': (ens_v2, scorer_v2, False),
-            'B_v3_full': (ens_v3, scorer_v3, True),
-            'C_v3ens_v2score': (ens_v3, scorer_v2, False),
-            'D_v2ens_v3score': (ens_v2, scorer_v3, True),
-            'E_v2plus_bridge': (ens_v2_plus_bridge, scorer_v2, False),
+            'A_v2_full': ens_v2,
+            'B_v3_full': ens_v3,
+            'C_v3ens_v2score': ens_v3,
+            'D_v2ens_v3score': ens_v2,
+            'E_v2plus_bridge': ens_v2_plus_bridge,
         }
 
         row = {
@@ -153,15 +152,8 @@ def run_comparison(resume: bool = True):
             'tci_bridge_span': tci['bridge_span'],
         }
 
-        for label, (ens, scorer, use_v3) in conditions.items():
-            if use_v3:
-                ranked = scorer.rank_ensemble(
-                    ens, s1['sequence'], s1['coords'], s2['coords'],
-                    fd_idx, im_idx, common_idx_ens=ci1, common_idx_s2=ci2)
-            else:
-                ranked = scorer.rank_ensemble(
-                    ens, s1['sequence'], s1['coords'], fd_idx, im_idx)
-            m = _coverage_metrics(ranked, s1, s2, ci1, ci2)
+        for label, ens in conditions.items():
+            m = _coverage_metrics(ens, s1, s2, ci1, ci2)
             for k, v in m.items():
                 row[f'{label}_{k}'] = v
 
