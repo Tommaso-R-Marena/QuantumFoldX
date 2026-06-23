@@ -162,12 +162,66 @@ def generate_domain_rigid_body_ensemble(coords: np.ndarray,
     return ensemble
 
 
+def generate_torsion_ensemble(coords: np.ndarray,
+                               phi_psi: List[Tuple[float, float]],
+                               n_conformations: int = 20,
+                               max_delta: float = 15.0,
+                               seed: int = 42) -> List[np.ndarray]:
+    """
+    Generate ensemble by perturbing backbone φ/ψ dihedral angles.
+    
+    Uses a simplified Cα-only reconstruction: each residue is displaced
+    based on cumulative dihedral perturbations along the chain. This captures
+    local backbone flexibility complementary to NMA and rigid-body sampling.
+    """
+    rng = np.random.default_rng(seed)
+    n = len(coords)
+    if n < 4 or not phi_psi or len(phi_psi) != n:
+        return [coords.copy() for _ in range(n_conformations)]
+    
+    ensemble = []
+    for _ in range(n_conformations):
+        new_coords = coords.copy()
+        cumulative_shift = np.zeros(3)
+        
+        for i in range(1, n - 1):
+            phi, psi = phi_psi[i]
+            if np.isnan(phi) or np.isnan(psi):
+                continue
+            
+            dphi = rng.normal(0, max_delta / 3)
+            dpsi = rng.normal(0, max_delta / 3)
+            
+            # Displacement direction from local backbone geometry
+            v1 = new_coords[i] - new_coords[i - 1]
+            v2 = new_coords[i + 1] - new_coords[i]
+            v1_norm = np.linalg.norm(v1)
+            if v1_norm < 1e-6:
+                continue
+            v1 /= v1_norm
+            
+            # Perturbation magnitude scales with dihedral change
+            mag = 0.15 * (abs(dphi) + abs(dpsi)) / 180.0 * 3.8  # ~Cα-Cα distance
+            shift = mag * np.cross(v1, v2 / max(np.linalg.norm(v2), 1e-6))
+            if np.linalg.norm(shift) < 1e-8:
+                shift = mag * rng.normal(size=3)
+            
+            cumulative_shift += shift
+            new_coords[i:] += shift
+        
+        ensemble.append(new_coords)
+    
+    return ensemble
+
+
 def generate_hybrid_ensemble(coords: np.ndarray,
                               sequence: str,
                               fd_indices: List[int] = None,
                               im_indices: List[int] = None,
                               n_conformations: int = 50,
-                              seed: int = 42) -> List[Dict]:
+                              seed: int = 42,
+                              phi_psi: List[Tuple[float, float]] = None,
+                              use_qaoa: bool = False) -> List[Dict]:
     """
     Generate comprehensive ensemble using multiple methods at multiple scales.
     
@@ -176,6 +230,7 @@ def generate_hybrid_ensemble(coords: np.ndarray,
     - NMA perturbations at large amplitude (conformational transitions)
     - Domain rigid-body perturbations at conservative scale
     - Domain rigid-body perturbations at large scale (state transitions)
+    - Torsion angle perturbations (backbone φ/ψ sampling)
     - Include original structure as reference
     
     The multi-scale approach is critical for dual-state coverage:
@@ -195,11 +250,13 @@ def generate_hybrid_ensemble(coords: np.ndarray,
     
     if fd_indices is not None and im_indices is not None:
         # MULTI-SCALE SAMPLING for dual-state exploration
-        # Allocate: 25% conservative NMA, 15% large NMA, 30% conservative RB, 30% large RB
-        n_nma_cons = max(2, n_conformations // 4)
-        n_nma_large = max(2, n_conformations * 15 // 100)
-        n_rb_cons = max(2, n_conformations * 3 // 10)
-        n_rb_large = n_conformations - n_nma_cons - n_nma_large - n_rb_cons - 1
+        # Allocate: 20% conservative NMA, 10% large NMA, 25% conservative RB,
+        #           25% large RB, 20% torsion
+        n_nma_cons = max(2, n_conformations // 5)
+        n_nma_large = max(2, n_conformations // 10)
+        n_rb_cons = max(2, n_conformations // 4)
+        n_rb_large = max(2, n_conformations // 4)
+        n_torsion = max(2, n_conformations - n_nma_cons - n_nma_large - n_rb_cons - n_rb_large - 1)
         
         # Conservative NMA (local backbone flexibility)
         nma_coords = generate_nma_ensemble(
@@ -242,6 +299,17 @@ def generate_hybrid_ensemble(coords: np.ndarray,
                 'method': 'rigid_body_large',
                 'perturbation_id': f'rb_l_{i}'
             })
+        
+        # Torsion angle perturbations
+        if phi_psi:
+            torsion_coords = generate_torsion_ensemble(
+                coords, phi_psi, n_torsion, max_delta=20.0, seed=seed + 3)
+            for i, c in enumerate(torsion_coords):
+                ensemble.append({
+                    'coords': c,
+                    'method': 'torsion',
+                    'perturbation_id': f'tor_{i}'
+                })
     else:
         # No domain info — use NMA only at multiple scales
         n_nma = n_conformations * 2 // 3

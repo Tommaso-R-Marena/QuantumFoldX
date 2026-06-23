@@ -26,6 +26,10 @@ class BenchmarkTarget:
     chain_state2: str = 'A'    # Chain ID in state 2 PDB
     fd_residues: Tuple[int, int] = (0, 0)    # Functional domain residue range (start, end)
     im_residues: Tuple[int, int] = (0, 0)    # Inhibitory module residue range (start, end)
+    res_range_state1: Optional[Tuple[int, int]] = None  # Optional residue filter for state 1
+    res_range_state2: Optional[Tuple[int, int]] = None  # Optional residue filter for state 2
+    model_state1: int = 1      # NMR model number for state 1
+    model_state2: int = 1      # NMR model number for state 2
     category: str = 'autoinhibited'
     species: str = 'Homo sapiens'
     af3_imfd_rmsd: float = None              # Published AF3 imfdRMSD (Å)
@@ -97,12 +101,13 @@ AUTOINHIBITED_BENCHMARK = [
         notes='Major cancer drug target.'
     ),
     BenchmarkTarget(
-        pdb_id_state1='2J0J', pdb_id_state2='2J0J',
+        pdb_id_state1='2J0J', pdb_id_state2='2J0L',
         uniprot_id='Q05397', protein_name='Focal adhesion kinase 1',
         gene_name='PTK2', chain_state1='A', chain_state2='A',
-        fd_residues=(413, 686), im_residues=(1, 396),
+        fd_residues=(411, 686), im_residues=(30, 405),
+        res_range_state2=(411, 686),
         af3_imfd_rmsd=5.3,
-        notes='Large FERM-kinase domain motion; ~30Å displacement.'
+        notes='Autoinhibited FERM-kinase (2J0J) vs active kinase domain (2J0L, Lietha 2007).'
     ),
     BenchmarkTarget(
         pdb_id_state1='1BG1', pdb_id_state2='3CWG',
@@ -121,12 +126,13 @@ AUTOINHIBITED_BENCHMARK = [
         notes='AdoMet-allosteric; 25Å domain displacement.'
     ),
     BenchmarkTarget(
-        pdb_id_state1='1EJ5', pdb_id_state2='2A3Z',
+        pdb_id_state1='1EJ5', pdb_id_state2='1CEE',
         uniprot_id='P42768', protein_name='WASP',
-        gene_name='WAS', chain_state1='A', chain_state2='A',
-        fd_residues=(201, 321), im_residues=(230, 310),
+        gene_name='WAS', chain_state1='A', chain_state2='B',
+        fd_residues=(1, 59), im_residues=(60, 107),
+        model_state1=1, model_state2=1,
         af3_imfd_rmsd=5.1,
-        notes='Actin polymerization regulator.'
+        notes='Autoinhibited GBD (1EJ5) vs Cdc42-bound active GBD (1CEE chain B, Kim 2000).'
     ),
     BenchmarkTarget(
         pdb_id_state1='4MNE', pdb_id_state2='4XV2',
@@ -171,6 +177,125 @@ AUTOINHIBITED_BENCHMARK = [
 ]
 
 
+# =====================================================================
+# BENCHMARK SET 2: Fold-Switching Proteins (from Ronish et al. 2024)
+# =====================================================================
+# Representative subset of the 92 fold-switching proteins benchmark.
+# AF3 success rate on full set: 7.6% (7/92).
+
+FOLDSWITCH_BENCHMARK = [
+    BenchmarkTarget(
+        pdb_id_state1='5JYT', pdb_id_state2='5JYV',
+        uniprot_id='P74677', protein_name='Circadian clock protein KaiB',
+        gene_name='KAI_B', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 50), im_residues=(51, 92),
+        category='foldswitch',
+        species='Synechococcus elongatus',
+        notes='Classic fold-switcher: ground state vs fold-switched state.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1J8I', pdb_id_state2='1E8O',
+        uniprot_id='P47992', protein_name='Lymphotactin',
+        gene_name='XCL1', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 35), im_residues=(36, 68),
+        category='foldswitch',
+        notes='Chemokine fold-switch: beta-sheet vs alpha-helix.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='2OUG', pdb_id_state2='2LCL',
+        uniprot_id='P0A8E7', protein_name='Transcription antiterminator RfaH',
+        gene_name='RFAH', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 95), im_residues=(96, 162),
+        category='foldswitch',
+        species='Escherichia coli',
+        notes='All-alpha vs all-beta fold switch.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1DUJ', pdb_id_state2='2V64',
+        uniprot_id='Q13257', protein_name='Mitotic checkpoint protein Mad2',
+        gene_name='MAD2', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 100), im_residues=(101, 205),
+        category='foldswitch',
+        notes='Open vs closed Mad2 conformations.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1EX5', pdb_id_state2='1ETF',
+        uniprot_id='P04608', protein_name='HIV-1 Rev',
+        gene_name='REV', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 40), im_residues=(41, 85),
+        category='foldswitch',
+        species='Human immunodeficiency virus 1',
+        notes='Monomer vs dimer fold-switching RNA-binding protein.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='2K0E', pdb_id_state2='2K0F',
+        uniprot_id='P69905', protein_name='Hemoglobin subunit alpha',
+        gene_name='HBA1', chain_state1='A', chain_state2='A',
+        fd_residues=(1, 70), im_residues=(71, 141),
+        category='foldswitch',
+        notes='Tense vs relaxed hemoglobin states.'
+    ),
+]
+
+
+# =====================================================================
+# BENCHMARK SET 3: Multi-State Proteins (from M-SADA, Peng et al. 2025)
+# =====================================================================
+# Representative dual-state pairs from the M-SADA benchmark.
+# AF3 both-states-correct rate: 23.3% (60 protein pairs).
+
+MULTISTATE_BENCHMARK = [
+    BenchmarkTarget(
+        pdb_id_state1='1ATP', pdb_id_state2='3B6F',
+        uniprot_id='P00519', protein_name='Tyrosine-protein kinase ABL1',
+        gene_name='ABL1_MS', chain_state1='A', chain_state2='A',
+        fd_residues=(230, 490), im_residues=(1, 120),
+        category='multistate',
+        notes='M-SADA: ABL1 inactive vs active kinase.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='3LVP', pdb_id_state2='3LVO',
+        uniprot_id='P00533', protein_name='Epidermal growth factor receptor',
+        gene_name='EGFR_MS', chain_state1='A', chain_state2='A',
+        fd_residues=(696, 960), im_residues=(1, 310),
+        category='multistate',
+        notes='M-SADA: EGFR inactive vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='4HJO', pdb_id_state2='4HJP',
+        uniprot_id='P15056', protein_name='B-Raf kinase',
+        gene_name='BRAF_MS', chain_state1='A', chain_state2='A',
+        fd_residues=(457, 717), im_residues=(150, 280),
+        category='multistate',
+        notes='M-SADA: BRAF autoinhibited vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='1JWO', pdb_id_state2='1JW1',
+        uniprot_id='P06213', protein_name='Insulin receptor',
+        gene_name='INSR', chain_state1='A', chain_state2='A',
+        fd_residues=(960, 1300), im_residues=(1, 300),
+        category='multistate',
+        notes='M-SADA: insulin receptor inactive vs active.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='3PXQ', pdb_id_state2='3PXF',
+        uniprot_id='P07949', protein_name='Proto-oncogene tyrosine-protein kinase Ret',
+        gene_name='RET', chain_state1='A', chain_state2='A',
+        fd_residues=(830, 1110), im_residues=(1, 200),
+        category='multistate',
+        notes='M-SADA: RET inactive vs active kinase.'
+    ),
+    BenchmarkTarget(
+        pdb_id_state1='2SRC', pdb_id_state2='1Y57',
+        uniprot_id='P12931', protein_name='Proto-oncogene tyrosine-protein kinase Src',
+        gene_name='SRC_MS', chain_state1='A', chain_state2='A',
+        fd_residues=(260, 520), im_residues=(87, 146),
+        category='multistate',
+        notes='M-SADA: Src autoinhibited vs active.'
+    ),
+]
+
+
 # Published AF3 aggregate performance on autoinhibited proteins
 # From Papageorgiou et al. 2025, Communications Chemistry
 AF3_AUTOINHIBITED_PERFORMANCE = {
@@ -206,6 +331,21 @@ AF3_FOLDSWITCH_PERFORMANCE = {
 def get_autoinhibited_benchmark():
     """Return the full autoinhibited protein benchmark set."""
     return AUTOINHIBITED_BENCHMARK
+
+
+def get_foldswitch_benchmark():
+    """Return fold-switching protein benchmark subset."""
+    return FOLDSWITCH_BENCHMARK
+
+
+def get_multistate_benchmark():
+    """Return multi-state protein benchmark subset."""
+    return MULTISTATE_BENCHMARK
+
+
+def get_all_benchmarks():
+    """Return all benchmark targets across categories."""
+    return AUTOINHIBITED_BENCHMARK + FOLDSWITCH_BENCHMARK + MULTISTATE_BENCHMARK
 
 
 def get_af3_baseline():
