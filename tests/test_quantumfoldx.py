@@ -8,20 +8,26 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.data.pdb_fetcher import (
-    fetch_pdb, parse_pdb_ca_coords, compute_contact_map, compute_phi_psi
+    fetch_pdb, parse_pdb_ca_coords, parse_pdb_ca_coords_best_chain,
+    list_pdb_chains, compute_contact_map, compute_phi_psi,
 )
 from src.ensemble.conformational_sampler import (
-    generate_nma_ensemble, generate_torsion_ensemble, generate_hybrid_ensemble
+    generate_nma_ensemble, generate_torsion_ensemble, generate_hybrid_ensemble,
+    generate_manifold_bridge_ensemble,
 )
 from src.metrics.structural_metrics import rmsd, tm_score, imfd_rmsd
 from src.quantum.ising_vqe import build_ising_hamiltonian, IsingVQESolver
 from src.quantum.qaoa_rotamer import build_rotamer_qubo, QAOARotamerOptimizer
 from src.scoring.qicess_v2 import QICESSv2Scorer, ramachandran_score
-from src.scoring.qicess_v3 import QICESSv3Scorer
+from src.scoring.qicess_v3 import QICESSv3Scorer, create_dsib_scorer
+from src.scoring.geometry_utils import (
+    state2_imfd_score, state2_aligned_tm_score,
+    interpolate_coords_on_common, common_residue_pairs,
+)
 from src.quantum.exact_ising import IsingModel, IsingTerm, exact_ground_state, interpolate_ising
 from src.quantum.dual_state_ising import (
     build_dual_state_bridge, contacts_to_bitstring, manifold_overlap_score,
-    select_shared_contact_qubits,
+    select_shared_contact_qubits, compute_transition_complexity,
 )
 from configs.benchmark_dataset import (
     get_autoinhibited_benchmark, get_foldswitch_benchmark,
@@ -38,6 +44,14 @@ class TestPDBFetcher:
         assert struct is not None
         assert struct['n_residues'] > 100
         assert len(struct['sequence']) == struct['n_residues']
+
+    def test_best_chain_fallback(self):
+        path = fetch_pdb('2HYY')
+        chains = list_pdb_chains(path)
+        assert len(chains) >= 1
+        struct = parse_pdb_ca_coords_best_chain(path, preferred_chain='Z')
+        assert struct is not None
+        assert struct['n_residues'] > 100
 
     def test_nmr_model_parsing(self):
         path = fetch_pdb('1EJ5')
@@ -81,6 +95,23 @@ class TestEnsemble:
         assert 'quantum_bridge' in methods
         assert 'original' in methods
         assert len(ens) >= 20
+
+    def test_manifold_bridge_ensemble(self):
+        n = 40
+        coords1 = np.random.randn(n, 3) * 10
+        coords2 = coords1 + np.random.randn(n, 3) * 3
+        seq = 'A' * n
+        cm1 = compute_contact_map(coords1)
+        cm2 = compute_contact_map(coords2)
+        bridge = build_dual_state_bridge(seq, cm1, cm2, max_qubits=10)
+        ens = generate_manifold_bridge_ensemble(coords1, coords2, bridge, n_conformations=4)
+        assert len(ens) >= 1
+        assert ens[0].shape == coords1.shape
+
+    def test_create_dsib_scorer(self):
+        scorer = create_dsib_scorer()
+        assert scorer.max_qubits == 20
+        assert len(scorer.lambda_path) == 9
 
 
 class TestMetrics:
@@ -179,8 +210,52 @@ class TestDualStateBridge:
         H_mid = interpolate_ising(H1, H2, 0.5)
         assert H_mid.n_qubits == 3
 
+    def test_transition_complexity(self):
+        n = 40
+        seq = 'A' * n
+        coords1 = np.random.randn(n, 3) * 10
+        coords2 = coords1 + np.random.randn(n, 3) * 3
+        cm1 = compute_contact_map(coords1)
+        cm2 = compute_contact_map(coords2)
+        bridge = build_dual_state_bridge(
+            seq, cm1, cm2,
+            fd_indices=list(range(20)), im_indices=list(range(20, 40)),
+            max_qubits=12,
+        )
+        tci = compute_transition_complexity(bridge)
+        assert 0.0 <= tci['tci'] <= 1.0
+        assert tci['n_switch'] >= 0
+
+
+class TestGeometryUtils:
+    def test_common_residue_interpolation(self):
+        s1 = np.random.randn(50, 3)
+        s2 = np.random.randn(30, 3)
+        ci1 = list(range(10, 40))
+        ci2 = list(range(0, 30))
+        blended = interpolate_coords_on_common(s1, s2, 0.5, ci1, ci2)
+        assert blended.shape == s1.shape
+        pairs = common_residue_pairs(ci1, ci2, len(s1), len(s2))
+        i, j = pairs[0]
+        expected = 0.5 * s1[i] + 0.5 * s2[j]
+        assert np.allclose(blended[i], expected)
+
 
 class TestQICESSv3:
+    def test_state2_geometry_score(self):
+        n = 30
+        c1 = np.random.randn(n, 3) * 10
+        c2 = c1 + np.random.randn(n, 3) * 0.5
+        score = state2_aligned_tm_score(c2, c1, list(range(15)), list(range(n)), list(range(n)))
+        assert 0.0 <= score <= 1.0
+
+    def test_state2_imfd_score(self):
+        n = 30
+        c1 = np.random.randn(n, 3) * 10
+        c2 = c1 + np.random.randn(n, 3) * 0.5
+        score = state2_imfd_score(c2, c1, list(range(15)), list(range(15, 30)))
+        assert 0.0 <= score <= 1.0
+
     def test_v3_ranking_dual_state(self):
         n = 35
         coords1 = np.random.randn(n, 3) * 10
@@ -205,6 +280,7 @@ class TestQICESSv3:
         assert ranked[0]['rank'] == 1
         assert 'manifold_overlap' in ranked[0]
         assert 'state2_target' in ranked[0]
+        assert 'state2_geometry' in ranked[0]
         assert ranked[0]['n_qubits'] > 0
 
 
@@ -241,13 +317,16 @@ class TestBenchmarkDataset:
             )
 
     def test_autoinhibited_count(self):
-        assert len(get_autoinhibited_benchmark()) == 16
+        assert len(get_autoinhibited_benchmark()) == 24
 
     def test_foldswitch_count(self):
-        assert len(get_foldswitch_benchmark()) == 6
+        assert len(get_foldswitch_benchmark()) == 12
 
     def test_multistate_count(self):
-        assert len(get_multistate_benchmark()) == 6
+        assert len(get_multistate_benchmark()) == 13
+
+    def test_all_benchmarks_count(self):
+        assert len(get_all_benchmarks()) == 49
 
     def test_ptk2_was_parse(self):
         targets = {t.gene_name: t for t in get_autoinhibited_benchmark()}

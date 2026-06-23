@@ -39,6 +39,8 @@ def generate_quantum_bridge_ensemble(
     motion_hint: Dict,
     n_conformations: int = 15,
     seed: int = 42,
+    common_idx_s1: Optional[List[int]] = None,
+    common_idx_s2: Optional[List[int]] = None,
 ) -> List[np.ndarray]:
     """
     Generate conformations along the quantum-identified conformational bridge.
@@ -59,14 +61,16 @@ def generate_quantum_bridge_ensemble(
     d2_coords = coords_s1[domain2_indices].copy()
     d2_center = d2_coords.mean(axis=0)
 
-    # Linear interpolation between state 1 and state 2 (gold standard bridge)
+    from ..scoring.geometry_utils import interpolate_coords_on_common
+
+    # Linear interpolation on common residues (handles different chain lengths)
     n_interp = max(2, n_conformations // 3)
-    common_n = min(len(coords_s1), len(coords_s2))
     for t_idx in range(n_interp):
         alpha = (t_idx + 1) / (n_interp + 1)
-        blended = coords_s1.copy()
-        for i in range(common_n):
-            blended[i] = (1 - alpha) * coords_s1[i] + alpha * coords_s2[i]
+        blended = interpolate_coords_on_common(
+            coords_s1, coords_s2, alpha,
+            common_idx_s1, common_idx_s2,
+        )
         ensemble.append(blended)
 
     # Targeted rigid-body motions along switch-contact direction
@@ -103,6 +107,8 @@ def generate_switch_guided_ensemble(
     bridge,
     n_conformations: int = 10,
     seed: int = 42,
+    common_idx_s1: Optional[List[int]] = None,
+    common_idx_s2: Optional[List[int]] = None,
 ) -> List[np.ndarray]:
     """
     Generate conformations biased toward flipping switch contacts to state 2.
@@ -113,11 +119,53 @@ def generate_switch_guided_ensemble(
 
     motion = estimate_domain_motion_from_switches(
         bridge, coords, coords_s2, domain1_indices, domain2_indices,
+        common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2,
     )
     return generate_quantum_bridge_ensemble(
         coords, coords_s2, domain1_indices, domain2_indices,
         motion, n_conformations=n_conformations, seed=seed,
+        common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2,
     )
+
+
+def generate_manifold_bridge_ensemble(
+    coords_s1: np.ndarray,
+    coords_s2: np.ndarray,
+    bridge,
+    n_conformations: int = 8,
+    seed: int = 42,
+    common_idx_s1: Optional[List[int]] = None,
+    common_idx_s2: Optional[List[int]] = None,
+) -> List[np.ndarray]:
+    """
+    Generate conformations at λ values suggested by the DSIB low-energy manifold.
+
+    Each manifold state encodes a contact pattern observed at specific λ values
+    along H(λ); we map those back to geometric interpolants on common residues.
+    """
+    from ..scoring.geometry_utils import interpolate_coords_on_common
+
+    if bridge is None or not getattr(bridge, 'low_energy_manifold', None):
+        return []
+
+    rng = np.random.default_rng(seed)
+    ranked = sorted(
+        bridge.low_energy_manifold,
+        key=lambda m: (-m.get('lambda_coverage', 0.0), -m.get('boltzmann_weight', 0.0)),
+    )
+
+    ensemble = []
+    for state in ranked[:n_conformations]:
+        lams = state.get('lambdas', [0.5])
+        lam = float(np.clip(np.mean(lams), 0.05, 0.95))
+        blended = interpolate_coords_on_common(
+            coords_s1, coords_s2, lam,
+            common_idx_s1, common_idx_s2,
+        )
+        noise = rng.normal(0, 0.15, blended.shape)
+        ensemble.append(blended + noise)
+
+    return ensemble
 
 
 def generate_nma_ensemble(coords: np.ndarray, n_conformations: int = 20,
@@ -323,7 +371,10 @@ def generate_hybrid_ensemble(coords: np.ndarray,
                               phi_psi: List[Tuple[float, float]] = None,
                               use_qaoa: bool = False,
                               coords_s2: np.ndarray = None,
-                              quantum_bridge=None) -> List[Dict]:
+                              quantum_bridge=None,
+                              transition_difficulty: float = 0.0,
+                              common_idx_s1: Optional[List[int]] = None,
+                              common_idx_s2: Optional[List[int]] = None) -> List[Dict]:
     """
     Generate comprehensive ensemble using multiple methods at multiple scales.
     
@@ -413,32 +464,58 @@ def generate_hybrid_ensemble(coords: np.ndarray,
                     'perturbation_id': f'tor_{i}'
                 })
 
-        # Quantum bridge conformations (dual-state guided)
+        # Bridge conformations: scale with transition difficulty and TCI
         if coords_s2 is not None:
-            n_bridge = max(3, n_conformations // 5)
+            tci_val = 0.0
+            if quantum_bridge is not None:
+                from ..quantum.dual_state_ising import compute_transition_complexity
+                tci_val = compute_transition_complexity(quantum_bridge).get('tci', 0.0)
+            base_frac = 0.20 + 0.20 * float(np.clip(transition_difficulty, 0.0, 1.0))
+            base_frac += 0.10 * float(np.clip(tci_val, 0.0, 1.0))
+            n_bridge = max(6, int(n_conformations * base_frac))
+            n_manifold = max(3, n_bridge // 3)
+
             if quantum_bridge is not None:
                 bridge_coords = generate_switch_guided_ensemble(
                     coords, coords_s2, fd_indices, im_indices,
-                    quantum_bridge, n_conformations=n_bridge, seed=seed + 20)
+                    quantum_bridge, n_conformations=n_bridge, seed=seed + 20,
+                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2)
+                manifold_coords = generate_manifold_bridge_ensemble(
+                    coords, coords_s2, quantum_bridge,
+                    n_conformations=n_manifold, seed=seed + 30,
+                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2,
+                )
             else:
                 from ..quantum.dual_state_ising import (
                     build_dual_state_bridge, estimate_domain_motion_from_switches,
                 )
-                from ..data.pdb_fetcher import compute_contact_map
                 cm1 = compute_contact_map(coords, threshold=8.0)
                 cm2 = compute_contact_map(coords_s2, threshold=8.0)
                 bridge = build_dual_state_bridge(
-                    sequence, cm1, cm2, fd_indices, im_indices, max_qubits=18)
+                    sequence, cm1, cm2, fd_indices, im_indices, max_qubits=20)
                 motion = estimate_domain_motion_from_switches(
-                    bridge, coords, coords_s2, fd_indices, im_indices)
+                    bridge, coords, coords_s2, fd_indices, im_indices,
+                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2)
                 bridge_coords = generate_quantum_bridge_ensemble(
                     coords, coords_s2, fd_indices, im_indices,
-                    motion, n_conformations=n_bridge, seed=seed + 20)
+                    motion, n_conformations=n_bridge, seed=seed + 20,
+                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2)
+                manifold_coords = generate_manifold_bridge_ensemble(
+                    coords, coords_s2, bridge,
+                    n_conformations=n_manifold, seed=seed + 30,
+                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2,
+                )
             for i, c in enumerate(bridge_coords):
                 ensemble.append({
                     'coords': c,
                     'method': 'quantum_bridge',
                     'perturbation_id': f'qbridge_{i}'
+                })
+            for i, c in enumerate(manifold_coords):
+                ensemble.append({
+                    'coords': c,
+                    'method': 'manifold_bridge',
+                    'perturbation_id': f'mbridge_{i}'
                 })
     else:
         # No domain info — use NMA only at multiple scales

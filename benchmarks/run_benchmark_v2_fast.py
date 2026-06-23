@@ -16,9 +16,7 @@ from datetime import datetime
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.scoring.qicess_v2 import QICESSv2Scorer
-from configs.benchmark_dataset import get_autoinhibited_benchmark, get_af3_baseline
-from benchmarks.benchmark_utils import process_single_target, run_dual_state_stats
+from src.scoring.qicess_v3 import create_dsib_scorer
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 logger = logging.getLogger(__name__)
@@ -34,7 +32,7 @@ def main():
     logger.info("QuantumFoldX v2 — Dual-State Coverage Benchmark (Fast)")
     logger.info("="*80)
     
-    scorer = QICESSv3Scorer()
+    scorer = create_dsib_scorer()
     targets = get_autoinhibited_benchmark()
     af3_base = get_af3_baseline()
     

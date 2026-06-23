@@ -28,7 +28,7 @@ from datetime import datetime
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.scoring.qicess_v3 import QICESSv3Scorer
+from src.scoring.qicess_v3 import create_dsib_scorer
 from configs.benchmark_dataset import (
     get_autoinhibited_benchmark, get_foldswitch_benchmark,
     get_multistate_benchmark, get_af3_baseline
@@ -184,7 +184,7 @@ def main():
     logger.info("=" * 80)
     logger.info(f"Scorer: QICESS v3 (exact Ising enumeration, dual-state bridge)")
 
-    scorer = QICESSv3Scorer()
+    scorer = create_dsib_scorer()
     af3_base = get_af3_baseline()
     all_stats = {}
     total_start = time.time()

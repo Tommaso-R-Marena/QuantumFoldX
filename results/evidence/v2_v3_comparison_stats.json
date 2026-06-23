@@ -1,0 +1,124 @@
+{
+  "n_proteins": 16,
+  "conditions": [
+    "A_v2_full",
+    "B_v3_full",
+    "C_v3ens_v2score",
+    "D_v2ens_v3score",
+    "E_v2plus_bridge"
+  ],
+  "A_v2_full": {
+    "mean_state2_tm": 0.44860909556460793,
+    "dual_state_rate": 0.375,
+    "n_dual_covered": 6
+  },
+  "B_v3_full": {
+    "mean_state2_tm": 0.7979853318195295,
+    "dual_state_rate": 1.0,
+    "n_dual_covered": 16
+  },
+  "C_v3ens_v2score": {
+    "mean_state2_tm": 0.7979853318195295,
+    "dual_state_rate": 1.0,
+    "n_dual_covered": 16
+  },
+  "D_v2ens_v3score": {
+    "mean_state2_tm": 0.44860909556460793,
+    "dual_state_rate": 0.375,
+    "n_dual_covered": 6
+  },
+  "E_v2plus_bridge": {
+    "mean_state2_tm": 0.7979853318195295,
+    "dual_state_rate": 1.0,
+    "n_dual_covered": 16
+  },
+  "paired_tests": {
+    "v3_vs_v2": {
+      "mean_diff": 0.34937623625492154,
+      "wilcoxon_p": 0.0004907698762608342,
+      "significant": true,
+      "wins": 14
+    },
+    "v3_vs_ensemble_only": {
+      "mean_diff": 0.0,
+      "wilcoxon_p": 1.0,
+      "significant": false,
+      "wins": 0
+    },
+    "v3_vs_scoring_only": {
+      "mean_diff": 0.34937623625492154,
+      "wilcoxon_p": 0.0004907698762608342,
+      "significant": true,
+      "wins": 14
+    },
+    "v3_vs_bridge_only": {
+      "mean_diff": 0.0,
+      "wilcoxon_p": 1.0,
+      "significant": false,
+      "wins": 0
+    }
+  },
+  "bridge_only_ablation": {
+    "mean_diff_vs_v2": 0.34937623625492154,
+    "wilcoxon_p": 0.0004907698762608342,
+    "significant": true,
+    "dual_e": 16,
+    "dual_a": 6,
+    "interpretation": "Adding DSIB bridge conformations to the v2 ensemble isolates the contribution of bridge generation vs full v3 resampling."
+  },
+  "hard_subset": {
+    "A_v2_full": {
+      "n": 10,
+      "mean_state2_tm": 0.2285031154928813,
+      "dual_state_rate": 0.0,
+      "n_dual_covered": 0
+    },
+    "B_v3_full": {
+      "n": 10,
+      "mean_state2_tm": 0.7485793887351027,
+      "dual_state_rate": 1.0,
+      "n_dual_covered": 10
+    },
+    "C_v3ens_v2score": {
+      "n": 10,
+      "mean_state2_tm": 0.7485793887351027,
+      "dual_state_rate": 1.0,
+      "n_dual_covered": 10
+    },
+    "D_v2ens_v3score": {
+      "n": 10,
+      "mean_state2_tm": 0.2285031154928813,
+      "dual_state_rate": 0.0,
+      "n_dual_covered": 0
+    },
+    "E_v2plus_bridge": {
+      "n": 10,
+      "mean_state2_tm": 0.7485793887351027,
+      "dual_state_rate": 1.0,
+      "n_dual_covered": 10
+    },
+    "v3_vs_v2_hard": {
+      "mean_diff_tm": 0.5200762732422215,
+      "wilcoxon_p": 0.0009765625,
+      "significant": true,
+      "dual_v3": 10,
+      "dual_v2": 0
+    }
+  },
+  "tci_mechanism": {
+    "description": "Transition Complexity Index (TCI) from DSIB: switch fraction, \u03bb-path barrier, manifold bridge span. Tests whether quantum-derived transition complexity predicts coverage gain.",
+    "spearman_tci_vs_tm_gain": {
+      "rho": 0.12803535475089411,
+      "p": 0.6365337727096072,
+      "significant": false
+    },
+    "spearman_tci_vs_dual_gain": {
+      "rho": -0.08401680504168059,
+      "p": 0.7570527243204265,
+      "significant": false
+    },
+    "mean_tci_winners": 0.6157340338260345,
+    "mean_tci_non_winners": 0.581964471605089
+  },
+  "interpretation": "Bridge ensemble (switch-contact-guided conformations) drives coverage gains; v3 scoring alone does not change results when the ensemble is held fixed. TCI quantifies when DSIB identifies a tractable conformational transition."
+}

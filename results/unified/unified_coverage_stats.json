@@ -1,0 +1,106 @@
+{
+  "n_proteins": 48,
+  "categories": {
+    "autoinhibited": {
+      "n": 24,
+      "A_v2_full": {
+        "mean_state2_tm": 0.3407030800081341,
+        "dual_state_rate": 0.25,
+        "n_dual_covered": 6
+      },
+      "B_v3_full": {
+        "mean_state2_tm": 0.9032594498226542,
+        "dual_state_rate": 1.0,
+        "n_dual_covered": 24
+      },
+      "E_v2plus_bridge": {
+        "mean_state2_tm": 0.9032594498226542,
+        "dual_state_rate": 1.0,
+        "n_dual_covered": 24
+      },
+      "v3_vs_v2": {
+        "mean_diff": 0.5625563698145201,
+        "wilcoxon_p": 1.3507974243552756e-05,
+        "significant": true
+      }
+    },
+    "foldswitch": {
+      "n": 12,
+      "A_v2_full": {
+        "mean_state2_tm": 0.2502085078005523,
+        "dual_state_rate": 0.08333333333333333,
+        "n_dual_covered": 1
+      },
+      "B_v3_full": {
+        "mean_state2_tm": 0.7957948482800153,
+        "dual_state_rate": 0.9166666666666666,
+        "n_dual_covered": 11
+      },
+      "E_v2plus_bridge": {
+        "mean_state2_tm": 0.7957948482800153,
+        "dual_state_rate": 0.9166666666666666,
+        "n_dual_covered": 11
+      },
+      "v3_vs_v2": {
+        "mean_diff": 0.5455863404794629,
+        "wilcoxon_p": 0.000244140625,
+        "significant": true
+      }
+    },
+    "multistate": {
+      "n": 12,
+      "A_v2_full": {
+        "mean_state2_tm": 0.39205413763564456,
+        "dual_state_rate": 0.3333333333333333,
+        "n_dual_covered": 4
+      },
+      "B_v3_full": {
+        "mean_state2_tm": 0.9157058086870383,
+        "dual_state_rate": 1.0,
+        "n_dual_covered": 12
+      },
+      "E_v2plus_bridge": {
+        "mean_state2_tm": 0.9157058086870383,
+        "dual_state_rate": 1.0,
+        "n_dual_covered": 12
+      },
+      "v3_vs_v2": {
+        "mean_diff": 0.5236516710513938,
+        "wilcoxon_p": 0.00048828125,
+        "significant": true
+      }
+    }
+  },
+  "combined": {
+    "n": 48,
+    "A_v2_full": {
+      "mean_state2_tm": 0.3309172013631163,
+      "dual_state_rate": 0.22916666666666666,
+      "n_dual_covered": 11
+    },
+    "B_v3_full": {
+      "mean_state2_tm": 0.8795048891530906,
+      "dual_state_rate": 0.9791666666666666,
+      "n_dual_covered": 47
+    },
+    "E_v2plus_bridge": {
+      "mean_state2_tm": 0.8795048891530906,
+      "dual_state_rate": 0.9791666666666666,
+      "n_dual_covered": 47
+    },
+    "v3_vs_v2": {
+      "mean_diff": 0.5485876877899742,
+      "wilcoxon_p": 1.7610045767555523e-09,
+      "significant": true
+    },
+    "af3_weighted_mean_rate": 0.1496666666666667,
+    "p_vs_af3_weighted": 6.971064197003385e-38,
+    "hard_subset": {
+      "n": 37,
+      "v2_dual": 0,
+      "v3_dual": 36,
+      "v3_mean_tm": 0.8544714015212806,
+      "v2_mean_tm": 0.1780357689550617
+    }
+  }
+}
