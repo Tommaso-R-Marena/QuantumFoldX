@@ -1,0 +1,51 @@
+{
+  "n_proteins": 16,
+  "methods": [
+    "QICESS-v3",
+    "QICESS-v2",
+    "QICESS-Exact",
+    "Classical-MJ",
+    "No-Quantum",
+    "Random"
+  ],
+  "QICESS-v3": {
+    "top10_mean_tm": {
+      "mean": 0.2971518112240461,
+      "std": 0.2046577127810297
+    }
+  },
+  "QICESS-v2": {
+    "top10_mean_tm": {
+      "mean": 0.3386311137943644,
+      "std": 0.30311469671852287
+    }
+  },
+  "QICESS-Exact": {
+    "top10_mean_tm": {
+      "mean": 0.3342261648601215,
+      "std": 0.2983688091411285
+    }
+  },
+  "Classical-MJ": {
+    "top10_mean_tm": {
+      "mean": 0.2989156999674064,
+      "std": 0.20065382372862206
+    }
+  },
+  "No-Quantum": {
+    "top10_mean_tm": {
+      "mean": 0.28580830361249,
+      "std": 0.22810705310738089
+    }
+  },
+  "Random": {
+    "top10_mean_tm": {
+      "mean": 0.3562121201256604,
+      "std": 0.32710406783612744
+    }
+  },
+  "paired_tests": {
+    "v3_vs_QICESS-v2": {
+      "mean_diff": -0.04147930257031826,
+      "wilcoxon_p": 0.5898599509502481,
+      "significant": 

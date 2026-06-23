@@ -28,7 +28,7 @@ from datetime import datetime
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.scoring.qicess_v2 import QICESSv2Scorer
+from src.scoring.qicess_v3 import QICESSv3Scorer
 from configs.benchmark_dataset import (
     get_autoinhibited_benchmark, get_foldswitch_benchmark,
     get_multistate_benchmark, get_af3_baseline
@@ -67,7 +67,7 @@ BENCHMARK_CONFIGS = {
 }
 
 
-def run_benchmark_suite(name: str, config: dict, scorer: QICESSv2Scorer,
+def run_benchmark_suite(name: str, config: dict, scorer: QICESSv3Scorer,
                         af3_base: dict, resume: bool = True) -> tuple:
     """Run a single benchmark category with incremental saves."""
     targets = config['getter']()
@@ -180,14 +180,11 @@ def main():
     vqe_restarts = 1 if args.quick else 2
 
     logger.info("=" * 80)
-    logger.info("QuantumFoldX — FULL BENCHMARK SUITE")
+    logger.info("QuantumFoldX v3 — FULL BENCHMARK SUITE (Dual-State Quantum Bridge)")
     logger.info("=" * 80)
-    logger.info(f"VQE: {vqe_restarts} restarts, {vqe_steps} steps | QAOA: enabled")
+    logger.info(f"Scorer: QICESS v3 (exact Ising enumeration, dual-state bridge)")
 
-    scorer = QICESSv2Scorer(
-        vqe_layers=3, vqe_restarts=vqe_restarts, vqe_steps=vqe_steps,
-        use_qaoa=True, qaoa_layers=3
-    )
+    scorer = QICESSv3Scorer()
     af3_base = get_af3_baseline()
     all_stats = {}
     total_start = time.time()
@@ -226,7 +223,7 @@ def main():
         'suites': all_stats,
         'total_time_s': total_time,
         'timestamp': datetime.now().isoformat(),
-        'config': {'vqe_steps': vqe_steps, 'vqe_restarts': vqe_restarts, 'qaoa': True},
+        'config': {'scorer': 'QICESS-v3', 'dual_state_bridge': True},
     }
     with open(RESULTS_DIR / 'stats' / 'full_benchmark_summary.json', 'w') as f:
         json.dump(summary, f, indent=2, default=str)
