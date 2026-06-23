@@ -8,7 +8,9 @@ import numpy as np
 from scipy import stats as scipy_stats
 from typing import Dict, List, Optional, Tuple
 
-from src.data.pdb_fetcher import fetch_pdb, parse_pdb_ca_coords, compute_phi_psi
+from src.data.pdb_fetcher import (
+    fetch_pdb, parse_pdb_ca_coords, parse_pdb_ca_coords_best_chain, compute_phi_psi,
+)
 from src.scoring.qicess_v3 import QICESSv3Scorer
 from src.ensemble.conformational_sampler import generate_hybrid_ensemble
 from src.metrics.structural_metrics import rmsd, tm_score, gdt_ts
@@ -42,14 +44,10 @@ def parse_target_structures(target) -> Tuple[Optional[Dict], Optional[Dict], str
     m1 = getattr(target, 'model_state1', 1)
     m2 = getattr(target, 'model_state2', 1)
 
-    s1 = parse_pdb_ca_coords(pdb1, chain=target.chain_state1,
-                             res_range=rr1, model=m1)
-    if s1 is None:
-        s1 = parse_pdb_ca_coords(pdb1, chain=None, res_range=rr1, model=m1)
-    s2 = parse_pdb_ca_coords(pdb2, chain=target.chain_state2,
-                             res_range=rr2, model=m2)
-    if s2 is None:
-        s2 = parse_pdb_ca_coords(pdb2, chain=None, res_range=rr2, model=m2)
+    s1 = parse_pdb_ca_coords_best_chain(
+        pdb1, preferred_chain=target.chain_state1, res_range=rr1, model=m1)
+    s2 = parse_pdb_ca_coords_best_chain(
+        pdb2, preferred_chain=target.chain_state2, res_range=rr2, model=m2)
 
     if s1 is None or s2 is None:
         return None, None, 'parse_failed'
@@ -248,6 +246,7 @@ def process_single_target(target, scorer: QICESSv3Scorer = None,
         result['qicess_manifold_overlap'] = best.get('manifold_overlap', 0.0)
         result['qicess_state2_target'] = best.get('state2_target', 0.0)
         result['qicess_switch_satisfaction'] = best.get('switch_satisfaction', 0.0)
+        result['qicess_state2_geometry'] = best.get('state2_geometry', 0.0)
     else:
         result['qicess_quantum_energy'] = best.get('quantum_energy_raw', 0.0)
         result['qicess_qaoa_score'] = best.get('qaoa_rotamer', 0.0)

@@ -1,26 +1,17 @@
 """
 dual_state_ising.py — Dual-State Ising Hamiltonian Bridge (DSIB)
 
-Novel quantum-inspired formulation for conformational state coverage:
+Builds two Ising Hamiltonians — H₁ from state 1 contacts and H₂ from state 2
+contacts — on a shared qubit basis encoding inter-domain contact patterns.
 
-Instead of optimizing contacts from a single reference structure (which
-collapses the landscape to one basin), we build TWO Ising Hamiltonians —
-H₁ from state 1 contacts, H₂ from state 2 contacts — on a shared qubit
-basis encoding inter-domain contact patterns.
-
-The interpolated Hamiltonian H(λ) = (1-λ)H₁ + λH₂ defines a quantum
-conformational bridge: ground states at λ≈0 resemble state 1, at λ≈1
-resemble state 2, and intermediate λ values capture transition contacts.
-
-Low-energy states across the λ-path form a manifold M used to:
-  1. Score ensemble members by Born-rule overlap with M
-  2. Identify "switch contacts" (qubits flipping between H₁ and H₂ optima)
+The interpolated Hamiltonian H(λ) = (1-λ)H₁ + λH₂ is used to enumerate
+low-energy contact patterns between the two basins. Those patterns help:
+  1. Score ensemble members by overlap with the low-energy manifold
+  2. Identify switch contacts (qubits that flip between H₁ and H₂ optima)
   3. Guide targeted domain perturbations toward the alternate state
 
-This is the scientifically faithful realization of quantum superposition
-for protein conformational landscapes: not decorative VQE, but explicit
-dual-basin Hamiltonian interpolation with exact enumeration on tractable
-subspaces (≤20 qubits) and scalable annealing beyond.
+At ≤20 qubits we use exact enumeration; larger models fall back to greedy
+annealing. All circuits here are classically simulated.
 """
 
 from __future__ import annotations

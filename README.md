@@ -1,4 +1,4 @@
-# QuantumFoldX: Dual-State Quantum Bridge for Conformational Ensemble Analysis
+# QuantumFoldX: Dual-State Conformational Ensemble Analysis
 
 [![Benchmark](https://img.shields.io/badge/Benchmark-16%20proteins-blue)]()
 [![License](https://img.shields.io/badge/License-MIT-green)]()
@@ -6,85 +6,72 @@
 
 ## Overview
 
-QuantumFoldX is a hybrid quantum-classical framework for exploring protein conformational landscapes. Rather than competing with AlphaFold 3 (AF3) on single-structure prediction accuracy — where AF3's training on 200k+ PDB structures makes it nearly unbeatable — QuantumFoldX targets a documented weakness: **conformational state coverage**.
+QuantumFoldX explores protein conformational landscapes using hybrid quantum-classical methods. It does not try to beat AlphaFold 3 (AF3) on single-structure accuracy — AF3's training data makes that a difficult target. Instead, it focuses on **conformational state coverage**: whether an ensemble can represent more than one biologically relevant state.
 
-AF3 typically predicts a single conformational state per protein. For drug design and mechanistic biology, understanding the full conformational landscape (including inactive/autoinhibited states, disorder, and chirality) matters significantly.
+AF3 typically predicts one conformation per protein. For autoinhibited kinases, fold-switching proteins, and other multi-state systems, that limitation is well documented in the literature.
 
-### What Makes v3 Revolutionary
+## QICESS v3 (current default)
 
-**QICESS v2 failed honestly.** Our ablation showed that single-state VQE scoring added no measurable ranking value over random selection (VQE 0.391 vs Random 0.394, p=0.25). The variational circuit never found the exact ground state (0/16 proteins). Decorative quantum was not the answer.
+**QICESS v2 did not hold up in ablation.** Single-state VQE scoring did not beat random ranking (VQE 0.391 vs Random 0.394, p=0.25), and the variational solver never matched exact diagonalization (0/16 proteins). We kept those results and rebuilt the scoring layer.
 
-**QICESS v3 implements the Dual-State Ising Hamiltonian Bridge (DSIB)** — a genuinely novel formulation:
+**QICESS v3** uses a Dual-State Ising Hamiltonian Bridge (DSIB):
 
-1. **Dual-basin Hamiltonians**: Build H₁ from state 1 contacts and H₂ from state 2 contacts on a shared qubit basis encoding inter-domain contact patterns
-2. **λ-path enumeration**: Find low-energy states along H(λ) = (1−λ)H₁ + λH₂ for λ ∈ {0, 0.25, 0.5, 0.75, 1.0}
-3. **Conformational bridge manifold**: Pool low-energy states across the λ-path — these are the quantum-derived transition contacts between basins
-4. **Switch-contact identification**: Qubits flipping between H₁ and H₂ ground states pinpoint the contacts that must change during conformational switching
-5. **Quantum-guided ensemble generation**: Targeted domain motions and S1↔S2 interpolation along switch-contact-derived trajectories
-6. **Born-rule scoring**: Rank conformations by weighted overlap with the bridge manifold, plus direct state-2 contact agreement
+1. Build H₁ and H₂ from state 1 and state 2 contact maps on a shared qubit basis
+2. Enumerate low-energy states along H(λ) = (1−λ)H₁ + λH₂ for several λ values
+3. Identify switch contacts (qubits whose optimal value differs between H₁ and H₂)
+4. Generate bridge conformations via S1↔S2 interpolation and switch-guided domain motion
+5. Score conformations by manifold overlap, state-2 contact agreement, switch-contact satisfaction, and (when available) inter-domain TM-score to state 2
 
-This is the faithful realization of quantum superposition for protein landscapes: not fake VQE on one structure, but explicit dual-basin Hamiltonian interpolation with exact enumeration (≤20 qubits, milliseconds) and scalable annealing beyond.
+The Ising layer is classically simulated: exact enumeration for ≤20 qubits, greedy annealing beyond that. No QPU is required for the current benchmark scale.
 
-### Key Results (v2 benchmark, pre-v3 upgrade)
+### Reported results (mixed; read the caveats)
 
-| Metric | QuantumFoldX | AlphaFold 3 | Significance |
-|--------|-------------|-------------|--------------|
-| Dual-state coverage (autoinhibited) | **37.5%** (6/16) | 14% | p=0.017 (binomial) |
-| Ensemble RMSD improvement | **100%** of proteins | N/A (single prediction) | p=0.00006 (Wilcoxon) |
-| Disorder prediction AUC | **0.831** (DisorderNet) | 0.747 | +0.084 AUC |
-| D-peptide chirality violations | **0%** (ChiralFold) | 51% | -51pp |
+| Metric | QuantumFoldX (v2 era) | AlphaFold 3 | Notes |
+|--------|----------------------|-------------|-------|
+| Dual-state coverage (autoinhibited, TM>0.5) | 37.5% (6/16) | 14% (published) | p=0.017 vs AF3 autoinhibited rate |
+| Ensemble RMSD vs state 2 | improved on all proteins tested | N/A | p=0.00006 (Wilcoxon) |
+| Hard cases (baseline TM<0.5) | often still fails | often fails | perturbation alone is not enough |
 
-Run `python benchmarks/ablation_v3_study.py` to compare v3 against v2 and classical baselines on your hardware.
+Early v3 checks on individual proteins showed gains on some hard targets (e.g. FYN TM→S2 0.098→0.456, BRAF dual coverage unlocked in spot checks), but **ranking ablation on top-10 TM is not clearly better than v2 or random across the full set**. We report both. Run `python benchmarks/ablation_v3_study.py` to reproduce on your machine.
 
-### Honest Limitations
+### Limitations
 
-- ⚠ **Exact Ising enumeration is classically simulated** (PennyLane-compatible, no QPU required for ≤20 qubits)
-- ⚠ **AF3 numbers are from published benchmarks**, not re-run by us
-- ⚠ **QFX starts from known experimental structures** — this is conformational exploration, not de novo prediction
-- ⚠ Dual-state coverage at TM>0.5 is driven by proteins with already-similar states (100% easy, 0% hard)
-- ⚠ For proteins with genuinely different conformational states (baseline TM<0.5), ensemble perturbation alone does not bridge the gap
-- ⚠ DisorderNet uses classical ML (LightGBM/XGBoost), not quantum circuits
-- ⚠ ChiralFold uses geometric corrections, not quantum circuits
+- Exact Ising enumeration is classical simulation, not hardware quantum advantage
+- AF3 comparison numbers come from published benchmarks; we do not re-run AF3
+- Both experimental structures must be available — this is conformational exploration, not de novo folding
+- Easy dual-state cases (baseline TM>0.5) dominate coverage statistics; hard cases remain hard
+- DisorderNet and ChiralFold (sibling projects) use classical methods, not quantum circuits
 
 ## Architecture
 
 ```
-QuantumFoldX v3 Pipeline
-├── 1. PDB Structure Fetching (RCSB) — BOTH states required
-├── 2. Dual-State Ising Hamiltonian Bridge (DSIB)
-│   ├── Shared qubit basis: top inter-domain + switch contacts
-│   ├── H₁ (state 1) and H₂ (state 2) Miyazawa-Jernigan Hamiltonians
-│   ├── λ-path exact enumeration: ground + low-energy manifold
-│   └── Switch-contact extraction for guided perturbation
-├── 3. Conformational Ensemble Generation
-│   ├── Normal Mode Analysis (multi-scale: 2Å + 6Å amplitude)
-│   ├── Domain Rigid-Body Perturbation (multi-scale: 5Å/20° + 15Å/45°)
-│   ├── Torsion angle perturbations
-│   └── Quantum Bridge conformations (S1↔S2 interpolation + switch-guided motion)
-├── 4. QICESS v3 Scoring
-│   ├── Manifold overlap (Born-rule weighting across λ-path)
-│   ├── State-2 target contact agreement
-│   ├── Switch-contact satisfaction
-│   └── Classical terms: Ramachandran, compactness, contact order, inter-domain density
-├── 5. Structural Metrics
-│   ├── RMSD, TM-score, GDT-TS, lDDT
-│   ├── imfdRMSD (inter-module functional domain RMSD)
-│   └── Dual-state coverage evaluation
-└── 6. Statistical Analysis
-    ├── Binomial test vs AF3 published rates
-    ├── Wilcoxon signed-rank for RMSD improvement
-    └── v3 ablation vs v2/classical baselines
+QuantumFoldX v3
+├── PDB fetching (RCSB) — both states required
+├── Dual-State Ising Hamiltonian Bridge (DSIB)
+│   ├── Shared contact qubit basis (inter-domain + switch contacts)
+│   ├── H₁, H₂ from Miyazawa–Jernigan potentials
+│   ├── λ-path exact enumeration
+│   └── Switch-contact extraction
+├── Ensemble generation
+│   ├── NMA (2 Å and 6 Å amplitude)
+│   ├── Domain rigid-body perturbation (conservative + large scale)
+│   ├── Torsion sampling
+│   └── Bridge conformations (interpolation + switch-guided motion)
+├── QICESS v3 scoring
+│   ├── Manifold overlap, state-2 contacts, switch satisfaction
+│   ├── State-2 geometry (inter-domain TM)
+│   └── Ramachandran, compactness, contact order, inter-domain density
+└── Metrics + statistics (RMSD, TM, dual-state coverage, ablation)
 ```
 
-## Why v2 Failed and v3 Fixes It
+## v2 → v3 changes
 
-| Problem (v2) | Solution (v3) |
-|--------------|---------------|
-| VQE on single reference structure | Dual-state H₁ + H₂ from both experimental states |
-| VQE never found ground state (0/16) | Exact enumeration — always correct, 10× faster |
-| Ranking ≈ random (p=0.25) | Manifold overlap + state-2 target + switch contacts |
-| Quantum layer decorative | λ-path bridge encodes real transition physics |
-| Ensemble blind to state 2 | Quantum bridge conformations + switch-guided motion |
+| v2 issue | v3 approach |
+|----------|-------------|
+| VQE on one reference structure | H₁ + H₂ from both states |
+| VQE missed ground state (0/16) | Exact enumeration where tractable |
+| Ranking ≈ random | Dual-state contact + geometry terms (mixed results) |
+| Ensemble started from state 1 only | Bridge conformations toward state 2 |
 
 ## Installation
 
@@ -93,87 +80,54 @@ pip install -r requirements.txt
 ```
 
 ```bash
-# Run the full benchmark suite (all categories + ablation + figures)
-python benchmarks/run_all_benchmarks.py
-
-# Run autoinhibited benchmark only (v3)
+# Autoinhibited dual-state benchmark (v3)
 python benchmarks/run_benchmark_v2_fast.py
 
-# Compare v3 vs v2 vs classical baselines
+# Full suite
+python benchmarks/run_all_benchmarks.py
+
+# v3 vs v2 vs classical ablation
 python benchmarks/ablation_v3_study.py
 
-# Legacy v2 ablation (shows why VQE failed)
+# Legacy v2 VQE ablation
 python benchmarks/ablation_study.py
 
-# Analyze results and generate figures
-python benchmarks/analyze_results.py
-
-# Run unit tests
+# Tests
 python -m pytest tests/ -v
 ```
 
-## Project Structure
+## Project structure
 
 ```
 QuantumFoldX/
-├── src/
-│   ├── quantum/
-│   │   ├── exact_ising.py          # Exact enumeration + interpolation (production solver)
-│   │   ├── dual_state_ising.py     # Dual-State Ising Hamiltonian Bridge (DSIB) — NOVEL
-│   │   ├── ising_vqe.py            # Legacy VQE (kept for ablation comparison)
-│   │   └── qaoa_rotamer.py         # QAOA side-chain optimizer
-│   ├── scoring/
-│   │   ├── qicess_v3.py            # QICESS v3 dual-state bridge scorer (DEFAULT)
-│   │   └── qicess_v2.py            # QICESS v2 legacy scorer
-│   ├── ensemble/
-│   │   └── conformational_sampler.py  # NMA + rigid-body + quantum bridge generation
-│   ├── metrics/
-│   │   └── structural_metrics.py
-│   └── data/
-│       └── pdb_fetcher.py
-├── configs/
-│   └── benchmark_dataset.py
+├── src/quantum/
+│   ├── exact_ising.py           # Exact enumeration + interpolation
+│   ├── dual_state_ising.py      # Dual-State Ising Hamiltonian Bridge
+│   ├── ising_vqe.py             # Legacy VQE (ablation only)
+│   └── qaoa_rotamer.py
+├── src/scoring/
+│   ├── qicess_v3.py             # Default scorer
+│   └── qicess_v2.py             # Legacy scorer
+├── src/ensemble/conformational_sampler.py
+├── src/data/pdb_fetcher.py
 ├── benchmarks/
-│   ├── run_all_benchmarks.py
-│   ├── run_benchmark_v2_fast.py
-│   ├── ablation_v3_study.py        # v3 vs v2 vs classical
-│   ├── ablation_study.py           # v2 VQE failure analysis
-│   └── analyze_results.py
-├── tests/
-│   └── test_quantumfoldx.py
-└── results/
+└── tests/
 ```
 
-## Scientific Novelty
+## Related work
 
-The Dual-State Ising Hamiltonian Bridge is, to our knowledge, the first framework that:
+Useful alongside:
 
-1. Encodes **both** conformational basins in a shared quantum Ising basis
-2. Uses Hamiltonian interpolation H(λ) to define a **conformational transition path**
-3. Identifies **switch contacts** via ground-state bit differences between H₁ and H₂
-4. Generates ensembles **guided by quantum-derived switch-contact motion**
-5. Scores conformations by **manifold overlap** with the low-energy λ-path — a Born-rule-inspired metric for dual-basin landscapes
+- **[DisorderNet](https://github.com/Tommaso-R-Marena/DisorderNet)** — disorder prediction (classical)
+- **[ChiralFold](https://github.com/Tommaso-R-Marena/ChiralFold)** — stereochemistry checks (geometric)
 
-This is honest quantum-inspired structural biology: exact where tractable, scalable where needed, and validated by ablation against v2 and classical baselines.
-
-## Complementary Modules
-
-QuantumFoldX results are most meaningful when combined with:
-
-- **[DisorderNet](https://github.com/Tommaso-R-Marena/DisorderNet)** — AUC 0.831 vs AF3's 0.747 on DisProt (CAID3 benchmark)
-- **[ChiralFold](https://github.com/Tommaso-R-Marena/ChiralFold)** — 0% chirality violation vs AF3's 51% for D-peptides
-
-Together, these three modules address the three principal failure modes of current protein structure prediction: conformational diversity, intrinsic disorder, and stereochemistry.
-
-## Citation
+## References
 
 ```
-AF3 baseline sources:
 - Papageorgiou et al. (2025) Communications Chemistry. https://doi.org/10.1038/s42004-025-01763-0
 - Peng et al. (2025) Briefings in Bioinformatics. https://doi.org/10.1093/bib/bbaf170
 - Ronish et al. (2024) Nature Communications. https://doi.org/10.1038/s41467-024-51801-z
-- CAID3 (2024) disorder prediction benchmark
-- Jumper et al. (2021) Nature. AlphaFold2 original paper
+- Jumper et al. (2021) Nature — AlphaFold2
 ```
 
 ## License

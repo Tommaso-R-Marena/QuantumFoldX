@@ -68,6 +68,37 @@ def fetch_alphafold_prediction(uniprot_id: str, force: bool = False) -> Optional
         return None
 
 
+def list_pdb_chains(pdb_path: str, model: int = 1) -> List[str]:
+    """Return chain IDs with at least one standard amino-acid Cα in the file."""
+    chains: Dict[str, int] = {}
+    use_model_filter = False
+    in_target_model = True
+    current_model = 0
+
+    with open(pdb_path) as f:
+        for line in f:
+            if line.startswith("MODEL"):
+                use_model_filter = True
+                current_model = int(line.split()[1])
+                in_target_model = model is None or current_model == model
+                continue
+            if line.startswith("ENDMDL"):
+                in_target_model = False
+                continue
+            if use_model_filter and not in_target_model:
+                continue
+            if not line.startswith("ATOM"):
+                continue
+            if line[12:16].strip() != "CA":
+                continue
+            if line[17:20].strip() not in AA3TO1:
+                continue
+            chain_id = line[21].strip() or " "
+            chains[chain_id] = chains.get(chain_id, 0) + 1
+
+    return [c for c, _ in sorted(chains.items(), key=lambda x: (-x[1], x[0]))]
+
+
 def parse_pdb_ca_coords(pdb_path: str, chain: str = None,
                          res_range: Tuple[int, int] = None,
                          model: int = 1) -> Dict:
@@ -155,6 +186,43 @@ def parse_pdb_ca_coords(pdb_path: str, chain: str = None,
         'pdb_path': pdb_path,
         'n_residues': len(coords)
     }
+
+
+def parse_pdb_ca_coords_best_chain(
+    pdb_path: str,
+    preferred_chain: str = None,
+    res_range: Tuple[int, int] = None,
+    model: int = 1,
+    min_residues: int = 20,
+) -> Optional[Dict]:
+    """
+    Parse Cα coordinates, trying preferred_chain first then other chains.
+
+    Uses the preferred chain when it yields at least min_residues; otherwise
+    falls back to the longest parseable chain (legacy PDB entries often label
+    chains inconsistently).
+    """
+    if preferred_chain is not None:
+        preferred = parse_pdb_ca_coords(
+            pdb_path, chain=preferred_chain, res_range=res_range, model=model)
+        if preferred is not None and preferred['n_residues'] >= min_residues:
+            return preferred
+
+    best = None
+    for chain in list_pdb_chains(pdb_path, model=model):
+        if chain == preferred_chain:
+            continue
+        parsed = parse_pdb_ca_coords(
+            pdb_path, chain=chain, res_range=res_range, model=model)
+        if parsed is None:
+            continue
+        if best is None or parsed['n_residues'] > best['n_residues']:
+            best = parsed
+
+    if best is not None:
+        return best
+
+    return parse_pdb_ca_coords(pdb_path, chain=None, res_range=res_range, model=model)
 
 
 def parse_pdb_all_atom(pdb_path: str, chain: str = None) -> Dict:

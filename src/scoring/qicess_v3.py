@@ -1,20 +1,16 @@
 """
-qicess_v3.py — QICESS v3: Dual-State Quantum Bridge Ensemble Scorer
+qicess_v3.py — QICESS v3: Dual-State Bridge Ensemble Scorer
 
-Revolutionary upgrade over v2: instead of a single-state VQE ground state
-(which the ablation showed adds no ranking value), v3 implements the
-Dual-State Ising Hamiltonian Bridge (DSIB):
+Upgrade over v2: uses contact maps from both experimental states to build
+a Dual-State Ising Hamiltonian Bridge (DSIB), then scores conformations by
+overlap with low-energy states along H(λ) = (1-λ)H₁ + λH₂.
 
-  1. Build H₁ and H₂ from BOTH experimental states' contact maps
-  2. Enumerate low-energy states along H(λ) = (1-λ)H₁ + λH₂
-  3. Score conformations by manifold overlap + switch-contact satisfaction
-  4. Optionally use state-2 proximity for dual-state coverage ranking
+v2 ablation showed single-state VQE scoring did not beat random ranking on
+our benchmark (VQE 0.391 vs Random 0.394, p=0.25). v3 replaces that layer
+with exact Ising enumeration on a dual-state encoding and adds geometry-
+based state-2 proximity where coordinates are available.
 
-The quantum layer is now scientifically meaningful: it encodes the
-conformational transition path between known basins, not decorative VQE
-on a single reference structure.
-
-Solver: exact enumeration (≤20 qubits) — honest and faster than VQE.
+Solver: exact enumeration for ≤20 qubits; greedy annealing beyond that.
 """
 
 from __future__ import annotations
@@ -25,7 +21,7 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 
 from ..data.pdb_fetcher import compute_contact_map
-from ..metrics.structural_metrics import radius_of_gyration
+from ..metrics.structural_metrics import radius_of_gyration, tm_score
 from ..quantum.dual_state_ising import (
     DualStateBridge, build_dual_state_bridge,
     contacts_to_bitstring, manifold_overlap_score,
@@ -39,6 +35,37 @@ from .qicess_v2 import (
 logger = logging.getLogger(__name__)
 
 
+def state2_geometry_score(
+    coords: np.ndarray,
+    state2_coords: np.ndarray,
+    fd_indices: Optional[List[int]] = None,
+    im_indices: Optional[List[int]] = None,
+) -> float:
+    """
+    TM-score between a conformation and state 2 on inter-domain residues.
+
+    Uses the union of functional-domain and inhibitory-module indices when
+    available; otherwise compares overlapping prefix coordinates.
+    """
+    if state2_coords is None or len(coords) == 0 or len(state2_coords) == 0:
+        return 0.0
+
+    if fd_indices and im_indices:
+        idx = sorted(set(fd_indices) | set(im_indices))
+    else:
+        n = min(len(coords), len(state2_coords))
+        idx = list(range(n))
+
+    valid = [i for i in idx if i < len(coords) and i < len(state2_coords)]
+    if len(valid) < 10:
+        return 0.0
+
+    try:
+        return float(tm_score(state2_coords[valid], coords[valid]))
+    except Exception:
+        return 0.0
+
+
 class QICESSv3Scorer:
     """
     Dual-State Quantum Bridge Ensemble Scorer.
@@ -48,9 +75,10 @@ class QICESSv3Scorer:
     """
 
     DEFAULT_WEIGHTS = {
-        'manifold_overlap': 0.22,      # Born-rule overlap with λ-path manifold
-        'state2_target': 0.30,         # Direct agreement with state 2 contacts
-        'switch_satisfaction': 0.20,   # Switch contact pattern toward state 2
+        'manifold_overlap': 0.18,
+        'state2_target': 0.24,
+        'switch_satisfaction': 0.16,
+        'state2_geometry': 0.14,     # TM-score to state 2 on inter-domain residues
         'interdomain_contacts': 0.12,
         'compactness': 0.08,
         'ramachandran': 0.04,
@@ -109,6 +137,7 @@ class QICESSv3Scorer:
         fd_indices: Optional[List[int]] = None,
         im_indices: Optional[List[int]] = None,
         expected_rg: Optional[float] = None,
+        state2_coords: Optional[np.ndarray] = None,
     ) -> Dict:
         """Score one conformation against the dual-state quantum bridge."""
         scores: Dict = {}
@@ -123,6 +152,8 @@ class QICESSv3Scorer:
             conf_bs, bridge.s1_ground, bridge.qubits)
         scores['switch_satisfaction'] = switch_contact_satisfaction(
             conf_bs, bridge, target_state=2)
+        scores['state2_geometry'] = state2_geometry_score(
+            coords, state2_coords, fd_indices, im_indices)
         scores['n_qubits'] = bridge.n_qubits
         scores['n_switch_contacts'] = len(bridge.switch_contacts)
         scores['manifold_size'] = len(bridge.low_energy_manifold)
@@ -163,10 +194,11 @@ class QICESSv3Scorer:
         """
         ref = reference_coords if reference_coords is not None else ensemble[0]['coords']
         s2 = state2_coords if state2_coords is not None else ref
+        has_dual_state = state2_coords is not None
 
         logger.info(
             "  Building Dual-State Ising Bridge (%d residues, dual_state=%s)...",
-            len(sequence), state2_coords is not None,
+            len(sequence), has_dual_state,
         )
         bridge = self.build_bridge(sequence, ref, s2, fd_indices, im_indices)
 
@@ -178,6 +210,7 @@ class QICESSv3Scorer:
                 fd_indices=fd_indices,
                 im_indices=im_indices,
                 expected_rg=conf.get('expected_rg'),
+                state2_coords=s2 if has_dual_state else None,
             )
             result = {**conf, **scores, 'original_idx': idx}
             scored.append(result)

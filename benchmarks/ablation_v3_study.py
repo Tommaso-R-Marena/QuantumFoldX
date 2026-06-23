@@ -36,40 +36,46 @@ from benchmarks.ablation_study import (
     score_ensemble_random, score_ensemble_exact_diag, evaluate_ranking,
     find_common_residues,
 )
-from benchmarks.benchmark_utils import get_domain_indices
+from benchmarks.benchmark_utils import get_domain_indices, parse_target_structures
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 logger = logging.getLogger(__name__)
 
 RESULTS_DIR = PROJECT_ROOT / 'results' / 'ablation'
+RAW_FILE = RESULTS_DIR / 'ablation_v3_raw.csv'
 
 
-def run_ablation_v3():
+def run_ablation_v3(resume: bool = True):
     logger.info("=" * 80)
-    logger.info("QICESS v3 ABLATION — Dual-State Quantum Bridge vs Baselines")
+    logger.info("QICESS v3 ablation — dual-state bridge vs baselines")
     logger.info("=" * 80)
 
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     targets = get_autoinhibited_benchmark()
     scorer_v2 = QICESSv2Scorer(vqe_layers=3, vqe_restarts=2, vqe_steps=50, use_qaoa=False)
     scorer_v3 = QICESSv3Scorer()
 
     methods = ['QICESS-v3', 'QICESS-v2', 'QICESS-Exact', 'Classical-MJ', 'No-Quantum', 'Random']
     all_results = []
+    done_genes = set()
+
+    if resume and RAW_FILE.exists():
+        existing = pd.read_csv(RAW_FILE)
+        all_results = existing.to_dict('records')
+        done_genes = set(existing['gene'].tolist())
+        logger.info("Resuming: %d proteins already done", len(done_genes))
 
     for idx, target in enumerate(targets):
         if target.pdb_id_state1 == target.pdb_id_state2:
             continue
-
-        logger.info(f"\n[{idx+1}/{len(targets)}] {target.gene_name}")
-
-        pdb1 = fetch_pdb(target.pdb_id_state1)
-        pdb2 = fetch_pdb(target.pdb_id_state2)
-        if not pdb1 or not pdb2:
+        if target.gene_name in done_genes:
+            logger.info("[%d/%d] %s — skip (done)", idx + 1, len(targets), target.gene_name)
             continue
 
-        s1 = parse_pdb_ca_coords(pdb1, chain=target.chain_state1) or parse_pdb_ca_coords(pdb1)
-        s2 = parse_pdb_ca_coords(pdb2, chain=target.chain_state2) or parse_pdb_ca_coords(pdb2)
-        if s1 is None or s2 is None or s1['n_residues'] > 1000:
+        logger.info("\n[%d/%d] %s", idx + 1, len(targets), target.gene_name)
+
+        s1, s2, status = parse_target_structures(target)
+        if status != 'ok' or s1['n_residues'] > 1000:
             continue
 
         ci1, ci2, nc = find_common_residues(s1, s2)
@@ -78,7 +84,7 @@ def run_ablation_v3():
 
         fd_idx, im_idx = get_domain_indices(s1, target)
         n_ens = 80 if s1['n_residues'] < 400 else 50
-        phi_psi = compute_phi_psi(pdb1, chain=s1['chain'])
+        phi_psi = compute_phi_psi(s1['pdb_path'], chain=s1['chain'])
 
         bridge = scorer_v3.build_bridge(s1['sequence'], s1['coords'], s2['coords'], fd_idx, im_idx)
         ensemble = generate_hybrid_ensemble(
@@ -130,7 +136,7 @@ def run_ablation_v3():
             if key in row:
                 logger.info(f"    {m:18s}: {row[key]:.4f}")
 
-        pd.DataFrame(all_results).to_csv(RESULTS_DIR / 'ablation_v3_raw.csv', index=False)
+        pd.DataFrame(all_results).to_csv(RAW_FILE, index=False)
 
     df = pd.DataFrame(all_results)
     stats = {'n_proteins': len(df), 'methods': methods}
@@ -159,6 +165,10 @@ def run_ablation_v3():
             }
 
     stats['paired_tests'] = paired
+    stats['note'] = (
+        'Top-10 TM ranking is an imperfect proxy for dual-state coverage; '
+        'see per-protein ens_max_tm_state2 in the main benchmark.'
+    )
 
     with open(RESULTS_DIR / 'ablation_v3_stats.json', 'w') as f:
         json.dump(stats, f, indent=2)
