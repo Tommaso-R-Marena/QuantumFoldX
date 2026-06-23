@@ -17,10 +17,14 @@ When two experimental structures exist (state 1 and state 2):
 1. Build Ising Hamiltonians H₁ and H₂ from each state's contact map on a shared qubit basis
 2. Enumerate low-energy contact patterns along H(λ) = (1−λ)H₁ + λH₂
 3. Identify **switch contacts** — qubits whose optimal value differs between H₁ and H₂
-4. Generate **bridge conformations** via S1↔S2 interpolation and switch-contact-guided domain motion
+4. Generate **bridge conformations** via common-residue S1↔S2 interpolation and switch-contact-guided domain motion
 5. Score the ensemble (contact overlap, geometry, imfdRMSD)
 
 The Ising layer uses exact classical enumeration (≤20 qubits). No QPU is required at benchmark scale.
+
+### Transition Complexity Index (TCI)
+
+DSIB also computes a **Transition Complexity Index** from switch-contact density, the λ-path energy barrier, and manifold bridge span. TCI summarizes how structurally encoded a conformational transition is in the contact representation. It is reported alongside coverage results; on n=16 it does not yet predict per-protein gain (Spearman ρ=0.13, p=0.64).
 
 ## Evidence (head-to-head v2 vs v3, n=16 autoinhibited proteins)
 
@@ -29,22 +33,28 @@ Run: `python benchmarks/compare_v2_v3_coverage.py`
 | Condition | Dual-state coverage (TM>0.5) | Mean TM to state 2 |
 |-----------|------------------------------|---------------------|
 | v2 (baseline ensemble + VQE scoring) | 6/16 (37.5%) | 0.449 |
-| **v3 (DSIB ensemble + v3 scoring)** | **11/16 (68.8%)** | **0.657** |
-| v3 ensemble + v2 scoring | 11/16 (68.8%) | 0.657 |
+| **v3 (DSIB ensemble + v3 scoring)** | **16/16 (100%)** | **0.798** |
+| v3 ensemble + v2 scoring | 16/16 (100%) | 0.798 |
 | v2 ensemble + v3 scoring | 6/16 (37.5%) | 0.449 |
+| **v2 + bridge conformations only** | **16/16 (100%)** | **0.798** |
 
-**Paired Wilcoxon (v3 vs v2 TM→S2): p = 0.006.** Dual coverage vs published AF3 autoinhibited rate (14%): 11/16, p < 0.001 (binomial).
+**Paired Wilcoxon (v3 vs v2 TM→S2): p = 0.0005.** Dual coverage vs published AF3 autoinhibited rate (14%): 16/16, p < 0.001 (binomial).
 
-The decomposition shows that **bridge ensemble generation** drives the gain, not the scoring layer alone. When the DSIB ensemble is used, v2 and v3 scorers perform identically. When the v2 ensemble is used, v3 scoring does not help.
+The five-condition decomposition shows that **bridge ensemble generation** drives the gain, not the scoring layer alone:
+
+- When the DSIB ensemble is used, v2 and v3 scorers perform identically (C = B).
+- When the v2 ensemble is used, v3 scoring does not help (D = A).
+- **Adding only bridge conformations to the v2 ensemble matches full v3 exactly** (E = B). Resampling the entire ensemble is not required — the switch-contact-guided bridge path is sufficient.
 
 ### Hard subset (baseline S1↔S2 TM < 0.5, n=10)
 
 | Condition | Dual-state coverage | Mean TM to state 2 |
 |-----------|--------------------|--------------------|
 | v2 | 0/10 (0%) | 0.229 |
-| **v3 (DSIB)** | **5/10 (50%)** | **0.541** |
+| **v3 (DSIB)** | **10/10 (100%)** | **0.749** |
+| v2 + bridge only | 10/10 (100%) | 0.749 |
 
-This is where the method matters most: proteins whose conformational states differ substantially.
+Paired Wilcoxon on hard subset: p = 0.001. Common-residue alignment between states (needed when PDB entries differ in length, e.g. WAS 107 vs 59 residues) is required for bridge interpolation.
 
 ### What did not work
 
@@ -59,6 +69,7 @@ Top-10 ranking ablation remains a weak proxy; dual-state coverage is the primary
 - Both experimental structures must be available
 - Easy cases (baseline TM > 0.5) are often covered by any reasonable ensemble
 - Scoring refinements beyond ensemble generation show little additional benefit in our decomposition
+- TCI does not yet predict per-protein gain on this benchmark (n=16)
 
 ## Installation
 
@@ -94,7 +105,7 @@ QuantumFoldX v3
 ## Project structure
 
 ```
-src/quantum/dual_state_ising.py   # DSIB core
+src/quantum/dual_state_ising.py   # DSIB core + TCI
 src/quantum/exact_ising.py        # Exact enumeration
 src/scoring/qicess_v3.py          # Default scorer
 src/scoring/geometry_utils.py     # Residue-aligned geometry scores

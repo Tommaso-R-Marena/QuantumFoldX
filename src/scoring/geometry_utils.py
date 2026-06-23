@@ -131,3 +131,37 @@ def state2_aligned_tm_score(
 def transition_difficulty(baseline_tm: float) -> float:
     """0 = easy (similar states), 1 = hard (very different states)."""
     return float(np.clip(1.0 - baseline_tm, 0.0, 1.0))
+
+
+def common_residue_pairs(
+    common_idx_s1: Optional[List[int]],
+    common_idx_s2: Optional[List[int]],
+    n_s1: int,
+    n_s2: int,
+) -> List[Tuple[int, int]]:
+    """Return (s1_idx, s2_idx) pairs for aligned interpolation."""
+    if common_idx_s1 and common_idx_s2:
+        return [(i, j) for i, j in zip(common_idx_s1, common_idx_s2)
+                if i < n_s1 and j < n_s2]
+    n = min(n_s1, n_s2)
+    return [(i, i) for i in range(n)]
+
+
+def interpolate_coords_on_common(
+    coords_s1: np.ndarray,
+    coords_s2: np.ndarray,
+    alpha: float,
+    common_idx_s1: Optional[List[int]] = None,
+    common_idx_s2: Optional[List[int]] = None,
+) -> np.ndarray:
+    """
+    Linear S1→S2 blend on paired residues; unpaired residues stay at state 1.
+
+    Critical when state 1 and state 2 PDBs have different chain lengths
+    (e.g. WAS: 107 vs 59 residues).
+    """
+    blended = coords_s1.copy()
+    pairs = common_residue_pairs(common_idx_s1, common_idx_s2, len(coords_s1), len(coords_s2))
+    for i, j in pairs:
+        blended[i] = (1.0 - alpha) * coords_s1[i] + alpha * coords_s2[j]
+    return blended

@@ -39,6 +39,8 @@ def generate_quantum_bridge_ensemble(
     motion_hint: Dict,
     n_conformations: int = 15,
     seed: int = 42,
+    common_idx_s1: Optional[List[int]] = None,
+    common_idx_s2: Optional[List[int]] = None,
 ) -> List[np.ndarray]:
     """
     Generate conformations along the quantum-identified conformational bridge.
@@ -59,14 +61,16 @@ def generate_quantum_bridge_ensemble(
     d2_coords = coords_s1[domain2_indices].copy()
     d2_center = d2_coords.mean(axis=0)
 
-    # Linear interpolation between state 1 and state 2 (gold standard bridge)
+    from ..scoring.geometry_utils import interpolate_coords_on_common
+
+    # Linear interpolation on common residues (handles different chain lengths)
     n_interp = max(2, n_conformations // 3)
-    common_n = min(len(coords_s1), len(coords_s2))
     for t_idx in range(n_interp):
         alpha = (t_idx + 1) / (n_interp + 1)
-        blended = coords_s1.copy()
-        for i in range(common_n):
-            blended[i] = (1 - alpha) * coords_s1[i] + alpha * coords_s2[i]
+        blended = interpolate_coords_on_common(
+            coords_s1, coords_s2, alpha,
+            common_idx_s1, common_idx_s2,
+        )
         ensemble.append(blended)
 
     # Targeted rigid-body motions along switch-contact direction
@@ -103,6 +107,8 @@ def generate_switch_guided_ensemble(
     bridge,
     n_conformations: int = 10,
     seed: int = 42,
+    common_idx_s1: Optional[List[int]] = None,
+    common_idx_s2: Optional[List[int]] = None,
 ) -> List[np.ndarray]:
     """
     Generate conformations biased toward flipping switch contacts to state 2.
@@ -113,10 +119,12 @@ def generate_switch_guided_ensemble(
 
     motion = estimate_domain_motion_from_switches(
         bridge, coords, coords_s2, domain1_indices, domain2_indices,
+        common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2,
     )
     return generate_quantum_bridge_ensemble(
         coords, coords_s2, domain1_indices, domain2_indices,
         motion, n_conformations=n_conformations, seed=seed,
+        common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2,
     )
 
 
@@ -324,7 +332,9 @@ def generate_hybrid_ensemble(coords: np.ndarray,
                               use_qaoa: bool = False,
                               coords_s2: np.ndarray = None,
                               quantum_bridge=None,
-                              transition_difficulty: float = 0.0) -> List[Dict]:
+                              transition_difficulty: float = 0.0,
+                              common_idx_s1: Optional[List[int]] = None,
+                              common_idx_s2: Optional[List[int]] = None) -> List[Dict]:
     """
     Generate comprehensive ensemble using multiple methods at multiple scales.
     
@@ -421,7 +431,8 @@ def generate_hybrid_ensemble(coords: np.ndarray,
             if quantum_bridge is not None:
                 bridge_coords = generate_switch_guided_ensemble(
                     coords, coords_s2, fd_indices, im_indices,
-                    quantum_bridge, n_conformations=n_bridge, seed=seed + 20)
+                    quantum_bridge, n_conformations=n_bridge, seed=seed + 20,
+                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2)
             else:
                 from ..quantum.dual_state_ising import (
                     build_dual_state_bridge, estimate_domain_motion_from_switches,
@@ -432,10 +443,12 @@ def generate_hybrid_ensemble(coords: np.ndarray,
                 bridge = build_dual_state_bridge(
                     sequence, cm1, cm2, fd_indices, im_indices, max_qubits=18)
                 motion = estimate_domain_motion_from_switches(
-                    bridge, coords, coords_s2, fd_indices, im_indices)
+                    bridge, coords, coords_s2, fd_indices, im_indices,
+                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2)
                 bridge_coords = generate_quantum_bridge_ensemble(
                     coords, coords_s2, fd_indices, im_indices,
-                    motion, n_conformations=n_bridge, seed=seed + 20)
+                    motion, n_conformations=n_bridge, seed=seed + 20,
+                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2)
             for i, c in enumerate(bridge_coords):
                 ensemble.append({
                     'coords': c,

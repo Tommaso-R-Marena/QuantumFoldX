@@ -19,11 +19,14 @@ from src.quantum.ising_vqe import build_ising_hamiltonian, IsingVQESolver
 from src.quantum.qaoa_rotamer import build_rotamer_qubo, QAOARotamerOptimizer
 from src.scoring.qicess_v2 import QICESSv2Scorer, ramachandran_score
 from src.scoring.qicess_v3 import QICESSv3Scorer
-from src.scoring.geometry_utils import state2_imfd_score, state2_aligned_tm_score
+from src.scoring.geometry_utils import (
+    state2_imfd_score, state2_aligned_tm_score,
+    interpolate_coords_on_common, common_residue_pairs,
+)
 from src.quantum.exact_ising import IsingModel, IsingTerm, exact_ground_state, interpolate_ising
 from src.quantum.dual_state_ising import (
     build_dual_state_bridge, contacts_to_bitstring, manifold_overlap_score,
-    select_shared_contact_qubits,
+    select_shared_contact_qubits, compute_transition_complexity,
 )
 from configs.benchmark_dataset import (
     get_autoinhibited_benchmark, get_foldswitch_benchmark,
@@ -188,6 +191,36 @@ class TestDualStateBridge:
         H2 = IsingModel(3, [IsingTerm(1.0, (0,))])
         H_mid = interpolate_ising(H1, H2, 0.5)
         assert H_mid.n_qubits == 3
+
+    def test_transition_complexity(self):
+        n = 40
+        seq = 'A' * n
+        coords1 = np.random.randn(n, 3) * 10
+        coords2 = coords1 + np.random.randn(n, 3) * 3
+        cm1 = compute_contact_map(coords1)
+        cm2 = compute_contact_map(coords2)
+        bridge = build_dual_state_bridge(
+            seq, cm1, cm2,
+            fd_indices=list(range(20)), im_indices=list(range(20, 40)),
+            max_qubits=12,
+        )
+        tci = compute_transition_complexity(bridge)
+        assert 0.0 <= tci['tci'] <= 1.0
+        assert tci['n_switch'] >= 0
+
+
+class TestGeometryUtils:
+    def test_common_residue_interpolation(self):
+        s1 = np.random.randn(50, 3)
+        s2 = np.random.randn(30, 3)
+        ci1 = list(range(10, 40))
+        ci2 = list(range(0, 30))
+        blended = interpolate_coords_on_common(s1, s2, 0.5, ci1, ci2)
+        assert blended.shape == s1.shape
+        pairs = common_residue_pairs(ci1, ci2, len(s1), len(s2))
+        i, j = pairs[0]
+        expected = 0.5 * s1[i] + 0.5 * s2[j]
+        assert np.allclose(blended[i], expected)
 
 
 class TestQICESSv3:

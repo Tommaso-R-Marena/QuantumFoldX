@@ -371,6 +371,8 @@ def estimate_domain_motion_from_switches(
     coords_s2: np.ndarray,
     fd_indices: List[int],
     im_indices: List[int],
+    common_idx_s1: Optional[List[int]] = None,
+    common_idx_s2: Optional[List[int]] = None,
 ) -> Dict:
     """
     Estimate rigid-body motion needed to flip switch contacts toward state 2.
@@ -382,23 +384,45 @@ def estimate_domain_motion_from_switches(
         return {'translation': np.zeros(3), 'rotation_axis': np.zeros(3),
                 'rotation_angle_deg': 0.0, 'confidence': 0.0}
 
+    from ..scoring.geometry_utils import common_residue_pairs
+
+    pairs = common_residue_pairs(common_idx_s1, common_idx_s2, len(coords_s1), len(coords_s2))
+    s2_lookup = {i: j for i, j in pairs}
+
+    def _s2_coord(idx: int) -> Optional[np.ndarray]:
+        j = s2_lookup.get(idx)
+        if j is not None and j < len(coords_s2):
+            return coords_s2[j]
+        if idx < len(coords_s2):
+            return coords_s2[idx]
+        return None
+
     displacements = []
     for q in bridge.switch_contacts:
         if not q.is_interdomain:
             continue
         i, j = q.res_i, q.res_j
-        if (i < len(coords_s1) and j < len(coords_s1) and
-                i < len(coords_s2) and j < len(coords_s2)):
-            # Vector from s1 contact midpoint to s2 contact midpoint
-            mid_s1 = (coords_s1[i] + coords_s1[j]) / 2.0
-            mid_s2 = (coords_s2[i] + coords_s2[j]) / 2.0
+        c1_i = coords_s1[i] if i < len(coords_s1) else None
+        c1_j = coords_s1[j] if j < len(coords_s1) else None
+        c2_i = _s2_coord(i)
+        c2_j = _s2_coord(j)
+        if c1_i is not None and c1_j is not None and c2_i is not None and c2_j is not None:
+            mid_s1 = (c1_i + c1_j) / 2.0
+            mid_s2 = (c2_i + c2_j) / 2.0
             displacements.append(mid_s2 - mid_s1)
 
     if not displacements:
-        # Fall back to domain centroid displacement
-        im_s1 = coords_s1[im_indices].mean(axis=0)
-        im_s2 = coords_s2[[i for i in im_indices if i < len(coords_s2)]].mean(axis=0)
-        fd_center = coords_s1[fd_indices].mean(axis=0)
+        # Fall back to domain centroid displacement on common residues
+        fd_s1_pts = [coords_s1[i] for i in fd_indices if i < len(coords_s1)]
+        im_s1_pts = [coords_s1[i] for i in im_indices if i < len(coords_s1)]
+        im_s2_pts = [_s2_coord(i) for i in im_indices]
+        im_s2_pts = [p for p in im_s2_pts if p is not None]
+        if not fd_s1_pts or not im_s1_pts or not im_s2_pts:
+            return {'translation': np.zeros(3), 'rotation_axis': np.zeros(3),
+                    'rotation_angle_deg': 0.0, 'confidence': 0.0}
+        im_s1 = np.mean(im_s1_pts, axis=0)
+        im_s2 = np.mean(im_s2_pts, axis=0)
+        fd_center = np.mean(fd_s1_pts, axis=0)
         translation = im_s2 - im_s1
         return {
             'translation': translation,
@@ -412,11 +436,27 @@ def estimate_domain_motion_from_switches(
     mean_disp = disp_arr.mean(axis=0)
     confidence = min(len(displacements) / max(len(bridge.switch_contacts), 1), 1.0)
 
-    # Rotation axis from cross product of s1 and s2 domain vectors
-    im_s1 = coords_s1[[i for i in im_indices if i < len(coords_s1)]].mean(axis=0)
-    fd_s1 = coords_s1[[i for i in fd_indices if i < len(coords_s1)]].mean(axis=0)
-    im_s2 = coords_s2[[i for i in im_indices if i < len(coords_s2)]].mean(axis=0)
-    fd_s2 = coords_s2[[i for i in fd_indices if i < len(coords_s2)]].mean(axis=0)
+    # Rotation axis from cross product of s1 and s2 domain vectors (common-residue aware)
+    fd_s1_pts = [coords_s1[i] for i in fd_indices if i < len(coords_s1)]
+    im_s1_pts = [coords_s1[i] for i in im_indices if i < len(coords_s1)]
+    im_s2_pts = [_s2_coord(i) for i in im_indices]
+    fd_s2_pts = [_s2_coord(i) for i in fd_indices]
+    im_s2_pts = [p for p in im_s2_pts if p is not None]
+    fd_s2_pts = [p for p in fd_s2_pts if p is not None]
+    if not fd_s1_pts or not im_s1_pts or not im_s2_pts or not fd_s2_pts:
+        return {
+            'translation': mean_disp,
+            'rotation_axis': np.array([0., 0., 1.]),
+            'rotation_angle_deg': 0.0,
+            'confidence': confidence,
+            'pivot': np.mean(fd_s1_pts, axis=0) if fd_s1_pts else np.zeros(3),
+            'n_switch_contacts_used': len(displacements),
+        }
+
+    im_s1 = np.mean(im_s1_pts, axis=0)
+    fd_s1 = np.mean(fd_s1_pts, axis=0)
+    im_s2 = np.mean(im_s2_pts, axis=0)
+    fd_s2 = np.mean(fd_s2_pts, axis=0)
 
     v1 = im_s1 - fd_s1
     v2 = im_s2 - fd_s2
@@ -434,4 +474,68 @@ def estimate_domain_motion_from_switches(
         'confidence': confidence,
         'pivot': fd_s1,
         'n_switch_contacts_used': len(displacements),
+    }
+
+
+def compute_transition_complexity(bridge: DualStateBridge) -> Dict:
+    """
+    Transition Complexity Index (TCI) from DSIB analysis.
+
+    Combines switch-contact density, λ-path energy barrier, and manifold
+    bridge span into a single score in [0, 1]. Higher TCI indicates a
+    conformational transition that is structurally encoded in the contact
+    switch pattern and the interpolated Hamiltonian path H(λ).
+    """
+    n = bridge.n_qubits
+    if n == 0:
+        return {
+            'tci': 0.0,
+            'switch_fraction': 0.0,
+            'lambda_barrier': 0.0,
+            'bridge_span': 0.0,
+            'manifold_size_norm': 0.0,
+            'n_switch': 0,
+            'manifold_size': 0,
+        }
+
+    switch_fraction = len(bridge.switch_contacts) / n
+
+    energies = [
+        bridge.ground_states[lam]['ground_energy']
+        for lam in bridge.lambda_path
+        if lam in bridge.ground_states
+    ]
+    if energies:
+        e_min = min(energies)
+        e_max = max(energies)
+        e_mid = bridge.ground_states.get(0.5, {}).get('ground_energy', e_min)
+        span = max(abs(e_max - e_min), 1e-6)
+        lambda_barrier = float(np.clip((e_mid - e_min) / span, 0.0, 1.0))
+    else:
+        lambda_barrier = 0.0
+
+    if bridge.low_energy_manifold:
+        bridge_span = float(np.mean([m.get('lambda_coverage', 0.0)
+                                     for m in bridge.low_energy_manifold]))
+        manifold_size_norm = min(len(bridge.low_energy_manifold) / (2 ** n), 1.0)
+    else:
+        bridge_span = 0.0
+        manifold_size_norm = 0.0
+
+    tci = (
+        0.35 * switch_fraction
+        + 0.25 * lambda_barrier
+        + 0.25 * bridge_span
+        + 0.15 * manifold_size_norm
+    )
+    tci = float(np.clip(tci, 0.0, 1.0))
+
+    return {
+        'tci': tci,
+        'switch_fraction': float(switch_fraction),
+        'lambda_barrier': lambda_barrier,
+        'bridge_span': bridge_span,
+        'manifold_size_norm': float(manifold_size_norm),
+        'n_switch': len(bridge.switch_contacts),
+        'manifold_size': len(bridge.low_energy_manifold),
     }

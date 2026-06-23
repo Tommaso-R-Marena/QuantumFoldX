@@ -185,6 +185,7 @@ def process_single_target(target, scorer: QICESSv3Scorer = None,
             n_conformations=n_ens, seed=42, phi_psi=phi_psi,
             coords_s2=s2['coords'], quantum_bridge=bridge,
             transition_difficulty=difficulty,
+            common_idx_s1=ci1, common_idx_s2=ci2,
         )
     else:
         bridge = None
