@@ -1,0 +1,128 @@
+{
+  "suites": {
+    "autoinhibited": {
+      "n_valid": 16,
+      "category": "autoinhibited",
+      "primary": {
+        "metric": "Dual-State Coverage (TM>0.5)",
+        "n": 16,
+        "n_covered": 6,
+        "rate": 0.375,
+        "wilson_95ci": [
+          0.18480982554752806,
+          0.613593529020652
+        ],
+        "af3_category_rate": 0.14,
+        "af3_multi_rate": 0.233,
+        "p_vs_af3_category": 0.017107722261230376,
+        "p_vs_af3_multi": 0.1473855306510558,
+        "sig_vs_category": true,
+        "sig_vs_multi": false
+      },
+      "improvement": {
+        "mean": 0.7943961310466948,
+        "frac_improved": 1.0,
+        "wilcoxon_p": 1.52587890625e-05,
+        "sig": "True"
+      },
+      "state2_tm": {
+        "mean": 0.44456005067227033,
+        "median": 0.3605578038140312,
+        "frac_above_05": 0.375
+      },
+      "quantum_ranking": {
+        "mean_rho": -0.2035777582499762,
+        "n_negative": 12
+      },
+      "timing": {
+        "suite_s": 540.3949840068817,
+        "timestamp": "2026-06-23T04:00:26.952353"
+      }
+    },
+    "foldswitch": {
+      "n_valid": 6,
+      "category": "foldswitch",
+      "primary": {
+        "metric": "Dual-State Coverage (TM>0.5)",
+        "n": 6,
+        "n_covered": 0,
+        "rate": 0.0,
+        "wilson_95ci": [
+          0,
+          0.3903430336530645
+        ],
+        "af3_category_rate": 0.076,
+        "af3_multi_rate": 0.233,
+        "p_vs_af3_category": 1.0,
+        "p_vs_af3_multi": 1.0,
+        "sig_vs_category": false,
+        "sig_vs_multi": false
+      },
+      "improvement": {
+        "mean": 0.9511458307399002,
+        "frac_improved": 1.0,
+        "wilcoxon_p": 0.015625,
+        "sig": "True"
+      },
+      "state2_tm": {
+        "mean": 0.15328383530905823,
+        "median": 0.14561823003683533,
+        "frac_above_05": 0.0
+      },
+      "quantum_ranking": {
+        "mean_rho": -0.11859408824897483,
+        "n_negative": 4
+      },
+      "timing": {
+        "suite_s": 201.56045699119568,
+        "timestamp": "2026-06-23T04:03:48.516614"
+      }
+    },
+    "multistate": {
+      "n_valid": 5,
+      "category": "multistate",
+      "primary": {
+        "metric": "Dual-State Coverage (TM>0.5)",
+        "n": 5,
+        "n_covered": 1,
+        "rate": 0.2,
+        "wilson_95ci": [
+          0.03622316096978745,
+          0.6244717358814613
+        ],
+        "af3_category_rate": 0.233,
+        "af3_multi_rate": 0.233,
+        "p_vs_af3_category": 0.7345536122513929,
+        "p_vs_af3_multi": 0.7345536122513929,
+        "sig_vs_category": false,
+        "sig_vs_multi": false
+      },
+      "improvement": {
+        "mean": 0.6490549031137196,
+        "frac_improved": 1.0,
+        "wilcoxon_p": 0.03125,
+        "sig": "True"
+      },
+      "state2_tm": {
+        "mean": 0.3323977871829479,
+        "median": 0.20142643011166902,
+        "frac_above_05": 0.2
+      },
+      "quantum_ranking": {
+        "mean_rho": -0.4326216708905785,
+        "n_negative": 5
+      },
+      "timing": {
+        "suite_s": 178.3379306793213,
+        "timestamp": "2026-06-23T04:06:46.861379"
+      }
+    }
+  },
+  "total_time_s": 1567.4967577457428,
+  "timestamp": "2026-06-23T04:17:34.043550",
+  "config": {
+    "vqe_steps": 50,
+    "vqe_restarts": 2,
+    "qaoa": true
+  }
+}
