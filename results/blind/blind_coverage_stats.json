@@ -1,0 +1,62 @@
+{
+  "n_proteins": 49,
+  "label": "blind_vs_oracle",
+  "BLIND": {
+    "mean_state2_tm": 0.3309652286475522,
+    "dual_state_rate": 0.22448979591836735,
+    "n_dual_covered": 11
+  },
+  "ORACLE": {
+    "mean_state2_tm": 0.8811164974805332,
+    "dual_state_rate": 0.9795918367346939,
+    "n_dual_covered": 48
+  },
+  "oracle_vs_blind": {
+    "mean_diff_tm": 0.550151268832981,
+    "wilcoxon_p": 1.1981091706744958e-09,
+    "significant": true,
+    "oracle_wins": 46
+  },
+  "dual_coverage_gain": {
+    "oracle_dual": 48,
+    "blind_dual": 11,
+    "proteins_gained": 37
+  },
+  "by_category": {
+    "autoinhibited": {
+      "n": 24,
+      "blind_dual": 6,
+      "oracle_dual": 24,
+      "blind_mean_tm": 0.3407030800081341,
+      "oracle_mean_tm": 0.9032594498226542
+    },
+    "foldswitch": {
+      "n": 12,
+      "blind_dual": 1,
+      "oracle_dual": 11,
+      "blind_mean_tm": 0.2502085078005523,
+      "oracle_mean_tm": 0.7957948482800153
+    },
+    "multistate": {
+      "n": 13,
+      "blind_dual": 4,
+      "oracle_dual": 13,
+      "blind_mean_tm": 0.38753232230216994,
+      "oracle_mean_tm": 0.918995646264788
+    }
+  },
+  "hard_subset": {
+    "n": 38,
+    "blind_dual": 0,
+    "oracle_dual": 37,
+    "blind_mean_tm": 0.1821208944641515,
+    "oracle_mean_tm": 0.8572083040390833
+  },
+  "vs_af3_weighted": {
+    "af3_rate": 0.1496666666666667,
+    "blind_dual_rate": 0.22448979591836735,
+    "oracle_dual_rate": 0.9795918367346939,
+    "p_blind_vs_af3": 0.1060779020481872,
+    "p_oracle_vs_af3": 1.0649926945929536e-38
+  }
+}

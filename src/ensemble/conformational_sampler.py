@@ -41,7 +41,8 @@ def generate_quantum_bridge_ensemble(
     seed: int = 42,
     common_idx_s1: Optional[List[int]] = None,
     common_idx_s2: Optional[List[int]] = None,
-) -> List[np.ndarray]:
+    tagged: bool = False,
+) -> List:
     """
     Generate conformations along the quantum-identified conformational bridge.
 
@@ -71,7 +72,14 @@ def generate_quantum_bridge_ensemble(
             coords_s1, coords_s2, alpha,
             common_idx_s1, common_idx_s2,
         )
-        ensemble.append(blended)
+        if tagged:
+            ensemble.append({
+                'coords': blended,
+                'bridge_source': 'common_residue_interp',
+                'interp_alpha': alpha,
+            })
+        else:
+            ensemble.append(blended)
 
     # Targeted rigid-body motions along switch-contact direction
     n_targeted = n_conformations - n_interp
@@ -94,7 +102,14 @@ def generate_quantum_bridge_ensemble(
             if idx < n:
                 new_coords[idx] = d2_moved[j]
 
-        ensemble.append(new_coords)
+        if tagged:
+            ensemble.append({
+                'coords': new_coords,
+                'bridge_source': 'switch_contact_rigid',
+                'motion_progress': progress,
+            })
+        else:
+            ensemble.append(new_coords)
 
     return ensemble
 
@@ -109,7 +124,8 @@ def generate_switch_guided_ensemble(
     seed: int = 42,
     common_idx_s1: Optional[List[int]] = None,
     common_idx_s2: Optional[List[int]] = None,
-) -> List[np.ndarray]:
+    tagged: bool = False,
+) -> List:
     """
     Generate conformations biased toward flipping switch contacts to state 2.
 
@@ -125,6 +141,7 @@ def generate_switch_guided_ensemble(
         coords, coords_s2, domain1_indices, domain2_indices,
         motion, n_conformations=n_conformations, seed=seed,
         common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2,
+        tagged=tagged,
     )
 
 
@@ -374,7 +391,8 @@ def generate_hybrid_ensemble(coords: np.ndarray,
                               quantum_bridge=None,
                               transition_difficulty: float = 0.0,
                               common_idx_s1: Optional[List[int]] = None,
-                              common_idx_s2: Optional[List[int]] = None) -> List[Dict]:
+                              common_idx_s2: Optional[List[int]] = None,
+                              tag_bridge_sources: bool = False) -> List[Dict]:
     """
     Generate comprehensive ensemble using multiple methods at multiple scales.
     
@@ -476,10 +494,11 @@ def generate_hybrid_ensemble(coords: np.ndarray,
             n_manifold = max(3, n_bridge // 3)
 
             if quantum_bridge is not None:
-                bridge_coords = generate_switch_guided_ensemble(
+                bridge_items = generate_switch_guided_ensemble(
                     coords, coords_s2, fd_indices, im_indices,
                     quantum_bridge, n_conformations=n_bridge, seed=seed + 20,
-                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2)
+                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2,
+                    tagged=tag_bridge_sources)
                 manifold_coords = generate_manifold_bridge_ensemble(
                     coords, coords_s2, quantum_bridge,
                     n_conformations=n_manifold, seed=seed + 30,
@@ -496,25 +515,37 @@ def generate_hybrid_ensemble(coords: np.ndarray,
                 motion = estimate_domain_motion_from_switches(
                     bridge, coords, coords_s2, fd_indices, im_indices,
                     common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2)
-                bridge_coords = generate_quantum_bridge_ensemble(
+                bridge_items = generate_quantum_bridge_ensemble(
                     coords, coords_s2, fd_indices, im_indices,
                     motion, n_conformations=n_bridge, seed=seed + 20,
-                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2)
+                    common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2,
+                    tagged=tag_bridge_sources)
                 manifold_coords = generate_manifold_bridge_ensemble(
                     coords, coords_s2, bridge,
                     n_conformations=n_manifold, seed=seed + 30,
                     common_idx_s1=common_idx_s1, common_idx_s2=common_idx_s2,
                 )
-            for i, c in enumerate(bridge_coords):
-                ensemble.append({
-                    'coords': c,
-                    'method': 'quantum_bridge',
-                    'perturbation_id': f'qbridge_{i}'
-                })
+            for i, item in enumerate(bridge_items):
+                if tag_bridge_sources and isinstance(item, dict):
+                    src = item['bridge_source']
+                    ensemble.append({
+                        'coords': item['coords'],
+                        'method': src,
+                        'bridge_source': src,
+                        'perturbation_id': f'{src}_{i}',
+                    })
+                else:
+                    c = item['coords'] if isinstance(item, dict) else item
+                    ensemble.append({
+                        'coords': c,
+                        'method': 'quantum_bridge',
+                        'perturbation_id': f'qbridge_{i}'
+                    })
             for i, c in enumerate(manifold_coords):
                 ensemble.append({
                     'coords': c,
                     'method': 'manifold_bridge',
+                    'bridge_source': 'manifold_bridge',
                     'perturbation_id': f'mbridge_{i}'
                 })
     else:
