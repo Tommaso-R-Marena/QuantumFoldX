@@ -1,0 +1,83 @@
+{
+  "n_proteins": 16,
+  "conditions": [
+    "A_v2_full",
+    "B_v3_full",
+    "C_v3ens_v2score",
+    "D_v2ens_v3score"
+  ],
+  "A_v2_full": {
+    "mean_state2_tm": 0.4486090955646079,
+    "dual_state_rate": 0.375,
+    "n_dual_covered": 6
+  },
+  "B_v3_full": {
+    "mean_state2_tm": 0.6569236633985744,
+    "dual_state_rate": 0.6875,
+    "n_dual_covered": 11
+  },
+  "C_v3ens_v2score": {
+    "mean_state2_tm": 0.6569236633985744,
+    "dual_state_rate": 0.6875,
+    "n_dual_covered": 11
+  },
+  "D_v2ens_v3score": {
+    "mean_state2_tm": 0.4486090955646079,
+    "dual_state_rate": 0.375,
+    "n_dual_covered": 6
+  },
+  "paired_tests": {
+    "v3_vs_v2": {
+      "mean_diff": 0.20831456783396657,
+      "wilcoxon_p": 0.005859342799884314,
+      "significant": true,
+      "wins": 8
+    },
+    "v3_vs_ensemble_only": {
+      "mean_diff": 0.0,
+      "wilcoxon_p": 1.0,
+      "significant": false,
+      "wins": 0
+    },
+    "v3_vs_scoring_only": {
+      "mean_diff": 0.20831456783396657,
+      "wilcoxon_p": 0.005859342799884314,
+      "significant": true,
+      "wins": 8
+    }
+  },
+  "hard_subset": {
+    "A_v2_full": {
+      "n": 10,
+      "mean_state2_tm": 0.22850311549288124,
+      "dual_state_rate": 0.0,
+      "n_dual_covered": 0
+    },
+    "B_v3_full": {
+      "n": 10,
+      "mean_state2_tm": 0.5409316477504184,
+      "dual_state_rate": 0.5,
+      "n_dual_covered": 5
+    },
+    "C_v3ens_v2score": {
+      "n": 10,
+      "mean_state2_tm": 0.5409316477504184,
+      "dual_state_rate": 0.5,
+      "n_dual_covered": 5
+    },
+    "D_v2ens_v3score": {
+      "n": 10,
+      "mean_state2_tm": 0.22850311549288124,
+      "dual_state_rate": 0.0,
+      "n_dual_covered": 0
+    },
+    "v3_vs_v2_hard": {
+      "mean_diff_tm": 0.31242853225753714,
+      "wilcoxon_p": 0.0078125,
+      "significant": true,
+      "dual_v3": 5,
+      "dual_v2": 0
+    }
+  },
+  "interpretation": "Bridge ensemble (switch-contact-guided conformations) drives coverage gains; v3 scoring alone does not change results when the ensemble is held fixed."
+}

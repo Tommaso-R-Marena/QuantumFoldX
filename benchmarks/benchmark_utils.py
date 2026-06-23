@@ -12,6 +12,7 @@ from src.data.pdb_fetcher import (
     fetch_pdb, parse_pdb_ca_coords, parse_pdb_ca_coords_best_chain, compute_phi_psi,
 )
 from src.scoring.qicess_v3 import QICESSv3Scorer
+from src.scoring.geometry_utils import transition_difficulty
 from src.ensemble.conformational_sampler import generate_hybrid_ensemble
 from src.metrics.structural_metrics import rmsd, tm_score, gdt_ts
 
@@ -172,6 +173,7 @@ def process_single_target(target, scorer: QICESSv3Scorer = None,
     phi_psi = compute_phi_psi(s1['pdb_path'], chain=s1['chain'])
 
     use_v3 = hasattr(scorer, 'build_bridge')
+    difficulty = transition_difficulty(baseline_tm_val)
 
     if use_v3:
         bridge = scorer.build_bridge(
@@ -182,6 +184,7 @@ def process_single_target(target, scorer: QICESSv3Scorer = None,
             fd_indices=fd_idx, im_indices=im_idx,
             n_conformations=n_ens, seed=42, phi_psi=phi_psi,
             coords_s2=s2['coords'], quantum_bridge=bridge,
+            transition_difficulty=difficulty,
         )
     else:
         bridge = None
@@ -198,12 +201,19 @@ def process_single_target(target, scorer: QICESSv3Scorer = None,
         result['n_quantum_bridge'] = sum(1 for c in ensemble if c['method'] == 'quantum_bridge')
         result['n_switch_contacts'] = len(bridge.switch_contacts)
 
+    result['transition_difficulty'] = difficulty
+    result['difficulty_tier'] = (
+        'easy' if baseline_tm_val > 0.5 else
+        'medium' if baseline_tm_val > 0.3 else 'hard'
+    )
+
     if use_v3:
         scored = scorer.rank_ensemble(
             ensemble, s1['sequence'],
             reference_coords=s1['coords'],
             state2_coords=s2['coords'],
             fd_indices=fd_idx, im_indices=im_idx,
+            common_idx_ens=ci1, common_idx_s2=ci2,
         )
     else:
         scored = scorer.rank_ensemble(
@@ -247,6 +257,7 @@ def process_single_target(target, scorer: QICESSv3Scorer = None,
         result['qicess_state2_target'] = best.get('state2_target', 0.0)
         result['qicess_switch_satisfaction'] = best.get('switch_satisfaction', 0.0)
         result['qicess_state2_geometry'] = best.get('state2_geometry', 0.0)
+        result['qicess_state2_imfd'] = best.get('state2_imfd', 0.0)
     else:
         result['qicess_quantum_energy'] = best.get('quantum_energy_raw', 0.0)
         result['qicess_qaoa_score'] = best.get('qaoa_rotamer', 0.0)
@@ -356,5 +367,20 @@ def run_dual_state_stats(df, af3_base: Dict, category: str = 'autoinhibited') ->
             'mean_rho': float(np.mean(rhos)),
             'n_negative': int(np.sum(rhos < 0)),
         }
+
+    # Stratified by transition difficulty (Papageorgiou et al. tiers)
+    if 'difficulty_tier' in valid.columns:
+        strata = {}
+        for tier in ('easy', 'medium', 'hard'):
+            sub = valid[valid['difficulty_tier'] == tier]
+            if len(sub) == 0:
+                continue
+            strata[tier] = {
+                'n': int(len(sub)),
+                'dual_state_rate': float(sub['dual_state_covered_tm05'].mean()),
+                'mean_state2_tm': float(sub['ens_max_tm_state2'].mean()),
+                'n_covered': int(sub['dual_state_covered_tm05'].sum()),
+            }
+        stats['stratified'] = strata
 
     return stats

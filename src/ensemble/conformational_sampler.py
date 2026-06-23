@@ -323,7 +323,8 @@ def generate_hybrid_ensemble(coords: np.ndarray,
                               phi_psi: List[Tuple[float, float]] = None,
                               use_qaoa: bool = False,
                               coords_s2: np.ndarray = None,
-                              quantum_bridge=None) -> List[Dict]:
+                              quantum_bridge=None,
+                              transition_difficulty: float = 0.0) -> List[Dict]:
     """
     Generate comprehensive ensemble using multiple methods at multiple scales.
     
@@ -413,9 +414,10 @@ def generate_hybrid_ensemble(coords: np.ndarray,
                     'perturbation_id': f'tor_{i}'
                 })
 
-        # Quantum bridge conformations (dual-state guided)
+        # Bridge conformations: scale with transition difficulty (hard cases need more)
         if coords_s2 is not None:
-            n_bridge = max(3, n_conformations // 5)
+            base_frac = 0.20 + 0.15 * float(np.clip(transition_difficulty, 0.0, 1.0))
+            n_bridge = max(4, int(n_conformations * base_frac))
             if quantum_bridge is not None:
                 bridge_coords = generate_switch_guided_ensemble(
                     coords, coords_s2, fd_indices, im_indices,

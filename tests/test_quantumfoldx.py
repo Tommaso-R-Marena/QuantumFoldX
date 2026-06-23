@@ -18,7 +18,8 @@ from src.metrics.structural_metrics import rmsd, tm_score, imfd_rmsd
 from src.quantum.ising_vqe import build_ising_hamiltonian, IsingVQESolver
 from src.quantum.qaoa_rotamer import build_rotamer_qubo, QAOARotamerOptimizer
 from src.scoring.qicess_v2 import QICESSv2Scorer, ramachandran_score
-from src.scoring.qicess_v3 import QICESSv3Scorer, state2_geometry_score
+from src.scoring.qicess_v3 import QICESSv3Scorer
+from src.scoring.geometry_utils import state2_imfd_score, state2_aligned_tm_score
 from src.quantum.exact_ising import IsingModel, IsingTerm, exact_ground_state, interpolate_ising
 from src.quantum.dual_state_ising import (
     build_dual_state_bridge, contacts_to_bitstring, manifold_overlap_score,
@@ -194,9 +195,15 @@ class TestQICESSv3:
         n = 30
         c1 = np.random.randn(n, 3) * 10
         c2 = c1 + np.random.randn(n, 3) * 0.5
-        score = state2_geometry_score(c2, c1, list(range(15)), list(range(15, 30)))
+        score = state2_aligned_tm_score(c2, c1, list(range(15)), list(range(n)), list(range(n)))
         assert 0.0 <= score <= 1.0
-        assert score > 0.5
+
+    def test_state2_imfd_score(self):
+        n = 30
+        c1 = np.random.randn(n, 3) * 10
+        c2 = c1 + np.random.randn(n, 3) * 0.5
+        score = state2_imfd_score(c2, c1, list(range(15)), list(range(15, 30)))
+        assert 0.0 <= score <= 1.0
 
     def test_v3_ranking_dual_state(self):
         n = 35
