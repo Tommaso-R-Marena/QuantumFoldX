@@ -6,7 +6,7 @@ a Dual-State Ising Hamiltonian Bridge (DSIB), then scores conformations by
 overlap with low-energy states along H(λ) = (1-λ)H₁ + λH₂.
 
 v2 ablation showed single-state VQE scoring did not beat random ranking on
-our benchmark (VQE 0.391 vs Random 0.394, p=0.25). v3 replaces that layer
+our benchmark (VQE 0.349 vs Random 0.356, p=0.345, n=16 top-10 mean TM). v3 replaces that layer
 with exact Ising enumeration on a dual-state encoding and adds geometry-
 based state-2 proximity where coordinates are available.
 

@@ -1,0 +1,193 @@
+{
+  "step1": {
+    "n_audited": 6,
+    "n_ref_matches_ground": 0,
+    "sign_flip_always_changes_ground": true,
+    "audits": [
+      {
+        "n_qubits": 16,
+        "n_selected_contacts": 16,
+        "ref_bitstring": "1111111111111111",
+        "ground_bitstring": "0110101101111110",
+        "ref_energy": -9.422500000000007,
+        "ground_energy": -25.072499999999994,
+        "ref_matches_ground": false,
+        "hamming_ref_vs_ground": 5,
+        "ref_agreement_with_ground": 0.6827016520894073,
+        "negated_ground_bitstring": "0000000000000000",
+        "sign_flip_changes_ground": true,
+        "gene": "ABL1"
+      },
+      {
+        "n_qubits": 16,
+        "n_selected_contacts": 16,
+        "ref_bitstring": "1111111111111111",
+        "ground_bitstring": "1011111001100110",
+        "ref_energy": 3.3075000000000054,
+        "ground_energy": -23.5475,
+        "ref_matches_ground": false,
+        "hamming_ref_vs_ground": 6,
+        "ref_agreement_with_ground": 0.6278141465751238,
+        "negated_ground_bitstring": "0000000000000000",
+        "sign_flip_changes_ground": true,
+        "gene": "SRC"
+      },
+      {
+        "n_qubits": 16,
+        "n_selected_contacts": 16,
+        "ref_bitstring": "1111111111111111",
+        "ground_bitstring": "0101110011111111",
+        "ref_energy": -4.065000000000003,
+        "ground_energy": -23.264999999999997,
+        "ref_matches_ground": false,
+        "hamming_ref_vs_ground": 4,
+        "ref_agreement_with_ground": 0.7321371355334828,
+        "negated_ground_bitstring": "0000000000000000",
+        "sign_flip_changes_ground": true,
+        "gene": "HCK"
+      },
+      {
+        "n_qubits": 16,
+        "n_selected_contacts": 16,
+        "ref_bitstring": "1111111111111111",
+        "ground_bitstring": "0111101100110110",
+        "ref_energy": 23.59500000000001,
+        "ground_energy": -56.670000000000016,
+        "ref_matches_ground": false,
+        "hamming_ref_vs_ground": 6,
+        "ref_agreement_with_ground": 0.6414779499404054,
+        "negated_ground_bitstring": "0000000000000000",
+        "sign_flip_changes_ground": true,
+        "gene": "FYN"
+      },
+      {
+        "n_qubits": 16,
+        "n_selected_contacts": 16,
+        "ref_bitstring": "1111111111111111",
+        "ground_bitstring": "1100111011111101",
+        "ref_energy": -3.4550000000000045,
+        "ground_energy": -27.124999999999993,
+        "ref_matches_ground": false,
+        "hamming_ref_vs_ground": 4,
+        "ref_agreement_with_ground": 0.7584242226924955,
+        "negated_ground_bitstring": "0000000000000000",
+        "sign_flip_changes_ground": true,
+        "gene": "LCK"
+      },
+      {
+        "n_qubits": 16,
+        "n_selected_contacts": 16,
+        "ref_bitstring": "1111111111111111",
+        "ground_bitstring": "1111011010111001",
+        "ref_energy": -11.662499999999994,
+        "ground_energy": -37.74750000000001,
+        "ref_matches_ground": false,
+        "hamming_ref_vs_ground": 5,
+        "ref_agreement_with_ground": 0.7503419972640218,
+        "negated_ground_bitstring": "0000000000000000",
+        "sign_flip_changes_ground": true,
+        "gene": "PTPN6"
+      }
+    ],
+    "bug_found": false,
+    "bug_description": null,
+    "mean_hamming_ref_vs_ground": 5.0,
+    "src_energy_vs_tm_spearman": {
+      "rho": -0.4793548323311808,
+      "p": 0.00042822116236862636
+    }
+  },
+  "step2": {
+    "n_qubits": 16,
+    "selected_contacts": 16,
+    "ala_dipeptide_contacts_at_8A": 0,
+    "note": "3-bead Ace-Ala-Nme has 0 contacts at 8 \u00c5; deca-alanine used for basin test",
+    "basin_energies_full_hamiltonian": [
+      {
+        "basin": "C7eq",
+        "phi_psi": [
+          -80.0,
+          80.0
+        ],
+        "n_contacts": 28,
+        "bitstring": "1111111111111111",
+        "ising_energy": 24.49999999999999,
+        "agreement_with_ground": 0.5625000000000002
+      },
+      {
+        "basin": "C7ax",
+        "phi_psi": [
+          60.0,
+          -60.0
+        ],
+        "n_contacts": 13,
+        "bitstring": "1100000110000110",
+        "ising_energy": 4.9,
+        "agreement_with_ground": 0.5625000000000002
+      },
+      {
+        "basin": "helical",
+        "phi_psi": [
+          -57.0,
+          -47.0
+        ],
+        "n_contacts": 0,
+        "bitstring": "0000000000000000",
+        "ising_energy": 46.90000000000004,
+        "agreement_with_ground": 0.4375000000000001
+      },
+      {
+        "basin": "extended",
+        "phi_psi": [
+          -150.0,
+          150.0
+        ],
+        "n_contacts": 0,
+        "bitstring": "0000000000000000",
+        "ising_energy": 46.90000000000004,
+        "agreement_with_ground": 0.4375000000000001
+      }
+    ],
+    "C7eq_minus_C7ax_energy": 19.599999999999987,
+    "eq_mean_energy": 23.09999999999999,
+    "ax_mean_energy": 11.899999999999995,
+    "mannwhitney_eq_lower_p": 0.9999999990934761,
+    "separates_basins_full_h": false,
+    "independent_qubit_ref_matches_ground": true,
+    "basin_energies_independent_qubit": [
+      {
+        "basin": "C7eq",
+        "ising_energy_independent": -11.199999999999998
+      },
+      {
+        "basin": "C7ax",
+        "ising_energy_independent": 2.8
+      },
+      {
+        "basin": "helical",
+        "ising_energy_independent": 11.199999999999998
+      },
+      {
+        "basin": "extended",
+        "ising_energy_independent": 11.199999999999998
+      }
+    ],
+    "separates_C7eq_vs_extended_independent": true
+  },
+  "baseline_14": {
+    "method": "exact_agreement",
+    "n_proteins": 14,
+    "mean_spearman_rho": -0.2999061586103994,
+    "std_spearman_rho": 0.4258385093589959,
+    "mean_random_spearman_rho": -0.06423204877472627,
+    "wilcoxon_p_vs_random": 0.03304694365260125
+  },
+  "step3": {
+    "method": "independent_qubit_per_conf_energy",
+    "n_proteins": 14,
+    "mean_spearman_rho": -0.37260040459437044,
+    "std_spearman_rho": 0.4835634999012246,
+    "mean_random_spearman_rho": -0.06423204877472627,
+    "wilcoxon_p_vs_random": 0.01922343909754908
+  }
+}

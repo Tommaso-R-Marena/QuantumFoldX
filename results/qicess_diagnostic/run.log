@@ -1,0 +1,46 @@
+2026-06-24 04:16:23,415 [INFO] ======================================================================
+2026-06-24 04:16:23,415 [INFO] STEP 1: Hamiltonian sign / normalization audit
+2026-06-24 04:16:23,415 [INFO] ======================================================================
+2026-06-24 04:16:25,433 [INFO]   ABL1: ref==ground? False hamming=5 ref_agreement=0.683
+2026-06-24 04:16:28,237 [INFO]   SRC: ref==ground? False hamming=6 ref_agreement=0.628
+2026-06-24 04:16:30,607 [INFO]   HCK: ref==ground? False hamming=4 ref_agreement=0.732
+2026-06-24 04:16:30,607 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/2DQ7.pdb (chain=A)
+2026-06-24 04:16:33,771 [INFO]   FYN: ref==ground? False hamming=6 ref_agreement=0.641
+2026-06-24 04:16:36,100 [INFO]   LCK: ref==ground? False hamming=4 ref_agreement=0.758
+2026-06-24 04:16:38,081 [INFO]   PTPN6: ref==ground? False hamming=5 ref_agreement=0.750
+2026-06-24 04:16:38,874 [INFO]   SRC per-conf Ising energy vs TM→S2: rho=-0.4794, p=0.0004
+2026-06-24 04:16:38,874 [INFO]   Summary: 0/6 proteins have ref==ground bitstring, mean Hamming=5.0
+2026-06-24 04:16:38,876 [INFO] 
+======================================================================
+2026-06-24 04:16:38,876 [INFO] STEP 2: Alanine dipeptide Ramachandran basin test
+2026-06-24 04:16:38,876 [INFO] ======================================================================
+2026-06-24 04:16:42,311 [INFO]   C7eq     E=+24.5000 agreement=0.563 contacts=28
+2026-06-24 04:16:42,311 [INFO]   C7ax     E=+4.9000 agreement=0.563 contacts=13
+2026-06-24 04:16:42,312 [INFO]   helical  E=+46.9000 agreement=0.438 contacts=0
+2026-06-24 04:16:42,312 [INFO]   extended E=+46.9000 agreement=0.438 contacts=0
+2026-06-24 04:16:42,312 [INFO]   C7eq vs C7ax (full H): eq_mean=23.1000 ax_mean=11.9000 separates=False p=1.0000
+2026-06-24 04:16:42,312 [INFO]   Independent-qubit ref==ground: True
+2026-06-24 04:16:42,312 [INFO]     ind C7eq     E=-11.2000
+2026-06-24 04:16:42,312 [INFO]     ind C7ax     E=+2.8000
+2026-06-24 04:16:42,312 [INFO]     ind helical  E=+11.2000
+2026-06-24 04:16:42,312 [INFO]     ind extended E=+11.2000
+2026-06-24 04:16:42,312 [INFO] 
+======================================================================
+2026-06-24 04:16:42,312 [INFO] BASELINE: 14-protein ranking (ground-state agreement, original method)
+2026-06-24 04:16:42,312 [INFO] ======================================================================
+2026-06-24 04:16:47,630 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/2DQ7.pdb (chain=A)
+2026-06-24 04:16:47,631 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/1A6U.pdb (chain=A)
+2026-06-24 04:17:07,941 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/2DQ7.pdb (chain=A)
+2026-06-24 04:17:07,943 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/1A6U.pdb (chain=A)
+2026-06-24 04:17:12,112 [INFO]   mean Spearman rho = -0.2999 (random -0.0642, Wilcoxon p=0.0330)
+2026-06-24 04:17:12,112 [INFO] 
+======================================================================
+2026-06-24 04:17:12,112 [INFO] STEP 3: Principled fix — independent-qubit Ising, per-conformation energy
+2026-06-24 04:17:12,112 [INFO] ======================================================================
+2026-06-24 04:17:17,498 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/2DQ7.pdb (chain=A)
+2026-06-24 04:17:17,500 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/1A6U.pdb (chain=A)
+2026-06-24 04:17:37,982 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/2DQ7.pdb (chain=A)
+2026-06-24 04:17:37,984 [WARNING] No Cα atoms found in /workspace/data/pdb_cache/1A6U.pdb (chain=A)
+2026-06-24 04:17:42,192 [INFO]   mean Spearman rho = -0.3726 (random -0.0642, Wilcoxon p=0.0192)
+2026-06-24 04:17:42,192 [INFO] 
+Saved to /workspace/results/qicess_diagnostic/discrimination_diagnostic.json

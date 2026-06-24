@@ -68,9 +68,17 @@ On SRC, WAS, FYN, CLIC1, REV, and PDGFRB, the max-TM winner in the ORACLE ensemb
 
 ## What did not work
 
-QICESS v2's single-state VQE scoring did not beat random ranking (VQE 0.391 vs Random 0.394, p=0.25) and never matched exact diagonalization (0/16). We report that failure and replaced it.
+**QICESS v2 ranking (n=16 autoinhibited proteins, stored ablation).** Metric: top-10 mean TM to state 2. QICESS-VQE 0.349 vs Random 0.356 (Wilcoxon p=0.345, not significant). QICESS-Exact 0.346 vs Random 0.356 (p=0.345). VQE never matched exact diagonalization (0/16; mean Hamming 5.1/16). An earlier 14-protein run in commit `1df6b3a` gave VQE 0.391 vs Random 0.394 (p=0.25) — same metric, smaller cohort; the README previously cited that stale figure while `results/ablation/ablation_raw.csv` was re-run at n=16 (`45f3f6a`).
 
-The Ising switch-contact machinery generates conformations but does not produce the max-TM winner in the Step 1 diagnostic sample (switch_contact_rigid won 0/6; common_residue_interp won 5/6; manifold_bridge won 1/6 and still interpolates toward state 2 coordinates). DSIB's apparent success under the ORACLE setting is attributable to direct S1↔S2 interpolation, confirmed by the BLIND/ORACLE gap: BLIND 11/49 (22.4%) vs ORACLE 48/49 (98.0%), Wilcoxon p=1.20e-09.
+**Contact-Ising energy model (standalone negative result).** Follow-up diagnostic (`benchmarks/qicess_discrimination_diagnostic.py`) found this is not a sign or normalization bug. On six test kinases, reference contact bitstrings matched the exact ground state in **0/6** (mean Hamming distance **5.0/16**): the optimization target is disconnected from the reference structure it is meant to represent.
+
+- **SRC, per-conformation Ising energy vs TM→S2:** Spearman ρ = **−0.479**, p = **0.0004**, n=40. Real signal, wrong direction.
+- **Deca-alanine Ramachandran basins (known order):** the full Hamiltonian with ZZ cooperative terms ranks C7ax below C7eq (wrong order). Removing ZZ terms restores the correct ordering (C7eq lowest energy).
+- **Principled fix tried once (n=14 held-out kinases):** remove ZZ terms; rank by per-conformation independent-qubit energy. Result: **significantly worse than random** (mean Spearman ρ = **−0.3726**, Wilcoxon p vs random = **0.0192**), not better.
+
+Meaningful dual-state discrimination from contact-Ising alone would require different collective coordinates (domain packing angle, hinge distance) or a dual-state Hamiltonian. DSIB explored the latter separately, with its own honestly documented BLIND/ORACLE gap (see table above).
+
+The Ising switch-contact machinery generates conformations but does not produce the max-TM winner in the DSIB bridge-source diagnostic (switch_contact_rigid won 0/6; common_residue_interp won 5/6; manifold_bridge won 1/6 and still interpolates toward state 2 coordinates). DSIB's apparent success under the ORACLE setting is attributable to direct S1↔S2 interpolation, confirmed by the BLIND/ORACLE gap: BLIND 11/49 (22.4%) vs ORACLE 48/49 (98.0%), Wilcoxon p=1.20e-09.
 
 Top-10 ranking ablation remains a weak proxy; dual-state coverage is the primary endpoint.
 

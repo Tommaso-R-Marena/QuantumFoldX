@@ -107,8 +107,8 @@ ax.set_xlabel('Hamming Distance (bits out of 16)')
 ax.set_title('C) VQE vs Exact Ground State')
 ax.invert_yaxis()
 
-# Annotate: 0/14 match
-ax.text(0.95, 0.05, f'Match rate: 0/{len(bs_df)}\nMean Hamming: {hamming_dists.mean():.1f}/16\n'
+# Annotate match rate from stored bitstring comparison
+ax.text(0.95, 0.05, f'Match rate: {int(bs_df["identical"].sum())}/{len(bs_df)}\nMean Hamming: {hamming_dists.mean():.1f}/16\n'
         f'Exact diag: {exact_times.mean():.1f}s\nVQE: {vqe_times.mean():.1f}s',
         transform=ax.transAxes, ha='right', va='bottom', fontsize=9,
         bbox=dict(boxstyle='round', facecolor='#FFCDD2', alpha=0.9))
@@ -126,18 +126,35 @@ print(f"Saved: {FIGURES_DIR / 'fig4_ablation.png'}")
 fig, ax = plt.subplots(figsize=(14, 5))
 ax.axis('off')
 
+n_prot = stats.get('n_proteins', len(df))
+vqe_tm = stats['QICESS-VQE']['top10_mean_tm']['mean']
+rand_tm = stats['Random']['top10_mean_tm']['mean']
+vqe_rand = stats['paired_tests']['VQE_vs_Random']
+exact_tm = stats['QICESS-Exact']['top10_mean_tm']['mean']
+vqe_exact = stats['paired_tests']['VQE_vs_QICESS-Exact']
+vqe_noq = stats['paired_tests']['VQE_vs_No-Quantum']
+ve = stats.get('vqe_vs_exact', {})
+n_match = ve.get('n_identical', 0)
+mean_h = ve.get('mean_hamming', 0.0)
+mean_vqe_t = bs_df['vqe_time'].mean() if len(bs_df) else 0.0
+mean_ex_t = bs_df['exact_time'].mean() if len(bs_df) else 0.0
+
 verdict_data = [
     ['Finding', 'Detail', 'Implication'],
-    ['VQE never finds exact\nground state', '0/14 proteins match\n(mean Hamming = 5.1/16)', 
+    [f'VQE never finds exact\nground state', f'{n_match}/{n_prot} proteins match\n(mean Hamming = {mean_h:.1f}/16)',
      'VQE is trapped in local minima\nat 16 qubits with 3 layers'],
-    ['VQE does not outperform\nrandom ranking', 'VQE: 0.391 vs Random: 0.394\n(p = 0.25, NS)',
+    ['VQE does not outperform\nrandom ranking',
+     f'VQE: {vqe_tm:.3f} vs Random: {rand_tm:.3f}\n(p = {vqe_rand["wilcoxon_p"]:.2f}, NS)',
      'Quantum scoring adds no\nmeasurable ranking value'],
-    ['VQE \u2248 Exact diag\nfor ranking', '\u0394 = +0.002 (p = 0.48, NS)',
+    ['VQE \u2248 Exact diag\nfor ranking',
+     f'\u0394 = {vqe_exact["mean_diff"]:+.3f} (p = {vqe_exact["wilcoxon_p"]:.2f}, NS)',
      'Even correct ground state\ndoes not improve ranking'],
-    ['Exact diag is 2x faster\nthan VQE', 'VQE: ~13s vs Exact: ~6s\nper protein',
+    ['Exact diag faster\nthan VQE',
+     f'VQE: ~{mean_vqe_t:.0f}s vs Exact: ~{mean_ex_t:.0f}s\nper protein',
      'Quantum circuit overhead\nwith no compensating benefit'],
-    ['Marginal VQE advantage\nover no-quantum', '\u0394 = +0.059 (p = 0.058, NS)\nBorderline but not significant',
-     'Any signal is within noise;\n14 proteins insufficient power'],
+    ['Marginal VQE advantage\nover no-quantum',
+     f'\u0394 = {vqe_noq["mean_diff"]:+.3f} (p = {vqe_noq["wilcoxon_p"]:.2f}, NS)',
+     'Any signal is within noise;\ncohort insufficient power'],
 ]
 
 table = ax.table(cellText=verdict_data[1:], colLabels=verdict_data[0],
