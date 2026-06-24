@@ -67,7 +67,12 @@ def _coverage_metrics(ensemble, s1, s2, ci1, ci2):
 
 def _merge_v2_plus_bridge(ens_v2, ens_v3):
     """v2 ensemble augmented with DSIB bridge conformations from v3."""
-    bridge = [c for c in ens_v3 if c['method'] in ('quantum_bridge', 'manifold_bridge')]
+    bridge_methods = {
+        'quantum_bridge', 'manifold_bridge',
+        'common_residue_interp', 'switch_contact_rigid',
+    }
+    bridge = [c for c in ens_v3 if c.get('method') in bridge_methods
+              or c.get('bridge_source') in bridge_methods]
     merged = list(ens_v2)
     for i, c in enumerate(bridge):
         merged.append({

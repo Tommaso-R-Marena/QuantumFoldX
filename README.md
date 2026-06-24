@@ -2,7 +2,7 @@
 
 [![Benchmark](https://img.shields.io/badge/Benchmark-49%20proteins-blue)]()
 [![License](https://img.shields.io/badge/License-MIT-green)]()
-[![Quantum](https://img.shields.io/badge/Quantum-Exact%20Ising%20Enumeration-orange)]()
+[![Method](https://img.shields.io/badge/Method-Conformational%20bridging%20%2B%20Ising--guided%20sampling-orange)]()
 
 ## Overview
 
@@ -37,40 +37,40 @@ DSIB computes a **Transition Complexity Index** from switch-contact density, the
 | Fold-switching | 12 | Ronish et al. 2024 | 7.6% |
 | Multi-state | 13 | M-SADA (Peng et al. 2025) | 23.3% |
 
-## Evidence (autoinhibited subset, n=16 head-to-head)
+## Evidence: oracle vs blind (n=49)
 
-Run: `python benchmarks/compare_v2_v3_coverage.py`
+Run: `python benchmarks/run_blind_coverage.py`
 
-| Condition | Dual-state coverage (TM>0.5) | Mean TM to state 2 |
-|-----------|------------------------------|---------------------|
-| v2 (baseline ensemble + VQE scoring) | 6/16 (37.5%) | 0.449 |
-| **v3 (DSIB ensemble + v3 scoring)** | **16/16 (100%)** | **0.798** |
-| v2 + bridge conformations only | 16/16 (100%) | 0.798 |
+Diagnostic (Step 1, bridge-source breakdown): `python benchmarks/dsib_ablation_diagnostic.py`
 
-**Paired Wilcoxon (v3 vs v2 TM→S2): p = 0.0005.** Bridge-only ablation matches full v3 exactly (E = B).
+| Setting | Dual coverage (n=49) | Mean TM→S2 | vs AF3 (15%) |
+|---------|----------------------|------------|--------------|
+| BLIND (state 1 only at generation) | 11/49 (22.4%) | 0.331 | p=0.106 (not significant) |
+| ORACLE (both states known at generation) | 48/49 (98.0%) | 0.881 | p~1.06e-38 |
 
-Hard subset (baseline TM < 0.5): 0/10 → 10/10 dual coverage.
+ORACLE vs BLIND: Wilcoxon p=1.20e-09.
 
-### Cross-dataset benchmark (n=48 proteins, 3 categories)
+BLIND performance matches the existing v2 baseline. The 98% ORACLE figure reflects conformational interpolation toward an already-known target structure, not de novo prediction. This benchmark cannot demonstrate predictive or generative capability, because it requires the answer (state 2) as input.
 
-Run: `python benchmarks/run_unified_coverage.py`
+### By category
 
-| Category | v2 dual coverage | v3 (DSIB) dual coverage | Wilcoxon p |
-|----------|------------------|-------------------------|------------|
-| Autoinhibited (24) | 6/24 (25%) | **24/24 (100%)** | 1.4×10⁻⁵ |
-| Fold-switch (12) | 1/12 (8%) | **11/12 (92%)** | 2.4×10⁻⁴ |
-| Multi-state (12) | 4/12 (33%) | **12/12 (100%)** | 4.9×10⁻⁴ |
-| **Combined (48)** | **11/48 (23%)** | **47/48 (98%)** | 1.8×10⁻⁹ |
+| Category | BLIND dual | ORACLE dual | BLIND mean TM→S2 | ORACLE mean TM→S2 |
+|----------|------------|-------------|------------------|-------------------|
+| Autoinhibited (24) | 6/24 | 24/24 | 0.341 | 0.903 |
+| Fold-switch (12) | 1/12 | 11/12 | 0.250 | 0.796 |
+| Multi-state (13) | 4/13 | 13/13 | 0.388 | 0.919 |
 
-Hard subset (baseline TM < 0.5, n=37): v2 0/37 → v3 **36/37** dual coverage.
+Hard subset (baseline TM < 0.5, n=38): BLIND 0/38 dual coverage → ORACLE 37/38 dual coverage.
 
-Bridge-only ablation (E) matches full v3 on all categories. vs published AF3 weighted mean dual-state rate (15%): p < 10⁻³⁷.
+### Bridge-source diagnostic (Step 1, n=6 proteins across all categories)
 
-One fold-switch outlier (HIV Rev) remains below TM 0.5 threshold; all autoinhibited and multi-state targets are covered.
+On SRC, WAS, FYN, CLIC1, REV, and PDGFRB, the max-TM winner in the ORACLE ensemble was a bridge member on 6/6 proteins. By source: **common_residue_interp** won 5/6; **manifold_bridge** won 1/6 (PDGFRB); **switch_contact_rigid** won 0/6. Switch-contact-guided rigid-body motion (the Ising H₁/H₂ output) generates conformations but did not produce the max-TM winner in this sample. Condition E (v2 + bridge only) matched condition B (full v3) on 6/6 because coverage is max TM over the full ensemble, not a ranked selection step.
 
 ## What did not work
 
-QICESS v2's single-state VQE scoring did not beat random ranking (VQE 0.391 vs Random 0.394, p=0.25). We report that failure and replaced it with DSIB bridge generation.
+QICESS v2's single-state VQE scoring did not beat random ranking (VQE 0.391 vs Random 0.394, p=0.25) and never matched exact diagonalization (0/16). We report that failure and replaced it.
+
+The Ising switch-contact machinery generates conformations but does not produce the max-TM winner in the Step 1 diagnostic sample (switch_contact_rigid won 0/6; common_residue_interp won 5/6; manifold_bridge won 1/6 and still interpolates toward state 2 coordinates). DSIB's apparent success under the ORACLE setting is attributable to direct S1↔S2 interpolation, confirmed by the BLIND/ORACLE gap: BLIND 11/49 (22.4%) vs ORACLE 48/49 (98.0%), Wilcoxon p=1.20e-09.
 
 Top-10 ranking ablation remains a weak proxy; dual-state coverage is the primary endpoint.
 
@@ -78,7 +78,7 @@ Top-10 ranking ablation remains a weak proxy; dual-state coverage is the primary
 
 - Classically simulated Ising enumeration, not hardware quantum advantage
 - AF3 numbers are from published benchmarks; we do not re-run AF3
-- Both experimental structures must be available
+- **Both experimental structures must be available at generation time for ORACLE performance.** Without state 2, dual coverage falls to 11/49 (22.4%) — see the oracle-vs-blind table above. This is not de novo prediction; it is pathway modeling between two known endpoints.
 - Scoring refinements beyond ensemble generation show little additional benefit
 
 ## Installation
@@ -88,17 +88,17 @@ pip install -r requirements.txt
 ```
 
 ```bash
-# Unified cross-dataset benchmark (49 proteins)
+# Blind vs oracle benchmark (49 proteins) — primary evidence
+python benchmarks/run_blind_coverage.py
+
+# Bridge-source ablation diagnostic (Step 1)
+python benchmarks/dsib_ablation_diagnostic.py
+
+# Unified cross-dataset benchmark (v2 vs v3)
 python benchmarks/run_unified_coverage.py
 
 # Autoinhibited head-to-head v2 vs v3
 python benchmarks/compare_v2_v3_coverage.py
-
-# Full autoinhibited benchmark
-python benchmarks/run_benchmark_v2_fast.py
-
-# All categories + ablation
-python benchmarks/run_all_benchmarks.py
 
 # Tests
 python -m pytest tests/ -v
@@ -110,9 +110,9 @@ python -m pytest tests/ -v
 QuantumFoldX v3 (DSIB)
 ├── PDB fetching (both states, chain fallback)
 ├── DSIB: H₁, H₂, 9-point λ-path, switch contacts, TCI
-├── Ensemble: NMA + rigid-body + torsion + quantum_bridge + manifold_bridge
+├── Ensemble: NMA + rigid-body + torsion + bridge_interp + switch_rigid + manifold_bridge
 ├── Scoring: manifold overlap, state-2 contacts/geometry/imfdRMSD
-└── Metrics: dual-state coverage, stratified by category and difficulty
+└── Metrics: dual-state coverage (oracle vs blind)
 ```
 
 ## Project structure
@@ -121,11 +121,12 @@ QuantumFoldX v3 (DSIB)
 src/quantum/dual_state_ising.py   # DSIB core + TCI
 src/scoring/qicess_v3.py          # create_dsib_scorer() factory
 src/ensemble/conformational_sampler.py
-benchmarks/run_unified_coverage.py  # 49-protein cross-dataset benchmark
-benchmarks/compare_v2_v3_coverage.py
-configs/benchmark_dataset.py      # 49 curated targets
-results/unified/                  # Cross-dataset outputs
-results/evidence/                 # Autoinhibited head-to-head
+benchmarks/run_blind_coverage.py       # Primary evidence: blind vs oracle
+benchmarks/dsib_ablation_diagnostic.py # Bridge-source breakdown
+benchmarks/run_unified_coverage.py
+configs/benchmark_dataset.py           # 49 curated targets
+results/blind/                         # Blind vs oracle outputs
+results/unified/                       # Cross-dataset v2 vs v3 outputs
 ```
 
 ## References
