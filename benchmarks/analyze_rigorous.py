@@ -116,26 +116,63 @@ def compute_stats(df: pd.DataFrame) -> dict:
         'n_interp_better_or_equal': int(np.sum(d <= e + 1e-6)),
     }
 
-    # Q4: mode overlap explains blind predictability
+    # Q4: mode overlap explains blind predictability.
+    # The *correct* target is the blind GAIN toward state 2 beyond simply
+    # returning state 1 (blind_best - baseline_tm): absolute blind TM is
+    # confounded by how similar the two states already are.
     q4 = {}
-    blind_best = ok[['blind_baseline_max_tm_s2', 'blind_softmode_max_tm_s2']].max(axis=1).astype(float).values
+    blind_best = ok[['blind_baseline_max_tm_s2',
+                     'blind_softmode_max_tm_s2']].max(axis=1).astype(float).values
+    baseline = ok['baseline_tm'].astype(float).values
+    blind_gain = blind_best - baseline
+    hard_mask = baseline < 0.5
+
+    def _spear_perm(x, y, seed=7, n_perm=10000):
+        m = ~(np.isnan(x) | np.isnan(y))
+        if m.sum() < 5:
+            return None
+        rho, p = sp.spearmanr(x[m], y[m])
+        rng = np.random.default_rng(seed)
+        perm = np.array([sp.spearmanr(x[m], rng.permutation(y[m]))[0]
+                         for _ in range(n_perm)])
+        p_perm = (np.sum(np.abs(perm) >= abs(rho)) + 1) / (n_perm + 1)
+        return {'spearman_rho': float(rho), 'p_analytic': float(p),
+                'p_permutation': float(p_perm), 'n': int(m.sum())}
+
+    def _partial_spear(x, y, z):
+        """Spearman of x,y controlling for z (rank-residual method)."""
+        m = ~(np.isnan(x) | np.isnan(y) | np.isnan(z))
+        rx, ry, rz = (sp.rankdata(v[m]) for v in (x, y, z))
+        def _resid(a, b):
+            b1 = np.vstack([b, np.ones_like(b)]).T
+            coef, *_ = np.linalg.lstsq(b1, a, rcond=None)
+            return a - b1 @ coef
+        rho, p = sp.spearmanr(_resid(rx, rz), _resid(ry, rz))
+        return {'partial_rho': float(rho), 'p': float(p), 'n': int(m.sum())}
+
+    trans = ok['transition_rmsd'].astype(float).values
     for feat in ['best_single_overlap', 'cum_overlap_5', 'cum_overlap_10',
-                 'softest_mode_overlap']:
+                 'softest_mode_overlap', 'transition_rmsd']:
         if feat not in ok.columns:
             continue
         x = ok[feat].astype(float).values
-        m = ~(np.isnan(x) | np.isnan(blind_best))
-        if m.sum() < 5:
-            continue
-        rho, p = sp.spearmanr(x[m], blind_best[m])
-        # permutation p on Spearman rho
-        rng = np.random.default_rng(7)
-        perm = np.array([sp.spearmanr(x[m], rng.permutation(blind_best[m]))[0]
-                         for _ in range(5000)])
-        p_perm = (np.sum(np.abs(perm) >= abs(rho)) + 1) / (len(perm) + 1)
-        q4[feat] = {'spearman_rho': float(rho), 'p_analytic': float(p),
-                    'p_permutation': float(p_perm), 'n': int(m.sum())}
+        entry = {'vs_blind_gain': _spear_perm(x, blind_gain, seed=11),
+                 'vs_blind_gain_hard': _spear_perm(x[hard_mask], blind_gain[hard_mask], seed=12),
+                 'vs_blind_abs': _spear_perm(x, blind_best, seed=13)}
+        if feat == 'best_single_overlap':
+            # Is overlap's effect just a proxy for transition size? Control for it.
+            entry['partial_gain_ctrl_transition'] = _partial_spear(x, blind_gain, trans)
+            entry['partial_gain_ctrl_baseline'] = _partial_spear(x, blind_gain, baseline)
+            rho_t, p_t = sp.spearmanr(x, trans)
+            entry['independence_overlap_vs_transition'] = {
+                'spearman_rho': float(rho_t), 'p': float(p_t)}
+        q4[feat] = entry
     out['overlap_vs_blind'] = q4
+    out['confound_note'] = (
+        'Absolute blind TM is dominated by baseline_tm (state-1/2 similarity); the '
+        'honest target is blind gain over returning state 1. Soft-mode overlap and '
+        'transition magnitude are independent predictors of that gain (see '
+        'partial_gain_ctrl_transition and independence_overlap_vs_transition).')
 
     # By category
     bycat = {}
@@ -165,7 +202,8 @@ def compute_stats(df: pd.DataFrame) -> dict:
         'blind_union>af3 (binom)': out['vs_af3']['blind_union']['p_binom_greater'],
     }
     for feat, r in q4.items():
-        family[f'overlap~blind:{feat} (perm)'] = r['p_permutation']
+        if r.get('vs_blind_gain'):
+            family[f'overlap~gain:{feat} (perm)'] = r['vs_blind_gain']['p_permutation']
     out['holm_bonferroni'] = st.holm_bonferroni(family)
 
     return out
@@ -185,22 +223,57 @@ def _setup_mpl():
 
 
 def fig_overlap_vs_blind(df, plt):
-    ok = df[df['status'] == 'ok']
-    blind_best = ok[['blind_baseline_max_tm_s2', 'blind_softmode_max_tm_s2']].max(axis=1)
-    fig, ax = plt.subplots(figsize=(7, 5.5))
+    ok = df[df['status'] == 'ok'].copy()
+    ok['blind_best'] = ok[['blind_baseline_max_tm_s2',
+                           'blind_softmode_max_tm_s2']].max(axis=1)
+    ok['blind_gain'] = ok['blind_best'] - ok['baseline_tm']
+    fig, ax = plt.subplots(figsize=(7.2, 5.5))
     for cat, g in ok.groupby('category'):
-        yy = g[['blind_baseline_max_tm_s2', 'blind_softmode_max_tm_s2']].max(axis=1)
-        ax.scatter(g['best_single_overlap'], yy, s=55, alpha=0.8,
+        ax.scatter(g['best_single_overlap'], g['blind_gain'], s=55, alpha=0.85,
                    color=CAT_COLORS[cat], label=CAT_LABEL[cat], edgecolor='k', lw=0.4)
-    rho, p = sp.spearmanr(ok['best_single_overlap'], blind_best)
-    ax.axhline(0.5, ls='--', c='gray', lw=1)
-    ax.text(0.02, 0.52, 'TM = 0.5 (fold match)', color='gray', fontsize=9)
+    rho, p = sp.spearmanr(ok['best_single_overlap'], ok['blind_gain'])
+    # annotate the one genuine conformational-change success
+    ak = ok[ok['gene'] == 'AK1']
+    if len(ak):
+        ax.annotate('AK1 (hinge)\nsole genuine\nblind success',
+                    (float(ak['best_single_overlap'].iloc[0]), float(ak['blind_gain'].iloc[0])),
+                    textcoords='offset points', xytext=(-15, -38), fontsize=8.5,
+                    arrowprops=dict(arrowstyle='->', color='k', lw=0.8))
+    ax.axhline(0.0, ls='--', c='gray', lw=1)
     ax.set_xlabel('ANM best single-mode overlap with observed transition (state 1 only)')
-    ax.set_ylabel('Best BLIND max TM-score to state 2')
-    ax.set_title(f'Blind predictability tracks soft-mode overlap\nSpearman '
-                 rf'$\rho$={rho:.2f} (p={p:.1e}), n={len(ok)}')
+    ax.set_ylabel('BLIND gain toward state 2  (max TM$_2$ $-$ baseline TM)')
+    ax.set_title('How far a blind ensemble moves toward state 2 tracks soft-mode overlap\n'
+                 rf'Spearman $\rho$={rho:.2f} (p={p:.1e}), n={len(ok)}')
     ax.legend(loc='upper left', framealpha=0.9)
-    fig.savefig(FIG_DIR / 'fig1_overlap_vs_blind_tm.png')
+    fig.savefig(FIG_DIR / 'fig1_overlap_vs_blind_gain.png')
+    plt.close(fig)
+
+
+def fig_confound(df, plt):
+    """Blind coverage is dominated by state pairs that are already similar."""
+    ok = df[df['status'] == 'ok'].copy()
+    ok['blind_best'] = ok[['blind_baseline_max_tm_s2',
+                           'blind_softmode_max_tm_s2']].max(axis=1)
+    fig, ax = plt.subplots(figsize=(7.2, 5.5))
+    for cat, g in ok.groupby('category'):
+        ax.scatter(g['baseline_tm'], g['blind_best'], s=55, alpha=0.85,
+                   color=CAT_COLORS[cat], label=CAT_LABEL[cat], edgecolor='k', lw=0.4)
+    ax.plot([0, 1], [0, 1], ls='--', c='gray', lw=1, label='y = x (no gain)')
+    ax.axhline(0.5, ls=':', c='k', lw=0.8, alpha=0.6)
+    ax.axvline(0.5, ls=':', c='k', lw=0.8, alpha=0.6)
+    ax.text(0.03, 0.53, 'covered (TM>0.5)', fontsize=8, color='k')
+    ax.text(0.52, 0.03, 'already-similar states', fontsize=8, color='k', rotation=90)
+    ak = ok[ok['gene'] == 'AK1']
+    if len(ak):
+        ax.annotate('AK1', (float(ak['baseline_tm'].iloc[0]), float(ak['blind_best'].iloc[0])),
+                    textcoords='offset points', xytext=(6, 6), fontsize=9)
+    ax.set_xlabel('Baseline state-1 vs state-2 similarity (TM-score)')
+    ax.set_ylabel('Best BLIND max TM-score to state 2')
+    ax.set_title('Blind "coverage" is dominated by already-similar state pairs\n'
+                 '(points hug y=x: the ensemble barely improves on returning state 1)')
+    ax.legend(loc='lower right', framealpha=0.9)
+    ax.set_xlim(0, 1.02); ax.set_ylim(0, 1.02)
+    fig.savefig(FIG_DIR / 'fig7_coverage_confound.png')
     plt.close(fig)
 
 
@@ -338,6 +411,7 @@ def main():
     fig_dsib_vs_interp(df, plt)
     fig_coverage_bars(stats, plt)
     fig_overlap_by_category(df, plt)
+    fig_confound(df, plt)
 
     # Console summary
     n = stats['n_proteins']
@@ -363,9 +437,14 @@ def main():
           f"95%CI [{dv['paired_bootstrap_dsib_minus_interp']['ci'][0]:+.3f},"
           f"{dv['paired_bootstrap_dsib_minus_interp']['ci'][1]:+.3f}]  "
           f"(DSIB better on {dv['n_dsib_better']}/{n})")
-    print('Q4 overlap vs blind max-TM (Spearman):')
+    print('Q4 overlap vs BLIND GAIN over state 1 (Spearman, permutation p):')
     for feat, r in stats['overlap_vs_blind'].items():
-        print(f"    {feat:22s} rho={r['spearman_rho']:+.3f}  perm p={r['p_permutation']:.4f}")
+        g = r.get('vs_blind_gain'); h = r.get('vs_blind_gain_hard')
+        if g:
+            line = f"    {feat:22s} all: rho={g['spearman_rho']:+.3f} p={g['p_permutation']:.4f}"
+            if h:
+                line += f"   hard(n={h['n']}): rho={h['spearman_rho']:+.3f} p={h['p_permutation']:.4f}"
+            print(line)
     print('\nBy category:')
     for cat, cs in stats['by_category'].items():
         print(f"  {cat:14s} n={cs['n']:2d}  overlap={cs['mean_best_overlap']:.3f}  "
