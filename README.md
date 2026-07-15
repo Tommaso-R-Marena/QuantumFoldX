@@ -71,8 +71,8 @@ exact tests, effect sizes, and Holm–Bonferroni correction. See
 
 Run:
 ```bash
-python benchmarks/run_rigorous_benchmark.py --no-resume   # generate (needs network)
-python benchmarks/analyze_rigorous.py                     # statistics + figures
+python benchmarks/run_rigorous_benchmark.py --no-resume --n-ens 56   # generate (needs network)
+python benchmarks/analyze_rigorous.py                               # statistics + figures
 ```
 
 Headline findings (all paired over the same 49 proteins):
