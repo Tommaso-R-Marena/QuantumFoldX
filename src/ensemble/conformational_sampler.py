@@ -185,6 +185,63 @@ def generate_manifold_bridge_ensemble(
     return ensemble
 
 
+def generate_anm_mode_scan_ensemble(
+    coords: np.ndarray,
+    n_conformations: int = 60,
+    n_modes: int = 6,
+    max_rmsd: float = 18.0,
+    cutoff: float = 13.0,
+    seed: int = 42,
+) -> List[np.ndarray]:
+    """Blind conformational sampling along the softest ANM modes.
+
+    Unlike ``generate_nma_ensemble`` (random amplitudes summed over many
+    modes), this *systematically scans* each of the softest ``n_modes``
+    low-frequency modes in both directions across a grid of target RMSD
+    amplitudes, then adds a few random soft-mode combinations. Low-frequency
+    ANM modes are the standard linear-response predictor of functional
+    conformational change (Tama & Sanejouand 2001; Bahar et al. 2010), so
+    this is a physically-motivated *blind* generator that uses state 1 only.
+
+    Amplitude scaling: displacing ``coords`` by ``c * mode`` (mode a unit
+    3N-vector) yields Calpha RMSD ``c / sqrt(N)``; we invert this to hit
+    target RMSD values.
+    """
+    from ..analysis.mode_overlap import compute_anm_modes
+
+    rng = np.random.default_rng(seed)
+    n = len(coords)
+    if n < 8:
+        return [coords.copy() for _ in range(n_conformations)]
+
+    eigvals, eigvecs = compute_anm_modes(coords, n_modes=n_modes, cutoff=cutoff)
+    n_avail = eigvecs.shape[1]
+    if n_avail == 0:
+        return [coords.copy() for _ in range(n_conformations)]
+
+    sqrt_n = np.sqrt(n)
+    amps = np.linspace(max_rmsd / 5.0, max_rmsd, 5)          # graded RMSD grid
+    ensemble: List[np.ndarray] = []
+
+    for k in range(n_avail):
+        mode = eigvecs[:, k].reshape(n, 3)
+        for r in amps:
+            for sign in (+1.0, -1.0):
+                ensemble.append(coords + sign * (r * sqrt_n) * mode)
+                if len(ensemble) >= n_conformations:
+                    return ensemble
+
+    # Fill remainder with random combinations of the softest modes.
+    while len(ensemble) < n_conformations:
+        weights = rng.normal(0, 1, n_avail)
+        combo = eigvecs @ weights
+        combo /= max(np.linalg.norm(combo), 1e-8)
+        r = rng.uniform(max_rmsd / 3.0, max_rmsd)
+        ensemble.append(coords + (r * sqrt_n) * combo.reshape(n, 3))
+
+    return ensemble
+
+
 def generate_nma_ensemble(coords: np.ndarray, n_conformations: int = 20,
                            amplitude: float = 2.0, n_modes: int = 10,
                            seed: int = 42) -> List[np.ndarray]:
