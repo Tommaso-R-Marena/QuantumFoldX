@@ -3,3 +3,5 @@ __pycache__/
 data/pdb_cache/*.pdb
 .DS_Store
 *.egg-info/
+.venv/
+results_*_run.log

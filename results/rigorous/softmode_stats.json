@@ -1,0 +1,301 @@
+{
+  "n_proteins": 49,
+  "coverage": {
+    "baseline": {
+      "n_covered": 11,
+      "rate": 0.22448979591836735,
+      "wilson_95ci": [
+        0.1302483771472861,
+        0.35879056187045744
+      ],
+      "mean_max_tm_s2": 0.3289707197604695,
+      "median_max_tm_s2": 0.1701427867319709
+    },
+    "single_mode": {
+      "n_covered": 11,
+      "rate": 0.22448979591836735,
+      "wilson_95ci": [
+        0.1302483771472861,
+        0.35879056187045744
+      ],
+      "mean_max_tm_s2": 0.3310615989315247,
+      "median_max_tm_s2": 0.1737508083896002
+    },
+    "subspace": {
+      "n_covered": 11,
+      "rate": 0.22448979591836735,
+      "wilson_95ci": [
+        0.1302483771472861,
+        0.35879056187045744
+      ],
+      "mean_max_tm_s2": 0.3344566960904574,
+      "median_max_tm_s2": 0.1740471224747461
+    },
+    "subspace_relax": {
+      "n_covered": 11,
+      "rate": 0.22448979591836735,
+      "wilson_95ci": [
+        0.1302483771472861,
+        0.35879056187045744
+      ],
+      "mean_max_tm_s2": 0.3417575781241623,
+      "median_max_tm_s2": 0.1882911508584802
+    },
+    "combo": {
+      "n_covered": 11,
+      "rate": 0.22448979591836735,
+      "wilson_95ci": [
+        0.1302483771472861,
+        0.35879056187045744
+      ],
+      "mean_max_tm_s2": 0.3454376065673848,
+      "median_max_tm_s2": 0.1882911508584802
+    }
+  },
+  "comparisons": {
+    "subspace_vs_baseline": {
+      "mean_a": 0.3344566960904574,
+      "mean_b": 0.3289707197604695,
+      "paired_bootstrap": {
+        "n": 49,
+        "method": "bca",
+        "ci": [
+          -0.00018435704864809088,
+          0.01863628709847133
+        ],
+        "z0": 0.09640364162321052,
+        "accel": 0.08901120466513078,
+        "mean_diff": 0.005485976329987919
+      },
+      "permutation_greater": {
+        "observed": 0.005485976329987919,
+        "p_value": 0.10524473776311184,
+        "n": 49,
+        "alternative": "greater"
+      },
+      "mcnemar_coverage": {
+        "b": 0,
+        "c": 0,
+        "p_value": 1.0,
+        "odds": NaN
+      },
+      "rank_biserial": 0.20068027210884354,
+      "cohens_d": 0.18556640111854225,
+      "n_improved": 25,
+      "n_worsened": 17
+    },
+    "subspace_relax_vs_baseline": {
+      "mean_a": 0.3417575781241623,
+      "mean_b": 0.3289707197604695,
+      "paired_bootstrap": {
+        "n": 49,
+        "method": "bca",
+        "ci": [
+          0.005574543877858894,
+          0.028980097621068162
+        ],
+        "z0": 0.09237512787644497,
+        "accel": 0.08908078665482021,
+        "mean_diff": 0.0127868583636928
+      },
+      "permutation_greater": {
+        "observed": 0.0127868583636928,
+        "p_value": 0.0018999050047497626,
+        "n": 49,
+        "alternative": "greater"
+      },
+      "mcnemar_coverage": {
+        "b": 0,
+        "c": 0,
+        "p_value": 1.0,
+        "odds": NaN
+      },
+      "rank_biserial": 0.48639455782312924,
+      "cohens_d": 0.3473239747924534,
+      "n_improved": 30,
+      "n_worsened": 14
+    },
+    "subspace_vs_single_mode": {
+      "mean_a": 0.3344566960904574,
+      "mean_b": 0.3310615989315247,
+      "paired_bootstrap": {
+        "n": 49,
+        "method": "bca",
+        "ci": [
+          0.000777998168165919,
+          0.006668815101556996
+        ],
+        "z0": 0.008773311508328052,
+        "accel": 0.028685506472806044,
+        "mean_diff": 0.0033950971589326823
+      },
+      "permutation_greater": {
+        "observed": 0.0033950971589326823,
+        "p_value": 0.014249287535623219,
+        "n": 49,
+        "alternative": "greater"
+      },
+      "mcnemar_coverage": {
+        "b": 0,
+        "c": 0,
+        "p_value": 1.0,
+        "odds": NaN
+      },
+      "rank_biserial": 0.44873949579831934,
+      "cohens_d": 0.3194502449466627,
+      "n_improved": 23,
+      "n_worsened": 8
+    },
+    "subspace_relax_vs_subspace": {
+      "mean_a": 0.3417575781241623,
+      "mean_b": 0.3344566960904574,
+      "paired_bootstrap": {
+        "n": 49,
+        "method": "bca",
+        "ci": [
+          0.004696577793594995,
+          0.011651096056652209
+        ],
+        "z0": 0.05969318454768027,
+        "accel": 0.05521944826658886,
+        "mean_diff": 0.007300882033704882
+      },
+      "permutation_greater": {
+        "observed": 0.007300882033704882,
+        "p_value": 4.999750012499375e-05,
+        "n": 49,
+        "alternative": "greater"
+      },
+      "mcnemar_coverage": {
+        "b": 0,
+        "c": 0,
+        "p_value": 1.0,
+        "odds": NaN
+      },
+      "rank_biserial": 0.7858585858585858,
+      "cohens_d": 0.6145802484344749,
+      "n_improved": 35,
+      "n_worsened": 6
+    },
+    "combo_vs_baseline": {
+      "mean_a": 0.3454376065673848,
+      "mean_b": 0.3289707197604695,
+      "paired_bootstrap": {
+        "n": 49,
+        "method": "bca",
+        "ci": [
+          0.01027529939007368,
+          0.03317880234794133
+        ],
+        "z0": 0.12136744671333508,
+        "accel": 0.11046710910176198,
+        "mean_diff": 0.016466886806915274
+      },
+      "permutation_greater": {
+        "observed": 0.016466886806915274,
+        "p_value": 4.999750012499375e-05,
+        "n": 49,
+        "alternative": "greater"
+      },
+      "mcnemar_coverage": {
+        "b": 0,
+        "c": 0,
+        "p_value": 1.0,
+        "odds": NaN
+      },
+      "rank_biserial": 1.0,
+      "cohens_d": 0.4846759748824925,
+      "n_improved": 30,
+      "n_worsened": 0
+    }
+  },
+  "gain_vs_overlap": {
+    "spearman_rho": 0.31598550946476855,
+    "p_permutation": 0.026797320267973202,
+    "partial_ctrl_transition": {
+      "partial_rho": 0.358028470840349,
+      "p": 0.01154200568780908
+    },
+    "high_overlap_mean_gain": 0.02449498659982811,
+    "low_overlap_mean_gain": 0.0015470552570029062,
+    "high_gain_bootstrap": {
+      "point": 0.02449498659982811,
+      "n": 24,
+      "method": "bca",
+      "ci": [
+        0.011663789881575855,
+        0.05701609285075079
+      ],
+      "z0": 0.1100118210228888,
+      "accel": 0.09632261217872241
+    },
+    "low_gain_bootstrap": {
+      "point": 0.0015470552570029062,
+      "n": 25,
+      "method": "bca",
+      "ci": [
+        -0.00485217235789167,
+        0.006316350500794114
+      ],
+      "z0": -0.04764395595447656,
+      "accel": -0.030445881786743602
+    },
+    "stratum_interaction_perm_p": 0.004199580041995801,
+    "median_overlap_split": 0.2524092662306608
+  },
+  "by_category": {
+    "autoinhibited": {
+      "n": 24,
+      "mean_gain": 0.018127205695724045,
+      "mean_overlap": 0.2543098822537318,
+      "baseline_dual": 6,
+      "subspace_relax_dual": 6
+    },
+    "foldswitch": {
+      "n": 12,
+      "mean_gain": 0.0014399400498695352,
+      "mean_overlap": 0.2844591367617663,
+      "baseline_dual": 1,
+      "subspace_relax_dual": 1
+    },
+    "multistate": {
+      "n": 13,
+      "mean_gain": 0.01340183404039506,
+      "mean_overlap": 0.2301054077993031,
+      "baseline_dual": 4,
+      "subspace_relax_dual": 4
+    }
+  },
+  "holm_bonferroni": {
+    "relax>subspace": {
+      "p_raw": 4.999750012499375e-05,
+      "p_adjusted": 0.00024998750062496874,
+      "threshold": 0.01,
+      "reject_h0": true
+    },
+    "subspace_relax>baseline": {
+      "p_raw": 0.0018999050047497626,
+      "p_adjusted": 0.00759962001899905,
+      "threshold": 0.0125,
+      "reject_h0": true
+    },
+    "overlap_stratum_interaction": {
+      "p_raw": 0.004199580041995801,
+      "p_adjusted": 0.012598740125987402,
+      "threshold": 0.016666666666666666,
+      "reject_h0": true
+    },
+    "subspace>single": {
+      "p_raw": 0.014249287535623219,
+      "p_adjusted": 0.028498575071246438,
+      "threshold": 0.025,
+      "reject_h0": true
+    },
+    "gain~overlap": {
+      "p_raw": 0.026797320267973202,
+      "p_adjusted": 0.028498575071246438,
+      "threshold": 0.05,
+      "reject_h0": true
+    }
+  }
+}

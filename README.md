@@ -62,6 +62,59 @@ BLIND performance matches the existing v2 baseline. The 98% ORACLE figure reflec
 
 Hard subset (baseline TM < 0.5, n=38): BLIND 0/38 dual coverage → ORACLE 37/38 dual coverage.
 
+## Rigorous re-analysis: mode overlap + honest controls (n=49)
+
+A fully controlled re-analysis with confidence intervals, paired permutation /
+exact tests, effect sizes, and Holm–Bonferroni correction. See
+[`results/rigorous/FINDINGS.md`](results/rigorous/FINDINGS.md) and figures in
+`results/rigorous/figures/`.
+
+Run:
+```bash
+python benchmarks/run_rigorous_benchmark.py --no-resume --n-ens 56   # generate (needs network)
+python benchmarks/analyze_rigorous.py                               # statistics + figures
+```
+
+Headline findings (all paired over the same 49 proteins):
+
+1. **The Ising/quantum bridge adds nothing.** The full DSIB pipeline is
+   *significantly worse* than plain S1→S2 interpolation with no Ising at all
+   (ΔTM = −0.101, 95% CI [−0.126, −0.077]; DSIB better on 1/49; Holm-adj
+   p = 4×10⁻⁴).
+2. **The oracle result is a trivial artifact.** Pure interpolation toward the
+   known state 2 covers 49/49 (100%). This is not prediction.
+3. **Blind prediction is not significantly above AF3** (11/49 = 22.4%, 95% CI
+   13–36%; p = 0.11 vs 15%). 0/38 hard proteins (baseline TM < 0.5) are covered
+   blindly; 10/11 "covered" proteins already have similar states.
+4. **Blind gain toward state 2 is governed by elastic-network soft-mode
+   overlap** (Spearman ρ = 0.46, p = 0.001; independent of transition size:
+   partial ρ = 0.49, p = 4×10⁻⁴). Adenylate kinase (highest single-mode overlap)
+   is the only genuine blind conformational-change success.
+
+The honest contribution is a mechanistic characterization of *what is
+predictable and why* — and a clean refutation of the quantum-advantage claim —
+not a state-of-the-art prediction result.
+
+### Follow-up: soft-mode subspace sampling
+
+Acting on finding 4, a fully blind soft-mode **subspace** sampler with
+ENM-guided Cα relaxation (`src/ensemble/nm_guided.py`,
+`benchmarks/run_softmode_improvement.py`, `benchmarks/analyze_softmode.py`)
+gives a small but statistically robust improvement in blind max-TM to state 2
+(ΔTM +0.013, 95% CI [+0.006, +0.029]; Holm-adj p = 0.008), and the improvement
+is significantly concentrated on high-overlap collective/hinge transitions
+(high vs low stratum +0.025 vs +0.002, interaction p = 0.004). The combined
+ensemble is never worse than baseline (30 improved, 0 worsened), and adenylate
+kinase rises 0.58 → 0.80. **It does not, however, change the binary dual-state
+coverage rate (11/49 for every sampler)** — the gains rarely cross TM > 0.5 for
+hard cases, and fold-switchers gain nothing. Details in
+[`results/rigorous/FINDINGS.md`](results/rigorous/FINDINGS.md).
+
+```bash
+python benchmarks/run_softmode_improvement.py --no-resume --n-ens 56
+python benchmarks/analyze_softmode.py
+```
+
 ### Bridge-source diagnostic (Step 1, n=6 proteins across all categories)
 
 On SRC, WAS, FYN, CLIC1, REV, and PDGFRB, the max-TM winner in the ORACLE ensemble was a bridge member on 6/6 proteins. By source: **common_residue_interp** won 5/6; **manifold_bridge** won 1/6 (PDGFRB); **switch_contact_rigid** won 0/6. Switch-contact-guided rigid-body motion (the Ising H₁/H₂ output) generates conformations but did not produce the max-TM winner in this sample. Condition E (v2 + bridge only) matched condition B (full v3) on 6/6 because coverage is max TM over the full ensemble, not a ranked selection step.

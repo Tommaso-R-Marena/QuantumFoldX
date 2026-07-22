@@ -1,0 +1,332 @@
+{
+  "n_proteins": 49,
+  "af3_weighted_rate": 0.1496666666666667,
+  "coverage": {
+    "blind_baseline": {
+      "n_covered": 11,
+      "rate": 0.22448979591836735,
+      "wilson_95ci": [
+        0.1302483771472861,
+        0.35879056187045744
+      ],
+      "mean_max_tm_s2": 0.3289707197604695,
+      "median_max_tm_s2": 0.1701427867319709
+    },
+    "blind_softmode": {
+      "n_covered": 11,
+      "rate": 0.22448979591836735,
+      "wilson_95ci": [
+        0.1302483771472861,
+        0.35879056187045744
+      ],
+      "mean_max_tm_s2": 0.3306747178348211,
+      "median_max_tm_s2": 0.1657612885691584
+    },
+    "blind_union": {
+      "n_covered": 11,
+      "rate": 0.22448979591836735,
+      "wilson_95ci": [
+        0.1302483771472861,
+        0.35879056187045744
+      ],
+      "mean_max_tm_s2": 0.33765367828995974,
+      "median_max_tm_s2": 0.1737844392932114
+    },
+    "oracle_interp": {
+      "n_covered": 49,
+      "rate": 1.0,
+      "wilson_95ci": [
+        0.9272997032640949,
+        0.9999999999999999
+      ],
+      "mean_max_tm_s2": 0.9440620448585888,
+      "median_max_tm_s2": 0.9476495359790256
+    },
+    "oracle_dsib": {
+      "n_covered": 48,
+      "rate": 0.9795918367346939,
+      "wilson_95ci": [
+        0.8930623153224584,
+        0.9963884204614692
+      ],
+      "mean_max_tm_s2": 0.8430051916524827,
+      "median_max_tm_s2": 0.8697518352850575
+    }
+  },
+  "vs_af3": {
+    "blind_baseline": {
+      "rate": 0.22448979591836735,
+      "af3": 0.1496666666666667,
+      "p_binom_greater": 0.1060779020481872
+    },
+    "blind_softmode": {
+      "rate": 0.22448979591836735,
+      "af3": 0.1496666666666667,
+      "p_binom_greater": 0.1060779020481872
+    },
+    "blind_union": {
+      "rate": 0.22448979591836735,
+      "af3": 0.1496666666666667,
+      "p_binom_greater": 0.1060779020481872
+    }
+  },
+  "softmode_vs_baseline": {
+    "mean_tm_softmode": 0.3306747178348211,
+    "mean_tm_baseline": 0.3289707197604695,
+    "paired_bootstrap": {
+      "n": 49,
+      "method": "bca",
+      "ci": [
+        -0.005115387683160861,
+        0.010529042022227908
+      ],
+      "z0": 0.017296597500018794,
+      "accel": 0.034776105049818845,
+      "mean_diff": 0.0017039980743516923
+    },
+    "permutation_greater": {
+      "observed": 0.0017039980743516923,
+      "p_value": 0.33868306584670765,
+      "n": 49,
+      "alternative": "greater"
+    },
+    "mcnemar_coverage": {
+      "b": 0,
+      "c": 0,
+      "p_value": 1.0,
+      "odds": NaN
+    },
+    "rank_biserial": 0.1292517006802721,
+    "cohens_d": 0.06229772096464359,
+    "n_improved": 27,
+    "n_worsened": 21
+  },
+  "dsib_vs_interp": {
+    "mean_tm_dsib": 0.8430051916524827,
+    "mean_tm_interp": 0.9440620448585888,
+    "paired_bootstrap_dsib_minus_interp": {
+      "n": 49,
+      "method": "bca",
+      "ci": [
+        -0.1264777502027265,
+        -0.07736450070214186
+      ],
+      "z0": -0.0012533144654325557,
+      "accel": -0.00953269918033864,
+      "mean_diff": -0.10105685320610601
+    },
+    "permutation_two_sided": {
+      "observed": -0.10105685320610601,
+      "p_value": 4.999750012499375e-05,
+      "n": 49,
+      "alternative": "two-sided"
+    },
+    "n_dsib_better": 1,
+    "n_interp_better_or_equal": 48
+  },
+  "overlap_vs_blind": {
+    "best_single_overlap": {
+      "vs_blind_gain": {
+        "spearman_rho": 0.4619113220062248,
+        "p_analytic": 0.0008346974904828782,
+        "p_permutation": 0.0010998900109989002,
+        "n": 49
+      },
+      "vs_blind_gain_hard": {
+        "spearman_rho": 0.3622236813307069,
+        "p_analytic": 0.02542996293542747,
+        "p_permutation": 0.025697430256974303,
+        "n": 38
+      },
+      "vs_blind_abs": {
+        "spearman_rho": 0.006479922445022704,
+        "p_analytic": 0.9647538128464016,
+        "p_permutation": 0.9616038396160383,
+        "n": 49
+      },
+      "partial_gain_ctrl_transition": {
+        "partial_rho": 0.48466758508087143,
+        "p": 0.00041705706191066255,
+        "n": 49
+      },
+      "partial_gain_ctrl_baseline": {
+        "partial_rho": 0.4421143935915098,
+        "p": 0.001469968931038256,
+        "n": 49
+      },
+      "independence_overlap_vs_transition": {
+        "spearman_rho": 0.009439257104954335,
+        "p": 0.9486752601161664
+      }
+    },
+    "cum_overlap_5": {
+      "vs_blind_gain": {
+        "spearman_rho": 0.18720342874636461,
+        "p_analytic": 0.19774014547059948,
+        "p_permutation": 0.20277972202779723,
+        "n": 49
+      },
+      "vs_blind_gain_hard": {
+        "spearman_rho": 0.22959072007003717,
+        "p_analytic": 0.16555833318200422,
+        "p_permutation": 0.1685831416858314,
+        "n": 38
+      },
+      "vs_blind_abs": {
+        "spearman_rho": -0.021990917903974692,
+        "p_analytic": 0.8807799462421653,
+        "p_permutation": 0.8821117888211178,
+        "n": 49
+      }
+    },
+    "cum_overlap_10": {
+      "vs_blind_gain": {
+        "spearman_rho": 0.2588397367212613,
+        "p_analytic": 0.07251886869644884,
+        "p_permutation": 0.0734926507349265,
+        "n": 49
+      },
+      "vs_blind_gain_hard": {
+        "spearman_rho": 0.2694243817027796,
+        "p_analytic": 0.10188759768162052,
+        "p_permutation": 0.10158984101589841,
+        "n": 38
+      },
+      "vs_blind_abs": {
+        "spearman_rho": -0.027705495178325424,
+        "p_analytic": 0.850117831464248,
+        "p_permutation": 0.8496150384961504,
+        "n": 49
+      }
+    },
+    "softest_mode_overlap": {
+      "vs_blind_gain": {
+        "spearman_rho": 0.17454972192458798,
+        "p_analytic": 0.23031779599423519,
+        "p_permutation": 0.23207679232076792,
+        "n": 49
+      },
+      "vs_blind_gain_hard": {
+        "spearman_rho": 0.13438389144232873,
+        "p_analytic": 0.4211754675600076,
+        "p_permutation": 0.41785821417858215,
+        "n": 38
+      },
+      "vs_blind_abs": {
+        "spearman_rho": -0.0637277412112863,
+        "p_analytic": 0.6635473221657321,
+        "p_permutation": 0.6639336066393361,
+        "n": 49
+      }
+    },
+    "transition_rmsd": {
+      "vs_blind_gain": {
+        "spearman_rho": 0.3973161896015103,
+        "p_analytic": 0.004701516243991781,
+        "p_permutation": 0.003999600039996,
+        "n": 49
+      },
+      "vs_blind_gain_hard": {
+        "spearman_rho": 0.0658787480849201,
+        "p_analytic": 0.694345102633118,
+        "p_permutation": 0.6911308869113089,
+        "n": 38
+      },
+      "vs_blind_abs": {
+        "spearman_rho": -0.5793662941986837,
+        "p_analytic": 1.2900881384983727e-05,
+        "p_permutation": 9.999000099990002e-05,
+        "n": 49
+      }
+    }
+  },
+  "confound_note": "Absolute blind TM is dominated by baseline_tm (state-1/2 similarity); the honest target is blind gain over returning state 1. Soft-mode overlap and transition magnitude are independent predictors of that gain (see partial_gain_ctrl_transition and independence_overlap_vs_transition).",
+  "by_category": {
+    "autoinhibited": {
+      "n": 24,
+      "mean_best_overlap": 0.2543098822537318,
+      "mean_cum_overlap_10": 0.3837997970962797,
+      "blind_baseline_dual": 6,
+      "blind_softmode_dual": 6,
+      "blind_union_dual": 6,
+      "oracle_interp_dual": 24,
+      "oracle_dsib_dual": 24,
+      "blind_baseline_mean_tm": 0.3381218805639438,
+      "blind_softmode_mean_tm": 0.3468395115549369
+    },
+    "foldswitch": {
+      "n": 12,
+      "mean_best_overlap": 0.2844591367617663,
+      "mean_cum_overlap_10": 0.40515930794871385,
+      "blind_baseline_dual": 1,
+      "blind_softmode_dual": 1,
+      "blind_union_dual": 1,
+      "oracle_interp_dual": 12,
+      "oracle_dsib_dual": 11,
+      "blind_baseline_mean_tm": 0.2502085078005523,
+      "blind_softmode_mean_tm": 0.23694744611031468
+    },
+    "multistate": {
+      "n": 13,
+      "mean_best_overlap": 0.2301054077993031,
+      "mean_cum_overlap_10": 0.3537200459815076,
+      "blind_baseline_dual": 4,
+      "blind_softmode_dual": 4,
+      "blind_union_dual": 4,
+      "oracle_interp_dual": 13,
+      "oracle_dsib_dual": 13,
+      "blind_baseline_mean_tm": 0.3847798493170558,
+      "blind_softmode_mean_tm": 0.3873495033279981
+    }
+  },
+  "holm_bonferroni": {
+    "dsib!=interp (perm)": {
+      "p_raw": 4.999750012499375e-05,
+      "p_adjusted": 0.00039998000099995,
+      "threshold": 0.00625,
+      "reject_h0": true
+    },
+    "overlap~gain:best_single_overlap (perm)": {
+      "p_raw": 0.0010998900109989002,
+      "p_adjusted": 0.007699230076992301,
+      "threshold": 0.0071428571428571435,
+      "reject_h0": true
+    },
+    "overlap~gain:transition_rmsd (perm)": {
+      "p_raw": 0.003999600039996,
+      "p_adjusted": 0.023997600239976002,
+      "threshold": 0.008333333333333333,
+      "reject_h0": true
+    },
+    "overlap~gain:cum_overlap_10 (perm)": {
+      "p_raw": 0.0734926507349265,
+      "p_adjusted": 0.3674632536746325,
+      "threshold": 0.01,
+      "reject_h0": false
+    },
+    "blind_union>af3 (binom)": {
+      "p_raw": 0.1060779020481872,
+      "p_adjusted": 0.4243116081927488,
+      "threshold": 0.0125,
+      "reject_h0": false
+    },
+    "overlap~gain:cum_overlap_5 (perm)": {
+      "p_raw": 0.20277972202779723,
+      "p_adjusted": 0.6083391660833917,
+      "threshold": 0.016666666666666666,
+      "reject_h0": false
+    },
+    "overlap~gain:softest_mode_overlap (perm)": {
+      "p_raw": 0.23207679232076792,
+      "p_adjusted": 0.6083391660833917,
+      "threshold": 0.025,
+      "reject_h0": false
+    },
+    "softmode>baseline (perm)": {
+      "p_raw": 0.33868306584670765,
+      "p_adjusted": 0.6083391660833917,
+      "threshold": 0.05,
+      "reject_h0": false
+    }
+  }
+}
