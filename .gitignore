@@ -4,4 +4,4 @@ data/pdb_cache/*.pdb
 .DS_Store
 *.egg-info/
 .venv/
-results_rigorous_run.log
+results_*_run.log

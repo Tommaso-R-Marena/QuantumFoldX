@@ -95,6 +95,26 @@ The honest contribution is a mechanistic characterization of *what is
 predictable and why* — and a clean refutation of the quantum-advantage claim —
 not a state-of-the-art prediction result.
 
+### Follow-up: soft-mode subspace sampling
+
+Acting on finding 4, a fully blind soft-mode **subspace** sampler with
+ENM-guided Cα relaxation (`src/ensemble/nm_guided.py`,
+`benchmarks/run_softmode_improvement.py`, `benchmarks/analyze_softmode.py`)
+gives a small but statistically robust improvement in blind max-TM to state 2
+(ΔTM +0.013, 95% CI [+0.006, +0.029]; Holm-adj p = 0.008), and the improvement
+is significantly concentrated on high-overlap collective/hinge transitions
+(high vs low stratum +0.025 vs +0.002, interaction p = 0.004). The combined
+ensemble is never worse than baseline (30 improved, 0 worsened), and adenylate
+kinase rises 0.58 → 0.80. **It does not, however, change the binary dual-state
+coverage rate (11/49 for every sampler)** — the gains rarely cross TM > 0.5 for
+hard cases, and fold-switchers gain nothing. Details in
+[`results/rigorous/FINDINGS.md`](results/rigorous/FINDINGS.md).
+
+```bash
+python benchmarks/run_softmode_improvement.py --no-resume --n-ens 56
+python benchmarks/analyze_softmode.py
+```
+
 ### Bridge-source diagnostic (Step 1, n=6 proteins across all categories)
 
 On SRC, WAS, FYN, CLIC1, REV, and PDGFRB, the max-TM winner in the ORACLE ensemble was a bridge member on 6/6 proteins. By source: **common_residue_interp** won 5/6; **manifold_bridge** won 1/6 (PDGFRB); **switch_contact_rigid** won 0/6. Switch-contact-guided rigid-body motion (the Ising H₁/H₂ output) generates conformations but did not produce the max-TM winner in this sample. Condition E (v2 + bridge only) matched condition B (full v3) on 6/6 because coverage is max TM over the full ensemble, not a ranked selection step.

@@ -160,3 +160,81 @@ low-mode, so the aggregate effect is null. This is reported as a negative result
 python benchmarks/run_rigorous_benchmark.py --no-resume --n-ens 56   # ~2 h, needs network
 python benchmarks/analyze_rigorous.py                                # stats + figures
 ```
+
+---
+
+# Follow-up: can soft-mode SUBSPACE sampling improve blind prediction?
+
+The result above (soft-mode overlap predicts blind gain) motivated a targeted
+attempt to *exploit* soft modes for genuinely blind prediction. All conditions
+here are **blind** (state 1 only), share one conformation budget, and use the
+same **blind, radius-of-gyration-based** amplitude schedule — no state-2
+information (not even the transition magnitude) leaks into generation. This
+fixes a subtle leak in the earlier `blind_softmode` condition, whose amplitude
+had been scaled by the (state-2-derived) transition magnitude.
+
+Code: `src/ensemble/nm_guided.py`, `benchmarks/run_softmode_improvement.py`,
+`benchmarks/analyze_softmode.py`. Data: `results/rigorous/softmode_improvement.csv`,
+`results/rigorous/softmode_stats.json`.
+
+**Samplers (all blind, equal budget n=56):**
+`baseline` (NMA+rigid+torsion) · `single_mode` (softest-mode axis scans) ·
+`subspace` (softest-10 mode *combinations*) · `subspace_relax` (+ ENM-guided
+Calpha relaxation) · `combo` (baseline ∪ subspace_relax).
+
+## What worked (survives Holm–Bonferroni over 5 tests)
+
+| Comparison | ΔTM (95% CI) | perm p | Holm-adj p |
+|-----------|:---:|:---:|:---:|
+| subspace_relax > baseline | +0.013 [+0.006, +0.029] | 0.0019 | **0.008** |
+| relaxation > subspace alone | +0.007 [+0.005, +0.012] | <1e-4 | **0.0002** (+35/−6) |
+| subspace > single-mode | +0.003 [+0.001, +0.007] | 0.014 | **0.029** |
+| gain ~ soft-mode overlap | ρ=0.32 | 0.027 | **0.029** |
+| gain: high- vs low-overlap stratum | +0.025 vs +0.002 | 0.004 | **0.013** |
+
+- Sampling the soft-mode **subspace** beats scanning single mode axes, and
+  **ENM-guided relaxation** adds a further, highly significant increment
+  (improves 35 proteins, worsens 6).
+- The improvement is **mechanistically targeted**: it is significantly larger
+  where soft-mode overlap is high (high-overlap mean gain +0.025 vs +0.002 for
+  low-overlap; interaction p=0.004), and this holds controlling for transition
+  size (partial ρ=0.36, p=0.012).
+- The **combined** ensemble (`combo`) is **never worse** than baseline
+  (improved 30, worsened 0; ΔTM +0.017 [+0.010, +0.033]).
+- The standout is **adenylate kinase** (the textbook hinge, highest overlap):
+  blind max TM to state 2 rises from **0.58 → 0.80**.
+
+![Gain concentrates at high overlap](figures/fig8_softmode_gain_vs_overlap.png)
+![Subspace+relax vs baseline](figures/fig9_subspace_relax_vs_baseline.png)
+
+## What did NOT generalize (reported honestly)
+
+- **Binary dual-state coverage does not move: 11/49 for every condition.** The
+  TM gains, though real and statistically robust, are mostly too small to push
+  hard cases across the TM > 0.5 threshold. No new protein is "covered".
+- **Fold-switchers gain essentially nothing** (mean gain +0.001): their
+  transitions are not low-mode, exactly as the overlap analysis predicts.
+- Improvements are on the order of ΔTM ≈ 0.01–0.06 for most proteins; only
+  adenylate kinase — already near the threshold — shows a large jump. Large
+  multi-domain and fold-switch transitions remain out of reach for any purely
+  blind linear-response method.
+
+![Mean by condition](figures/fig11_condition_means.png)
+![Gain by overlap tercile](figures/fig10_gain_by_overlap_tercile.png)
+
+## Honest bottom line
+
+Soft-mode subspace sampling with ENM-guided relaxation is a **real, reproducible,
+mechanistically-grounded improvement** to blind sampling that is safe to always
+include (the combined ensemble never hurts). But it is a **modest** effect that
+**does not change the headline coverage rate**: the collective/hinge transitions
+where soft modes carry signal are helped, while fold-switches and very large
+domain motions are not. This is progress on the *right* subproblem, not a
+solution to blind alternate-state prediction in general.
+
+## Reproduce (follow-up)
+
+```bash
+python benchmarks/run_softmode_improvement.py --no-resume --n-ens 56   # ~1 min (uses cached PDBs)
+python benchmarks/analyze_softmode.py                                  # stats + figures
+```
